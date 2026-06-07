@@ -242,60 +242,63 @@ def render_welcome():
 # ────────────────────────────────────────────────
 
 def render_info():
-    st.markdown('<div class="main-title">기본 정보 입력</div>', unsafe_allow_html=True)
+    lang = get_lang()
+    info_titles = {"ko":"기본 정보 입력","en":"Basic Information","zh":"基本信息","es":"Información Básica","hi":"बुनियादी जानकारी","ar":"المعلومات الأساسية","pt":"Informações Básicas"}
+    st.markdown(f'<div class="main-title">{info_titles.get(lang,"기본 정보 입력")}</div>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("---")
-        name = st.text_input("이름 (또는 별명)", placeholder="홍길동", value=st.session_state.name)
+        name = st.text_input(t("name_label", lang), placeholder="Name", value=st.session_state.name)
         age = st.number_input(
-            "나이 (만 나이)", min_value=6, max_value=80, value=st.session_state.age or 17,
-            help="6세~80세까지 입력 가능합니다"
+            t("age_label", lang), min_value=6, max_value=80, value=st.session_state.age or 17,
         )
 
         age_group = get_age_group(age)
         plan = get_assessment_plan(age_group)
 
         age_group_labels = {
-            "child": "아동 (6~12세)",
-            "teen": "청소년 (13~18세)",
-            "young_adult": "청년 (19~29세)",
-            "adult": "성인 (30세 이상)",
+            "child":       t("age_child", lang),
+            "teen":        t("age_teen", lang),
+            "young_adult": t("age_young", lang),
+            "adult":       t("age_adult", lang),
         }
 
-        st.info(f"연령대: **{age_group_labels[age_group]}** — {len(plan['sections'])}개 검사 모듈")
+        st.info(f"**{age_group_labels[age_group]}** — {len(plan['sections'])} modules")
 
         # 성인 전용: 현재 진로 상황 질문
         career_situation = None
         if age_group in ("adult", "young_adult"):
             st.markdown("---")
+            situation_opts = [
+                t("situation_opt1", lang),
+                t("situation_opt2", lang),
+                t("situation_opt3", lang),
+                t("situation_opt4", lang),
+            ]
             career_situation = st.radio(
-                "지금 어떤 상황인가요? (결과 해석에 활용됩니다)",
-                options=[
-                    "처음 직업 방향을 정하고 있습니다",
-                    "현재 직업에서 성장 방향을 찾고 있습니다",
-                    "이직 또는 직무 전환을 고려 중입니다",
-                    "번아웃 또는 진로 혼란 상태입니다",
-                ],
+                t("situation_label", lang),
+                options=situation_opts,
                 key="career_situation_radio",
                 index=0,
             )
 
         # 검사 구성 미리보기
-        with st.expander("검사 구성 확인하기"):
+        preview_labels = {"ko":"검사 구성 확인하기","en":"Preview test structure","zh":"预览测试结构","es":"Ver estructura del test","hi":"परीक्षण संरचना देखें","ar":"معاينة هيكل الاختبار","pt":"Ver estrutura do teste"}
+        with st.expander(preview_labels.get(lang, "검사 구성 확인하기")):
             for i, sec in enumerate(plan["sections"]):
                 n_q = len(sec["questions"])
-                st.markdown(f"**{i+1}. {sec['title']}** ({n_q}문항)")
+                st.markdown(f"**{i+1}. {sec['title']}** ({n_q})")
 
         st.markdown("")
         col_a, col_b = st.columns(2)
         with col_a:
-            if st.button("이전", use_container_width=True):
+            if st.button(t("prev_btn", lang), use_container_width=True):
                 go_to("welcome")
         with col_b:
-            if st.button("검사 시작", type="primary", use_container_width=True):
+            if st.button(t("start_btn", lang), type="primary", use_container_width=True):
                 if not name.strip():
-                    st.warning("이름을 입력해주세요.")
+                    st.warning("Please enter your name." if lang == "en" else "이름을 입력해주세요.")
                 else:
                     st.session_state.name = name
                     st.session_state.age = age
@@ -442,18 +445,21 @@ def _render_forced_choice_section(sec_key, questions, current_answers, current_s
     st.session_state.answers[sec_key] = current_answers
 
     # 이전/다음 버튼 (form 밖이므로 일반 button)
+    lang = get_lang()
+    _next_labels = {"ko":"다음 검사","en":"Next","zh":"下一步","es":"Siguiente","hi":"अगला","ar":"التالي","pt":"Próximo"}
+    _done_labels = {"ko":"결과 확인","en":"See Results","zh":"查看结果","es":"Ver Resultados","hi":"परिणाम देखें","ar":"عرض النتائج","pt":"Ver Resultados"}
     st.markdown("")
     col_a, col_b = st.columns(2)
     with col_a:
-        if st.button("이전" if current_sec_idx > 0 else "처음으로",
-                     use_container_width=True, key=f"fc_prev_{current_sec_idx}"):
+        prev_lbl = t("prev_btn", lang) if current_sec_idx > 0 else t("home_btn", lang)
+        if st.button(prev_lbl, use_container_width=True, key=f"fc_prev_{current_sec_idx}"):
             if current_sec_idx > 0:
                 st.session_state.current_section -= 1
             else:
                 go_to("info")
             st.rerun()
     with col_b:
-        next_label = "다음 검사" if current_sec_idx < total_sections - 1 else "결과 확인"
+        next_label = _next_labels.get(lang, "다음") if current_sec_idx < total_sections - 1 else _done_labels.get(lang, "결과 확인")
         next_disabled = (count != pick_n)
         if st.button(next_label, type="primary", use_container_width=True,
                      disabled=next_disabled, key=f"fc_next_{current_sec_idx}"):
@@ -463,14 +469,15 @@ def _render_forced_choice_section(sec_key, questions, current_answers, current_s
 
 def _render_nav_buttons(current_sec_idx, total_sections):
     """이전/다음 버튼 렌더링, 버튼 객체 반환"""
+    lang = get_lang()
+    _next_labels = {"ko":"다음 검사","en":"Next","zh":"下一步","es":"Siguiente","hi":"अगला","ar":"التالي","pt":"Próximo"}
+    _done_labels = {"ko":"결과 확인","en":"See Results","zh":"查看结果","es":"Ver Resultados","hi":"परिणाम देखें","ar":"عرض النتائج","pt":"Ver Resultados"}
     col_a, col_b = st.columns(2)
     with col_a:
-        prev_btn = st.form_submit_button(
-            "이전" if current_sec_idx > 0 else "처음으로",
-            use_container_width=True,
-        )
+        prev_lbl = t("prev_btn", lang) if current_sec_idx > 0 else t("home_btn", lang)
+        prev_btn = st.form_submit_button(prev_lbl, use_container_width=True)
     with col_b:
-        next_label = "다음 검사" if current_sec_idx < total_sections - 1 else "결과 확인"
+        next_label = _next_labels.get(lang, "다음") if current_sec_idx < total_sections - 1 else _done_labels.get(lang, "결과 확인")
         next_btn = st.form_submit_button(next_label, type="primary", use_container_width=True)
     return prev_btn, next_btn
 
@@ -906,7 +913,17 @@ def render_result():
     name = st.session_state.name
     age_group = st.session_state.age_group
 
-    st.markdown(f'<div class="main-title">{name}님의 진로 탐색 결과</div>', unsafe_allow_html=True)
+    lang = get_lang()
+    _result_titles = {
+        "ko": f"{name}님의 진로 탐색 결과",
+        "en": f"{name}'s Career Results",
+        "zh": f"{name}的职业探索结果",
+        "es": f"Resultados de {name}",
+        "hi": f"{name} के करियर परिणाम",
+        "ar": f"نتائج {name}",
+        "pt": f"Resultados de {name}",
+    }
+    st.markdown(f'<div class="main-title">{_result_titles.get(lang, _result_titles["ko"])}</div>', unsafe_allow_html=True)
 
     # ── 상단 핵심 지표
     holland_code = results.get("holland_code", "---")
@@ -920,26 +937,30 @@ def render_result():
         st.markdown(f"""
         <div class='metric-box'>
             <div class='metric-val'>{holland_code}</div>
-            <div class='metric-label'>나의 흥미 유형 코드</div>
+            <div class='metric-label'>{t("interest_code", lang)}</div>
         </div>""", unsafe_allow_html=True)
     with m2:
+        top1_display = tc(top1["career_id"], lang) if top1 and lang != "ko" else top1_name
         st.markdown(f"""
         <div class='metric-box'>
-            <div class='metric-val' style='font-size:1.3rem;'>{top1_name}</div>
-            <div class='metric-label'>가장 잘 맞는 직업 1위</div>
+            <div class='metric-val' style='font-size:1.3rem;'>{top1_display}</div>
+            <div class='metric-label'>{t("top1_career", lang)}</div>
         </div>""", unsafe_allow_html=True)
     with m3:
         st.markdown(f"""
         <div class='metric-box'>
             <div class='metric-val'>{top1_score}</div>
-            <div class='metric-label'>최고 적합도</div>
+            <div class='metric-label'>{t("top_score", lang)}</div>
         </div>""", unsafe_allow_html=True)
 
     st.markdown("---")
     has_maturity = "maturity" in results
-    tab_labels = ["직업 추천", "나의 프로파일", "흥미 유형", "강점 지능", "가치관 분석", "성격 특성"]
+    tab_labels = [
+        t("tab_recommend", lang), t("tab_profile", lang), t("tab_holland", lang),
+        t("tab_mi", lang), t("tab_values", lang), t("tab_personality", lang),
+    ]
     if has_maturity:
-        tab_labels.append("진로 탐색 현황")
+        tab_labels.append(t("tab_maturity", lang))
     tabs = st.tabs(tab_labels)
 
     # ──────────────────────────────────
@@ -963,7 +984,6 @@ def render_result():
             if guide_msg:
                 st.info(f"**현재 상황:** {situation}\n\n{guide_msg}")
 
-        lang = get_lang()
         st.markdown(f"### {t('top12_title', lang)}")
 
         # 카테고리 필터
@@ -1344,7 +1364,6 @@ def render_result():
     # ──────────────────────────────────
     # 결과 공유 / 저장
     # ──────────────────────────────────
-    lang = get_lang()
     st.markdown("---")
     st.markdown(f"### {t('share_title', lang)}")
     share_col, dl_col = st.columns(2)
