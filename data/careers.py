@@ -986,7 +986,37 @@ except ImportError:
     except ImportError:
         CAREERS_EXTRA = []
 
-CAREERS_DB = CAREERS_DB + CAREERS_EXTRA
+try:
+    from data.careers_extra2 import CAREERS_EXTRA2
+except ImportError:
+    try:
+        from careers_extra2 import CAREERS_EXTRA2
+    except ImportError:
+        CAREERS_EXTRA2 = []
+
+try:
+    from data.careers_extra3 import CAREERS_EXTRA3
+except ImportError:
+    try:
+        from careers_extra3 import CAREERS_EXTRA3
+    except ImportError:
+        CAREERS_EXTRA3 = []
+
+try:
+    from data.careers_extra4 import CAREERS_EXTRA4
+except ImportError:
+    try:
+        from careers_extra4 import CAREERS_EXTRA4
+    except ImportError:
+        CAREERS_EXTRA4 = []
+
+_all = CAREERS_DB + CAREERS_EXTRA + CAREERS_EXTRA2 + CAREERS_EXTRA3 + CAREERS_EXTRA4
+_seen = set()
+CAREERS_DB = []
+for _c in _all:
+    if _c["id"] not in _seen:
+        _seen.add(_c["id"])
+        CAREERS_DB.append(_c)
 
 
 def get_careers_by_category() -> dict:
