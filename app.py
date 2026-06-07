@@ -10,6 +10,8 @@ import plotly.graph_objects as go
 import plotly.express as px
 import numpy as np
 import pandas as pd
+import json
+import base64
 
 from data.questions import (
     get_assessment_plan, get_age_group,
@@ -178,6 +180,24 @@ def render_progress(current: int, total: int, label: str = ""):
 # ────────────────────────────────────────────────
 
 def render_welcome():
+    # 공유 링크로 접속 시 결과 미리보기 표시
+    params = st.query_params
+    if "r" in params:
+        share_data = _decode_share_param(params["r"])
+        if share_data:
+            st.markdown('<div class="main-title">공유된 진로 탐색 결과</div>', unsafe_allow_html=True)
+            st.success(f"**{share_data.get('n', '')}** 님의 결과를 공유받았습니다.")
+            st.markdown(f"**흥미 코드:** `{share_data.get('h', '')}`")
+            st.markdown("**추천 직업 Top 5:**")
+            for rank, (cname, cscore) in enumerate(share_data.get("t", []), 1):
+                st.markdown(f"{rank}. **{cname}** — {cscore}점")
+            st.markdown("---")
+            st.markdown("나도 직접 검사해 볼까요?")
+            if st.button("진로 탐색 시작하기", use_container_width=True, key="shared_start"):
+                st.query_params.clear()
+                st.rerun()
+            return
+
     st.markdown('<div class="main-title">진로 탐색 시스템</div>', unsafe_allow_html=True)
     st.markdown('<div class="sub-title">흥미·강점·성격·가치관을 종합 분석해 나에게 딱 맞는 직업을 찾아드립니다</div>',
                 unsafe_allow_html=True)
@@ -710,6 +730,154 @@ def _compute_and_go_to_result():
 
 
 # ────────────────────────────────────────────────
+# 직업별 상세 정보 (연봉 실데이터, 취업 경로)
+# 출처: 고용노동부 임금정보시스템, 커리어넷 (2024 기준)
+# ────────────────────────────────────────────────
+CAREER_DETAIL_DB = {
+    "software_dev":      {"salary_range": "3,500~7,000만원 (신입~5년차)", "career_path": ["컴퓨터공학 전공 or 부트캠프", "공개 채용 / 인턴십 지원", "주니어 개발자 1~3년", "시니어 / 풀스택 3~7년", "테크리드 or 창업"]},
+    "data_scientist":    {"salary_range": "4,000~9,000만원", "career_path": ["통계·수학·CS 전공 (대학원 권장)", "Kaggle 등 포트폴리오 구축", "주니어 분석가 2~3년", "시니어 데이터 과학자", "ML 리서처 or 수석 과학자"]},
+    "ai_engineer":       {"salary_range": "4,500~1억원+", "career_path": ["CS/수학 대학원", "논문 및 오픈소스 기여", "AI 스타트업 or 대기업 연구소", "ML 엔지니어 → 리서처", "AI 연구소 팀장"]},
+    "doctor":            {"salary_range": "1억~2억5천만원 (전문의 기준)", "career_path": ["의과대학 6년", "인턴 1년 + 레지던트 4년", "전문의 자격 취득", "개원 or 대학병원 교수 트랙"]},
+    "lawyer":            {"salary_range": "4,000~1억5천만원 (경력별)", "career_path": ["법학전문대학원(로스쿨) 3년", "변호사 시험 합격", "로펌 or 검사/판사 임용", "파트너 변호사 or 전문 분야 개업"]},
+    "teacher":           {"salary_range": "3,200~5,500만원 (공립 기준)", "career_path": ["사범대 or 교직 이수", "임용고시 준비·합격", "기간제 교사 → 정교사", "수석교사 or 교감·교장"]},
+    "nurse":             {"salary_range": "3,000~5,000만원", "career_path": ["간호학과 4년", "국가시험 합격 (간호사 면허)", "병원 신규 간호사", "전문 간호사 자격 취득", "수간호사 or 관리직"]},
+    "pharmacist":        {"salary_range": "4,000~7,000만원", "career_path": ["약학대학 6년", "약사 면허 취득", "약국 취업 or 병원 약사", "개인 약국 창업"]},
+    "architect":         {"salary_range": "3,000~7,000만원", "career_path": ["건축학과 5년", "건축사 시험 준비 (실무 3년)", "건축사 자격 취득", "설계사무소 or 건설사"]},
+    "accountant":        {"salary_range": "3,500~8,000만원 (CPA 기준)", "career_path": ["경영·회계학과", "공인회계사(CPA) 시험", "회계법인 입사 (Big4 등)", "파트너 or CFO 트랙"]},
+    "journalist":        {"salary_range": "3,000~6,000만원", "career_path": ["언론학·국문학 전공", "방송·신문사 공채 준비", "수습기자 1년", "취재기자 → 데스크 → 부장"]},
+    "designer_graphic":  {"salary_range": "2,500~5,500만원", "career_path": ["시각디자인 전공 or 독학", "포트폴리오 구축", "디자인 에이전시 or 인하우스", "시니어 디자이너 / 아트디렉터"]},
+    "musician":          {"salary_range": "불규칙 (무대·음반 수입 중심)", "career_path": ["음악 전공 or 독학 (재능 필수)", "콩쿠르·오디션 참가", "연주·레코딩 활동", "앙상블 or 솔로 무대", "교수직 병행 가능"]},
+    "chef":              {"salary_range": "2,200~6,000만원 (경력별)", "career_path": ["조리학과 or 요리학원", "레스토랑 보조 요리사", "수셰프(부주방장)", "총주방장 or 오너셰프"]},
+    "researcher":        {"salary_range": "4,000~8,000만원 (정부출연연 기준)", "career_path": ["이공계 대학원 (박사 권장)", "포스트닥터(포닥)", "연구소 입소 or 교수 공채", "책임연구원 or 부교수"]},
+    "professor":         {"salary_range": "5,000~9,000만원", "career_path": ["박사 학위 취득", "포닥/연구원 경험", "신진교수 공개채용 (경쟁률 높음)", "조교수 → 부교수 → 정교수"]},
+    "police":            {"salary_range": "3,000~5,500만원", "career_path": ["경찰대학 or 경찰공무원 채용시험", "순경 임용", "경장 → 경사 → 경위 (승진시험)", "경찰서 각 부서 순환 근무"]},
+    "firefighter":       {"salary_range": "3,000~5,200만원", "career_path": ["소방공무원 채용시험 합격", "소방사 임용 (체력 필수)", "소방장 → 소방위 승진", "구조대·구급대 등 특수부서"]},
+    "social_worker":     {"salary_range": "2,500~4,000만원", "career_path": ["사회복지학과", "사회복지사 1급 자격증", "복지관·NGO 취업", "시설장 or 전문 상담사"]},
+    "counselor":         {"salary_range": "2,800~5,000만원", "career_path": ["심리학·상담학 전공 (석사 권장)", "임상심리사·상담심리사 자격", "상담센터·학교상담 취업", "사설 상담소 개업"]},
+    "financial_analyst": {"salary_range": "4,000~1억원+ (성과급 포함)", "career_path": ["경제·경영·수학 전공", "증권사·투자은행 인턴", "애널리스트 CFA 취득", "선임 애널리스트 / 펀드매니저"]},
+    "marketing_manager": {"salary_range": "3,500~7,000만원", "career_path": ["경영·광고·미디어 전공", "마케팅 인턴십 경험", "대리 → 과장 → 마케팅 팀장", "CMO (최고마케팅책임자)"]},
+    "entrepreneur":      {"salary_range": "불규칙 (초기 낮음→성공 시 무제한)", "career_path": ["아이디어·시장조사", "팀 구성 + 투자 유치 (AC/VC)", "MVP 출시 → 피드백 반복", "스케일업 → 투자 시리즈 A/B", "IPO or M&A 엑싯"]},
+    "pilot":             {"salary_range": "7,000만~1억5천만원 (항공사 기준)", "career_path": ["항공운항학과 or 공군 조종사", "자가용 조종사(PPL) → 계기비행(IR) → 사업용(CPL)", "부기장 채용 (500시간+)", "기장 승격 (3,000시간+)"]},
+    "dentist":           {"salary_range": "8,000만~2억원", "career_path": ["치과대학 6년", "치과의사 면허 취득", "인턴·레지던트 (전문의 선택)", "치과 개원 or 대학병원 교수"]},
+    "clinical_psychologist": {"salary_range": "3,000~5,500만원", "career_path": ["심리학 전공 (석사·박사 권장)", "임상심리사 2급→1급 자격", "병원·센터 수련 3년", "정신건강임상심리사"]},
+    "kindergarten_teacher": {"salary_range": "2,200~3,800만원", "career_path": ["유아교육학과 or 아동학과", "보육교사 2급 → 1급 자격", "어린이집·유치원 취업", "원장 자격증 취득 후 개원"]},
+    "hr_manager":        {"salary_range": "3,500~7,000만원", "career_path": ["경영·심리·교육학 전공", "채용담당 or 노무팀 입사", "HR 제너럴리스트 경력", "CHRO (최고인사책임자)"]},
+    "tax_accountant":    {"salary_range": "4,000~9,000만원 (개업 시 변동)", "career_path": ["세무·회계학 전공", "세무사 시험 합격", "세무법인 or 세무서 근무", "개인 세무 사무소 개업"]},
+    "actuary":           {"salary_range": "5,000~1억2천만원", "career_path": ["수학·통계·보험계리학 전공", "계리사 1차→2차 시험 합격", "보험사·연금공단 입사", "선임 계리사 → 계리 부서장"]},
+    "webtoon_artist":    {"salary_range": "불규칙 (플랫폼 정산, 상위 작가 수억원)", "career_path": ["그림 실력 독학 or 학원", "단편 웹툰 플랫폼 공모전 도전", "연재 작가 계약", "인기 작품→2차 저작물(드라마·굿즈)"]},
+    "vr_ar_developer":   {"salary_range": "4,000~8,000만원", "career_path": ["컴퓨터공학·게임공학 전공", "Unity/Unreal 포트폴리오", "게임사 or XR 스타트업 입사", "시니어 XR 개발자"]},
+    "biotech_researcher":{"salary_range": "3,500~7,000만원", "career_path": ["생명공학·화학·의학 전공 (대학원)", "연구소 인턴십", "바이오테크 기업 입사", "연구책임자 or 기술이전 전문가"]},
+    "renewable_energy_engineer": {"salary_range": "3,500~7,000만원", "career_path": ["기계·전기·환경공학 전공", "에너지공단·발전사 취업", "태양광·풍력 설계 엔지니어", "신재생에너지 PM"]},
+    "urban_planner":     {"salary_range": "3,500~6,500만원", "career_path": ["도시공학·건축·지리학 전공", "국토연구원·LH공사 입사", "도시계획기사 자격증", "도시계획 전문위원"]},
+    "flight_attendant":  {"salary_range": "3,000~5,500만원 (항공사별 차이)", "career_path": ["어학능력 준비 (영어 필수)", "항공사 채용 공고 지원", "훈련원 교육 (6~8주)", "국내선 → 국제선 → 사무장"]},
+    "game_developer":    {"salary_range": "3,500~7,000만원", "career_path": ["컴퓨터공학·게임공학 전공", "개인 게임 포트폴리오 제작", "게임사 공채 or 인디 개발", "리드 개발자 → 게임 디렉터"]},
+}
+
+# ────────────────────────────────────────────────
+# 결과 공유 URL 생성 / HTML 보고서 생성
+# ────────────────────────────────────────────────
+
+def _generate_share_url(name: str, holland_code: str, ranked: list) -> str:
+    """상위 결과를 base64로 인코딩한 공유 URL 반환"""
+    share_data = {
+        "n": name,
+        "h": holland_code,
+        "t": [(r["career_name"], round(r["score"])) for r in ranked[:5]],
+    }
+    encoded = base64.urlsafe_b64encode(
+        json.dumps(share_data, ensure_ascii=False).encode()
+    ).decode()
+    base_url = st.secrets.get("APP_URL", "https://jinro-assessment.onrender.com")
+    return f"{base_url}/?r={encoded}"
+
+
+def _decode_share_param(param: str) -> dict | None:
+    """URL 공유 파라미터 디코딩"""
+    try:
+        decoded = base64.urlsafe_b64decode(param.encode()).decode()
+        return json.loads(decoded)
+    except Exception:
+        return None
+
+
+def _generate_html_report(name: str, age_group: str, holland_code: str,
+                           results: dict, ranked: list) -> str:
+    """다운로드용 HTML 보고서 생성"""
+    age_label = {"child": "아동", "teen": "청소년", "young_adult": "청년", "adult": "성인"}.get(age_group, "")
+
+    top_careers_html = ""
+    for i, fit in enumerate(ranked[:8]):
+        c = fit["career_data"]
+        diff = c.get("difficulty", "보통")
+        diff_color = {"낮음": "#22c55e", "보통": "#3b82f6", "높음": "#f59e0b", "매우 높음": "#ef4444"}.get(diff, "#888")
+        reasons_html = "".join(
+            f"<li><b>[{r['theory']}]</b> {r['detail']}</li>"
+            for r in fit.get("top_reasons", [])[:3]
+        )
+        detail = CAREER_DETAIL_DB.get(c["id"], {})
+        salary_str = detail.get("salary_range", c.get("salary_level", ""))
+        top_careers_html += f"""
+        <div style="border:1px solid #e5e7eb;border-radius:10px;padding:14px;margin-bottom:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;">
+                <span style="font-size:1.1rem;font-weight:700;">{i+1}. {c['name']}</span>
+                <span style="background:#667eea;color:white;padding:3px 10px;border-radius:20px;font-size:0.9rem;">{fit['score']:.0f}점</span>
+            </div>
+            <div style="color:#555;font-size:0.9rem;margin:6px 0;">{c['description']}</div>
+            <div style="font-size:0.85rem;">
+                <b>학력:</b> {c['education']} &nbsp;|&nbsp;
+                <b>예상 연봉:</b> {salary_str} &nbsp;|&nbsp;
+                <b>성장성:</b> {c['job_growth']} &nbsp;|&nbsp;
+                <b style="color:{diff_color}">난이도: {diff}</b>
+            </div>
+            <ul style="font-size:0.85rem;margin:6px 0 0 0;">{reasons_html}</ul>
+        </div>"""
+
+    holland_html = ""
+    if "holland" in results:
+        for k, v in results["holland"].items():
+            pct = int(v * 100)
+            holland_html += f"""
+            <div style="margin-bottom:6px;">
+                <span style="display:inline-block;width:80px;">{k}</span>
+                <div style="display:inline-block;background:#e5e7eb;width:200px;height:12px;border-radius:6px;vertical-align:middle;">
+                    <div style="background:#667eea;width:{pct * 2}px;height:12px;border-radius:6px;"></div>
+                </div>
+                <span style="margin-left:8px;font-size:0.85rem;">{pct}</span>
+            </div>"""
+
+    html = f"""<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<title>{name}님 진로 탐색 결과</title>
+<style>
+  body {{ font-family: 'Malgun Gothic', sans-serif; max-width: 800px; margin: 40px auto; padding: 0 20px; color: #1a1a2e; }}
+  h1 {{ background: linear-gradient(135deg,#667eea,#764ba2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }}
+  .meta {{ background:#f8f9ff; border-radius:10px; padding:14px; margin-bottom:20px; }}
+  @media print {{ body {{ margin:20px; }} }}
+</style>
+</head>
+<body>
+<h1>진로 탐색 결과 보고서</h1>
+<div class="meta">
+  <b>이름:</b> {name} &nbsp;&nbsp; <b>연령대:</b> {age_label} &nbsp;&nbsp; <b>흥미 코드:</b> {holland_code}
+  <br><small style="color:#888;">본 결과는 다중이론 앙상블(MTECA) 기반 진로 탐색 프로그램이 생성한 참고 자료입니다.</small>
+</div>
+
+<h2 style="margin-bottom:10px;">추천 직업 상위 8개</h2>
+{top_careers_html}
+
+<h2 style="margin-bottom:10px;">흥미 유형 프로파일</h2>
+<div style="padding:10px;">{holland_html}</div>
+
+<p style="color:#999;font-size:0.8rem;margin-top:30px;border-top:1px solid #eee;padding-top:10px;">
+생성일: {pd.Timestamp.now().strftime('%Y년 %m월 %d일')} | 진로 탐색 시스템 (jinro-assessment.onrender.com)
+</p>
+</body></html>"""
+    return html
+
+
+# ────────────────────────────────────────────────
 # 화면 4: 결과 화면
 # ────────────────────────────────────────────────
 
@@ -824,12 +992,26 @@ def render_result():
                             )
 
                     # 기본 정보
+                    # 상세 정보 (연봉 실데이터 우선)
+                    detail = CAREER_DETAIL_DB.get(career["id"], {})
+                    salary_display = detail.get("salary_range") or career["salary_level"]
                     st.markdown(f"""
                     - **필요 학력:** {career['education']}
-                    - **급여 수준:** {career['salary_level']}
+                    - **예상 연봉:** {salary_display}
                     - **성장성:** {career['job_growth']}
                     - **관련 전공:** {', '.join(career.get('related_majors', []))}
                     """)
+
+                    # 취업 경로 (있을 때만)
+                    career_path = detail.get("career_path")
+                    if career_path:
+                        steps = " → ".join(career_path)
+                        st.markdown(
+                            f"<div style='background:#f0f4ff;border-radius:8px;padding:0.5rem 0.8rem;"
+                            f"margin-top:0.3rem;font-size:0.84rem;border-left:3px solid #667eea;'>"
+                            f"<b>취업 경로:</b> {steps}</div>",
+                            unsafe_allow_html=True
+                        )
 
                     # 재능 전제 경고
                     talent_note = career.get("talent_note", "")
@@ -1127,6 +1309,27 @@ def render_result():
                      margin-bottom:0.4rem;border-left:3px solid #f59e0b;'>
                     <b>{label}</b> 강화 → {sug}
                 </div>""", unsafe_allow_html=True)
+
+    # ──────────────────────────────────
+    # 결과 공유 / 저장
+    # ──────────────────────────────────
+    st.markdown("---")
+    st.markdown("### 결과 공유 / 저장")
+    share_col, dl_col = st.columns(2)
+    with share_col:
+        share_url = _generate_share_url(name, holland_code, ranked)
+        st.text_input("공유 링크 (복사 후 공유)", value=share_url, key="share_url_input")
+        st.caption("링크를 복사해서 친구·가족과 결과를 공유할 수 있습니다.")
+    with dl_col:
+        html_report = _generate_html_report(name, age_group, holland_code, results, ranked)
+        st.download_button(
+            label="HTML 보고서 다운로드",
+            data=html_report.encode("utf-8"),
+            file_name=f"진로결과_{name}.html",
+            mime="text/html",
+            use_container_width=True,
+        )
+        st.caption("다운로드 후 브라우저에서 열고 인쇄(Ctrl+P)하면 PDF로 저장 가능합니다.")
 
     st.markdown("---")
     col_r1, col_r2 = st.columns(2)

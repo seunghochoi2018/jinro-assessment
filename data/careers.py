@@ -978,6 +978,17 @@ CAREERS_DB = [
 ]
 
 
+try:
+    from data.careers_extra import CAREERS_EXTRA
+except ImportError:
+    try:
+        from careers_extra import CAREERS_EXTRA
+    except ImportError:
+        CAREERS_EXTRA = []
+
+CAREERS_DB = CAREERS_DB + CAREERS_EXTRA
+
+
 def get_careers_by_category() -> dict:
     """카테고리별로 직업 목록 반환"""
     result = {}
