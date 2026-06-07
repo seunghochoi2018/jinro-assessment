@@ -18,22 +18,6 @@
   <p class="sub-title">{{ t('app_subtitle') }}</p>
 
   <div class="welcome-card">
-    <!-- Language selector (inline, prominent) -->
-    <div class="lang-select-group">
-      <label>{{ t('lang_select') }}</label>
-      <div class="lang-buttons">
-        {% for code, cfg in LANG_CONFIG.items() %}
-        <form method="post" action="/set-lang" style="display:inline;">
-          <input type="hidden" name="lang" value="{{ code }}">
-          <button type="submit" class="lang-flag-btn {% if lang == code %}active{% endif %}">
-            {{ cfg.flag }} {{ cfg.name }}
-          </button>
-        </form>
-        {% endfor %}
-      </div>
-    </div>
-
-    <hr>
     <p class="time-hint"><strong>{{ t('time_hint') }}</strong></p>
     <ul class="feature-list">
       <li>{{ t('feat1') }}</li>

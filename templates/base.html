@@ -12,17 +12,17 @@
 </head>
 <body>
 <header class="site-header">
-  <a href="/" class="logo">진로 탐색 시스템</a>
-  <div class="lang-selector">
-    {% for code, cfg in LANG_CONFIG.items() %}
-    <form method="post" action="/set-lang" style="display:inline;">
-      <input type="hidden" name="lang" value="{{ code }}">
-      <button type="submit" class="lang-btn {% if lang == code %}active{% endif %}">
-        {{ cfg.flag }} {{ cfg.name }}
-      </button>
+  <div class="header-left">
+    <form method="post" action="/set-lang" id="lang-form">
+      <select name="lang" class="lang-dropdown" onchange="document.getElementById('lang-form').submit()">
+        {% for code, cfg in LANG_CONFIG.items() %}
+        <option value="{{ code }}" {% if lang == code %}selected{% endif %}>{{ cfg.flag }} {{ cfg.name }}</option>
+        {% endfor %}
+      </select>
     </form>
-    {% endfor %}
   </div>
+  <a href="/" class="logo">Career Assessment</a>
+  <div style="width:120px;"></div>
 </header>
 
 <main class="container">

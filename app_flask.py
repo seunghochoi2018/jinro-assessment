@@ -25,11 +25,12 @@ from engine.matcher import rank_careers, get_career_fit_summary
 # ────────────────────────────────────────────────
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-prod")
+DEFAULT_LANG = "en"
 
 
 @app.context_processor
 def inject_globals():
-    lang = session.get("lang", "ko")
+    lang = session.get("lang", DEFAULT_LANG)
     return {
         "UI": UI,
         "LANG_CONFIG": LANG_CONFIG,
@@ -353,7 +354,7 @@ def _compute_holland_code(holland_scores: dict) -> str:
 
 @app.route("/")
 def index():
-    lang = session.get("lang", "ko")
+    lang = session.get("lang", DEFAULT_LANG)
     shared_data = None
     r_param = request.args.get("r")
     if r_param:
@@ -363,7 +364,7 @@ def index():
 
 @app.route("/set-lang", methods=["POST"])
 def set_lang():
-    lang = request.form.get("lang", "ko")
+    lang = request.form.get("lang", DEFAULT_LANG)
     if lang in LANG_CONFIG:
         session["lang"] = lang
     referrer = request.referrer or "/"
@@ -372,7 +373,7 @@ def set_lang():
 
 @app.route("/info", methods=["GET", "POST"])
 def info():
-    lang = session.get("lang", "ko")
+    lang = session.get("lang", DEFAULT_LANG)
 
     if request.method == "POST":
         name = request.form.get("name", "").strip()
@@ -435,7 +436,7 @@ def survey():
     if "plan" not in session:
         return redirect(url_for("index"))
 
-    lang = session.get("lang", "ko")
+    lang = session.get("lang", DEFAULT_LANG)
     plan = session["plan"]
     sections = plan["sections"]
     current_section_idx = session.get("current_section", 0)
@@ -482,7 +483,7 @@ def survey_post():
     if "plan" not in session:
         return redirect(url_for("index"))
 
-    lang = session.get("lang", "ko")
+    lang = session.get("lang", DEFAULT_LANG)
     plan = session["plan"]
     sections = plan["sections"]
     current_section_idx = session.get("current_section", 0)
@@ -581,7 +582,7 @@ def result():
     if "results" not in session and "result_error" not in session:
         return redirect(url_for("index"))
 
-    lang = session.get("lang", "ko")
+    lang = session.get("lang", DEFAULT_LANG)
     error = session.get("result_error")
     if error:
         return render_template("result.html", lang=lang, error=error)

@@ -7,6 +7,8 @@ body { font-family: system-ui, -apple-system, sans-serif; background: #f8f9ff; c
 .lang-selector { display: flex; flex-wrap: wrap; gap: 0.3rem; }
 .lang-btn { background: none; border: 1px solid #e0e0e0; border-radius: 20px; padding: 3px 10px; font-size: 0.78rem; cursor: pointer; white-space: nowrap; }
 .lang-btn.active { background: #667eea; color: white; border-color: #667eea; }
+.header-left { width: 120px; }
+.lang-dropdown { padding: 5px 8px; border: 1px solid #e0e0e0; border-radius: 8px; font-size: 0.85rem; cursor: pointer; background: white; }
 
 /* Main container */
 .container { max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem; }
