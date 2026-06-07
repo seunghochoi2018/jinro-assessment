@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="info-page">
+  <h1 class="main-title">{{ {'ko':'기본 정보 입력','en':'Basic Information','zh':'基本信息','es':'Información Básica','hi':'बुनियादी जानकारी','ar':'المعلومات الأساسية','pt':'Informações Básicas'}[lang] }}</h1>
+
+  {% if error %}<div class="alert alert-error">{{ error }}</div>{% endif %}
+
+  <form method="post" action="/info" class="info-form">
+    <div class="form-group">
+      <label>{{ t('name_label') }}</label>
+      <input type="text" name="name" value="{{ name_val }}" placeholder="Name" required class="form-input">
+    </div>
+
+    <div class="form-group">
+      <label>{{ t('age_label') }}</label>
+      <input type="number" name="age" value="{{ age_val }}" min="6" max="80" class="form-input" id="age-input">
+    </div>
+
+    <div class="age-group-info" id="age-group-display">
+      <!-- dynamically updated by JS, or static based on server value -->
+      {% if age_group %}
+      <div class="info-box">
+        <strong>{{ {'child': t('age_child'), 'teen': t('age_teen'), 'young_adult': t('age_young'), 'adult': t('age_adult')}[age_group] }}</strong>
+        &mdash; {{ plan_sections|length }} modules
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Career situation (for adults/young adults) -->
+    <div class="form-group situation-group" id="situation-group"
+         {% if age_group not in ['adult', 'young_adult'] %}style="display:none"{% endif %}>
+      <label>{{ t('situation_label') }}</label>
+      {% set opts = [t('situation_opt1'), t('situation_opt2'), t('situation_opt3'), t('situation_opt4')] %}
+      {% for opt in opts %}
+      <label class="radio-label">
+        <input type="radio" name="career_situation" value="{{ opt }}" {% if loop.first %}checked{% endif %}>
+        {{ opt }}
+      </label>
+      {% endfor %}
+    </div>
+
+    <!-- Plan preview -->
+    <details class="plan-preview">
+      <summary>{{ {'ko':'검사 구성 확인하기','en':'Preview test structure','zh':'预览测试结构','es':'Ver estructura del test','hi':'परीक्षण संरचना देखें','ar':'معاينة هيكل الاختبار','pt':'Ver estrutura do teste'}[lang] }}</summary>
+      <ol>
+        {% for sec in plan_sections %}
+        <li><strong>{{ sec.title }}</strong> ({{ sec.questions|length }})</li>
+        {% endfor %}
+      </ol>
+    </details>
+
+    <div class="btn-row">
+      <a href="/" class="btn-secondary">{{ t('prev_btn') }}</a>
+      <button type="submit" class="btn-primary">{{ t('start_btn') }}</button>
+    </div>
+  </form>
+</div>
+
+<script>
+// Dynamically show/hide situation group based on age
+document.getElementById('age-input').addEventListener('input', function() {
+  const age = parseInt(this.value);
+  const group = document.getElementById('situation-group');
+  if (age >= 19) {
+    group.style.display = 'block';
+  } else {
+    group.style.display = 'none';
+  }
+});
+</script>
+{% endblock %}

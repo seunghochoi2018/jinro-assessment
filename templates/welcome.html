@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="welcome-page">
+
+  {% if shared_data %}
+  <!-- Shared result preview -->
+  <div class="shared-result-box">
+    <h2>{{ t('shared_result') }}</h2>
+    <p><strong>{{ shared_data.n }}</strong></p>
+    <p><strong>{{ t('interest_code') }}:</strong> {{ shared_data.h }}</p>
+    <ol>{% for cname, cscore in shared_data.t %}<li>{{ cname }} &mdash; {{ cscore }}점</li>{% endfor %}</ol>
+    <p>{{ t('try_yourself') }}</p>
+    <a href="/" class="btn-primary">{{ t('start_btn') }}</a>
+  </div>
+  {% else %}
+
+  <h1 class="main-title">{{ t('app_title') }}</h1>
+  <p class="sub-title">{{ t('app_subtitle') }}</p>
+
+  <div class="welcome-card">
+    <!-- Language selector (inline, prominent) -->
+    <div class="lang-select-group">
+      <label>{{ t('lang_select') }}</label>
+      <div class="lang-buttons">
+        {% for code, cfg in LANG_CONFIG.items() %}
+        <form method="post" action="/set-lang" style="display:inline;">
+          <input type="hidden" name="lang" value="{{ code }}">
+          <button type="submit" class="lang-flag-btn {% if lang == code %}active{% endif %}">
+            {{ cfg.flag }} {{ cfg.name }}
+          </button>
+        </form>
+        {% endfor %}
+      </div>
+    </div>
+
+    <hr>
+    <p class="time-hint"><strong>{{ t('time_hint') }}</strong></p>
+    <ul class="feature-list">
+      <li>{{ t('feat1') }}</li>
+      <li>{{ t('feat2') }}</li>
+      <li>{{ t('feat3') }}</li>
+    </ul>
+    <hr>
+    <a href="/info" class="btn-primary btn-large">{{ t('start_btn') }}</a>
+  </div>
+
+  <!-- AdSense unit (optional second placement) -->
+  <div class="ad-inline">
+    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX"
+         data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </div>
+
+  {% endif %}
+</div>
+{% endblock %}

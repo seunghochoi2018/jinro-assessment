@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="survey-page">
+  <h1 class="main-title">{{ section_title }}</h1>
+
+  <!-- Progress bar -->
+  <div class="progress-container">
+    <div class="progress-label">
+      <span>{{ section_idx + 1 }}/{{ total_sections }}: {{ section_title }}</span>
+      <span>{{ progress_pct }}%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" style="width: {{ progress_pct }}%"></div>
+    </div>
+  </div>
+
+  <p class="sub-title">{{ section_desc }}</p>
+
+  <form method="post" action="/survey" class="survey-form" id="survey-form">
+
+    {% if is_forced_choice %}
+    <!-- Forced choice (values/anchors) -->
+    <div class="forced-choice-info">
+      아래 항목 중 <strong>가장 중요한 것 {{ pick_n }}가지</strong>를 선택하세요.
+      <small>모든 항목이 중요해 보여도, 자신에게 진짜 우선순위인 것을 골라야 합니다.</small>
+    </div>
+
+    <div id="fc-count-msg" class="fc-count"></div>
+
+    {% for q in questions %}
+    <label class="checkbox-label">
+      <input type="checkbox" name="selected_dims" value="{{ q.dim }}"
+             {% if saved_answers.get(q.id) == 5 %}checked{% endif %}
+             class="fc-checkbox" data-pickn="{{ pick_n }}">
+      <span>{{ q.text }}</span>
+    </label>
+    {% endfor %}
+
+    <div class="btn-row">
+      <button type="button" class="btn-secondary" onclick="goBack()">
+        {% if section_idx > 0 %}{{ t('prev_btn') }}{% else %}{{ t('home_btn') }}{% endif %}
+      </button>
+      <button type="submit" class="btn-primary" id="fc-submit" disabled>
+        {% if section_idx < total_sections - 1 %}다음 검사{% else %}결과 확인{% endif %}
+      </button>
+    </div>
+
+    {% else %}
+    <!-- Likert scale questions -->
+    {% set scale_labels = [t('scale_1'), t('scale_2'), t('scale_3'), t('scale_4'), t('scale_5')] %}
+
+    {% for q in questions %}
+    <div class="question-block">
+      <p class="question-text"><strong>{{ q.text }}</strong></p>
+      <div class="likert-row">
+        {% for i in range(1, 6) %}
+        <label class="likert-option">
+          <input type="radio" name="q_{{ q.id }}" value="{{ i }}"
+                 {% if saved_answers.get(q.id, 3) == i %}checked{% endif %} required>
+          <span>{{ scale_labels[i-1] }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+
+    <div class="btn-row">
+      <button type="button" class="btn-secondary" onclick="goBack()">
+        {% if section_idx > 0 %}{{ t('prev_btn') }}{% else %}{{ t('home_btn') }}{% endif %}
+      </button>
+      <button type="submit" class="btn-primary">
+        {% if section_idx < total_sections - 1 %}{{ t('next_btn') }}{% else %}{{ t('submit_btn') }}{% endif %}
+      </button>
+    </div>
+    {% endif %}
+
+  </form>
+</div>
+
+<!--
+  NOTE: The "go back" button posts to /survey-back which should decrement
+  session['current_section'] by 1 and redirect back to /survey.
+  Add this route to app.py:
+
+    @app.route('/survey-back', methods=['POST'])
+    def survey_back():
+        session['current_section'] = max(0, session.get('current_section', 1) - 1)
+        return redirect(url_for('survey'))
+-->
+
+<script>
+function goBack() {
+  {% if section_idx > 0 %}
+  // POST to /survey-back to decrement session current_section
+  const f = document.createElement('form');
+  f.method = 'post';
+  f.action = '/survey-back';
+  document.body.appendChild(f);
+  f.submit();
+  {% else %}
+  window.location.href = '/info';
+  {% endif %}
+}
+
+// Forced choice counter
+const fcCheckboxes = document.querySelectorAll('.fc-checkbox');
+const fcSubmit = document.getElementById('fc-submit');
+const fcMsg = document.getElementById('fc-count-msg');
+
+function updateFcCount() {
+  if (!fcCheckboxes.length) return;
+  const pickN = parseInt(fcCheckboxes[0]?.dataset.pickn || 3);
+  const checked = document.querySelectorAll('.fc-checkbox:checked').length;
+  const remaining = pickN - checked;
+  if (fcMsg) {
+    if (remaining > 0) {
+      fcMsg.textContent = remaining + '개 더 선택해 주세요.';
+      fcMsg.className = 'fc-count info';
+    } else if (remaining < 0) {
+      fcMsg.textContent = (-remaining) + '개를 취소해 주세요. 정확히 ' + pickN + '개만 선택 가능합니다.';
+      fcMsg.className = 'fc-count error';
+    } else {
+      fcMsg.textContent = '선택 완료!';
+      fcMsg.className = 'fc-count success';
+    }
+  }
+  if (fcSubmit) fcSubmit.disabled = (remaining !== 0);
+}
+
+fcCheckboxes.forEach(cb => cb.addEventListener('change', updateFcCount));
+updateFcCount();
+</script>
+{% endblock %}

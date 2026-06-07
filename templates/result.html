@@ -1,0 +1,202 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="result-page">
+  {% set result_titles = {'ko': name ~ '님의 진로 탐색 결과', 'en': name ~ "'s Career Results", 'zh': name ~ '的职业探索结果', 'es': 'Resultados de ' ~ name, 'hi': name ~ ' के करियर परिणाम', 'ar': 'نتائج ' ~ name, 'pt': 'Resultados de ' ~ name} %}
+  <h1 class="main-title">{{ result_titles.get(lang, result_titles.ko) }}</h1>
+
+  <!-- Top metrics -->
+  <div class="metrics-row">
+    <div class="metric-box">
+      <div class="metric-val">{{ holland_code }}</div>
+      <div class="metric-label">{{ t('interest_code') }}</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-val" style="font-size:1.2rem;">{{ top1_name }}</div>
+      <div class="metric-label">{{ t('top1_career') }}</div>
+    </div>
+    <div class="metric-box">
+      <div class="metric-val">{{ top1_score }}점</div>
+      <div class="metric-label">{{ t('top_score') }}</div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="recommend">{{ t('tab_recommend') }}</button>
+    <button class="tab-btn" data-tab="profile">{{ t('tab_profile') }}</button>
+    <button class="tab-btn" data-tab="holland">{{ t('tab_holland') }}</button>
+    <button class="tab-btn" data-tab="mi">{{ t('tab_mi') }}</button>
+    <button class="tab-btn" data-tab="values">{{ t('tab_values') }}</button>
+    <button class="tab-btn" data-tab="personality">{{ t('tab_personality') }}</button>
+    {% if has_maturity %}
+    <button class="tab-btn" data-tab="maturity">{{ t('tab_maturity') }}</button>
+    {% endif %}
+  </div>
+
+  <!-- Tab: 직업 추천 -->
+  <div id="tab-recommend" class="tab-content active">
+    {% if career_situation %}
+    <div class="info-box" style="margin-bottom:1rem;">
+      <strong>현재 상황:</strong> {{ career_situation }}
+    </div>
+    {% endif %}
+
+    <h3 class="section-header">{{ t('top12_title') }}</h3>
+
+    <!-- Category filter -->
+    <div class="category-filter">
+      <label>{{ t('category_filter') }}</label>
+      <select id="category-filter-select">
+        <option value="all">{{ t('all_category') }}</option>
+        {% for cat in categories %}
+        <option value="{{ cat }}">{{ tcat(cat) }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <!-- Career cards -->
+    {% for fit in ranked %}
+    {% set career = fit.career_data %}
+    {% set score = fit.score %}
+    {% set badge_cls = 'badge-high' if score >= 60 else ('badge-mid' if score >= 45 else 'badge-low') %}
+    {% set fit_label = '매우 높음' if score >= 75 else ('높음' if score >= 60 else ('보통' if score >= 45 else '낮음')) %}
+    {% set detail = career_detail_db.get(career.id, {}) %}
+    {% set salary_display = detail.get('salary_range') or career.salary_level %}
+    {% set diff = career.get('difficulty', '보통') %}
+    {% set diff_cls = {'낮음':'diff-low','보통':'diff-mid','높음':'diff-high','매우 높음':'diff-very-high'}.get(diff,'diff-mid') %}
+
+    <div class="career-card" data-category="{{ career.category }}">
+      <div class="career-card-header">
+        <div>
+          <span class="career-rank">#{{ loop.index }}</span>
+          <span class="career-name">{{ tc(career.id) if lang != 'ko' else career.name }}</span>
+        </div>
+        <span class="career-score">{{ score|round|int }}점</span>
+      </div>
+      <div class="career-detail {% if loop.index == 1 %}open{% endif %}">
+        <div class="career-detail-grid">
+          <div>
+            <div style="margin-bottom:0.5rem;">
+              <span class="badge {{ badge_cls }}">{{ fit_label }}</span>
+              <span class="badge badge-category">{{ tcat(career.category) }}</span>
+            </div>
+            <p style="color:#555;margin-bottom:0.7rem;">{{ career.description }}</p>
+
+            {% if fit.top_reasons %}
+            <p style="font-weight:700;margin-bottom:0.3rem;">{{ t('reason_title') }}</p>
+            {% for r in fit.top_reasons %}
+            <div class="reason-item"><strong>[{{ r.theory }}]</strong> {{ r.detail }}</div>
+            {% endfor %}
+            {% endif %}
+
+            <div style="margin-top:0.7rem;font-size:0.9rem;">
+              <p><strong>{{ t('education_label') }}:</strong> {{ career.education }}</p>
+              <p><strong>{{ t('salary_label') }}:</strong> {{ salary_display }}</p>
+              <p><strong>{{ t('growth_label') }}:</strong> {{ career.job_growth }}</p>
+              <p><strong>{{ t('major_label') }}:</strong> {{ career.get('related_majors', [])|join(', ') }}</p>
+            </div>
+
+            {% if detail.career_path %}
+            <div class="career-path-box">
+              <strong>{{ t('path_label') }}:</strong> {{ detail.career_path|join(' → ') }}
+            </div>
+            {% endif %}
+
+            {% if career.get('talent_note') %}
+            <div style="background:#fff7ed;border-radius:8px;padding:0.5rem 0.8rem;margin-top:0.4rem;border-left:3px solid #f97316;font-size:0.85rem;">
+              <strong>{{ t('notice_caution') }}:</strong> {{ career.talent_note }}
+            </div>
+            {% endif %}
+
+            {% if career.get('alt_careers') %}
+            <div class="alt-careers-box">
+              <strong>{{ t('alt_label') }}:</strong> {{ career.alt_careers|join(' · ') }}
+            </div>
+            {% endif %}
+          </div>
+
+          <!-- Module scores bar chart -->
+          <div>
+            {% if fit.module_scores %}
+            {% set mn = {'holland':'활동 흥미','mi':'강점 능력','big5':'성격','values':'직업 가치관','anchors':'성장 방향'} %}
+            {% for mod, sc in fit.module_scores.items() %}
+            <div style="margin-bottom:0.4rem;">
+              <div style="display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:2px;">
+                <span>{{ mn.get(mod, mod) }}</span><span>{{ sc|round|int }}</span>
+              </div>
+              <div style="background:#e8e8e8;border-radius:4px;height:8px;">
+                <div style="background:{% if sc >= 60 %}#22c55e{% elif sc >= 45 %}#f59e0b{% else %}#ef4444{% endif %};width:{{ sc }}%;height:8px;border-radius:4px;"></div>
+              </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Tab: 나의 프로파일 (simplified) -->
+  <div id="tab-profile" class="tab-content">
+    <h3 class="section-header">나를 입체적으로 이해하기</h3>
+    <p style="color:#666;margin-bottom:1rem;font-style:italic;">좋아하는 것·잘하는 것을 넘어, 어떤 환경에서 일할 때 가장 잘 맞는지 분석합니다.</p>
+    {{ profile_html|safe }}
+  </div>
+
+  <!-- Tab: 흥미 유형 -->
+  <div id="tab-holland" class="tab-content">
+    <h3 class="section-header">Holland 흥미 유형 프로파일</h3>
+    <div class="chart-container">{{ holland_chart|safe }}</div>
+  </div>
+
+  <!-- Tab: 강점 지능 -->
+  <div id="tab-mi" class="tab-content">
+    <h3 class="section-header">다중 지능 강점 프로파일</h3>
+    <div class="chart-container">{{ mi_chart|safe }}</div>
+  </div>
+
+  <!-- Tab: 가치관 -->
+  <div id="tab-values" class="tab-content">
+    <h3 class="section-header">직업 가치관 분석</h3>
+    <div class="chart-container">{{ values_chart|safe }}</div>
+  </div>
+
+  <!-- Tab: 성격 -->
+  <div id="tab-personality" class="tab-content">
+    <h3 class="section-header">Big Five 성격 특성</h3>
+    <div class="chart-container">{{ big5_chart|safe }}</div>
+  </div>
+
+  {% if has_maturity %}
+  <!-- Tab: 진로 탐색 현황 -->
+  <div id="tab-maturity" class="tab-content">
+    <h3 class="section-header">{{ t('tab_maturity') }}</h3>
+    {{ maturity_html|safe }}
+  </div>
+  {% endif %}
+
+  <!-- Share + Download -->
+  <div class="share-box">
+    <h3 style="margin-bottom:1rem;">{{ t('share_title') }}</h3>
+    <div style="margin-bottom:0.8rem;">
+      <label style="font-weight:600;display:block;margin-bottom:0.3rem;">{{ t('share_link') }}</label>
+      <div style="display:flex;gap:0.5rem;">
+        <input type="text" id="share-url-input" class="share-url-input" value="{{ share_url }}" readonly>
+        <button id="copy-url-btn" class="btn-secondary" style="flex:0 0 auto;padding:0.5rem 1rem;">복사</button>
+      </div>
+    </div>
+    <a href="/download-report" class="btn-secondary">{{ t('download_btn') }}</a>
+  </div>
+
+  <!-- Bottom action buttons -->
+  <div class="btn-row" style="margin-top:1.5rem;">
+    <form method="post" action="/reset" style="flex:1;">
+      <button type="submit" class="btn-secondary" style="width:100%;">{{ t('retake_btn') }}</button>
+    </form>
+    <a href="/" class="btn-secondary" style="flex:1;text-align:center;">{{ t('home_btn') }}</a>
+  </div>
+</div>
+{% endblock %}
