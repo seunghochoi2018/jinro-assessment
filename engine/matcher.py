@@ -18,36 +18,39 @@ from engine.scorer import (
 AGE_GROUP_IDX = {"child": 0, "teen": 1, "young_adult": 2, "adult": 3}
 
 
-def _cosine_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
-    """코사인 유사도 [0, 1]"""
-    norm_a = np.linalg.norm(vec_a)
-    norm_b = np.linalg.norm(vec_b)
-    if norm_a == 0 or norm_b == 0:
-        return 0.5
-    sim = float(np.dot(vec_a, vec_b) / (norm_a * norm_b))
-    # [-1, 1] → [0, 1]
-    return (sim + 1.0) / 2.0
-
-
 def _dimension_match(user_scores: dict, career_profile: dict, dims: list) -> tuple[float, dict]:
     """
     사용자 프로파일과 직업 프로파일의 차원별 매치 점수 계산
-    반환: (전체 유사도, {dim: 기여도})
+    (구 코사인 유사도 → 직접 근접도 기반으로 교체: 더 넓은 범위, 더 명확한 변별)
+
+    핵심 원칙:
+      1. 직업이 요구하는 수준이 높을수록 그 차원의 가중치가 커짐
+      2. 직업이 높은 수준(>0.65)을 요구하는데 사용자가 낮으면(<0.40) 추가 패널티
+      3. 결과 범위: 0~1 (구 코사인은 0.5~1.0으로 좁아서 변별력 부족)
+
+    반환: (전체 유사도 0~1, {dim: 기여도})
     """
     u_vec = np.array([user_scores.get(d, 0.5) for d in dims])
     c_vec = np.array([career_profile.get(d, 0.5) for d in dims])
 
-    # 전체 코사인 유사도
-    overall = _cosine_similarity(u_vec, c_vec)
+    # 차원별 근접도: 0=완전 반대, 1=완벽 일치
+    prox = 1.0 - np.abs(u_vec - c_vec)
 
-    # 차원별 기여도 (얼마나 각 차원이 매칭에 기여했는가)
+    # 핵심 불일치 패널티: 직업이 높은 역량 요구 & 사용자가 낮음
+    key_mismatch = (c_vec > 0.65) & (u_vec < 0.40)
+    prox = np.where(key_mismatch, prox * 0.5, prox)
+
+    # 직업 요구 수준을 가중치로 (직업이 많이 요구하는 차원일수록 중요)
+    w = np.clip(c_vec, 0.15, 1.0)
+    w = w / (w.sum() + 1e-9)
+
+    overall = float(np.dot(prox, w))
+
+    # 차원별 기여도
+    total_c = float(np.sum(c_vec)) + 1e-9
     contrib = {}
-    total_c = sum(c_vec) + 1e-9
     for i, d in enumerate(dims):
-        # 기여도 = 사용자 점수 × 직업 요구도 (정규화)
-        alignment = 1.0 - abs(u_vec[i] - c_vec[i])  # 0~1, 가까울수록 1
-        weight = c_vec[i] / total_c
-        contrib[d] = float(alignment * weight)
+        contrib[d] = float(float(prox[i]) * float(c_vec[i]) / total_c)
 
     return overall, contrib
 
@@ -294,13 +297,13 @@ def rank_careers(user_results: dict, age_group: str, top_n: int = 12) -> list[di
 
 
 def get_career_fit_summary(fit: dict) -> str:
-    """적합도 수준 텍스트"""
+    """적합도 수준 텍스트 (근접도 기반 스코어 기준)"""
     score = fit["score"]
-    if score >= 80:
+    if score >= 75:
         return "매우 높음"
-    elif score >= 65:
+    elif score >= 60:
         return "높음"
-    elif score >= 50:
+    elif score >= 45:
         return "보통"
     else:
         return "낮음"

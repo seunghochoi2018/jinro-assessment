@@ -19,8 +19,13 @@ from data.questions import (
     MI_LABELS, MI_DESC,
     BIG5_LABELS, VALUES_LABELS, ANCHOR_LABELS,
 )
+from data.i18n import t, tq, tc, tcat, LANG_CONFIG
 from engine.scorer import score_all_modules, get_ctci_interpretation, get_rcs_interpretation
 from engine.matcher import rank_careers, get_career_fit_summary
+
+
+def get_lang() -> str:
+    return st.session_state.get("lang", "ko")
 
 # ────────────────────────────────────────────────
 # 페이지 설정
@@ -60,6 +65,8 @@ st.markdown("""
     /* 스크롤바 스타일 */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-thumb { background: #667eea60; border-radius: 3px; }
+    /* 아랍어 RTL 지원 */
+    [lang="ar"] .stRadio, [lang="ar"] .stMarkdown { direction: rtl; text-align: right; }
 
     .main-title {
         font-size: 2.2rem; font-weight: 800;
@@ -137,12 +144,31 @@ def init_state():
         "ranked_careers": None,
         "selected_career": None,
         "career_situation": None, # 성인 전용: 현재 진로 상황
+        "lang": "ko",             # 언어 설정
     }
     for k, v in defaults.items():
         if k not in st.session_state:
             st.session_state[k] = v
 
 init_state()
+
+
+def _render_lang_selector():
+    """사이드바 / 상단 언어 선택기"""
+    lang_options = list(LANG_CONFIG.keys())
+    lang_labels = [f"{LANG_CONFIG[l]['flag']} {LANG_CONFIG[l]['name']}" for l in lang_options]
+    current_idx = lang_options.index(st.session_state.get("lang", "ko"))
+    chosen = st.selectbox(
+        "🌐 Language",
+        options=lang_options,
+        format_func=lambda l: f"{LANG_CONFIG[l]['flag']} {LANG_CONFIG[l]['name']}",
+        index=current_idx,
+        key="lang_selector",
+        label_visibility="collapsed",
+    )
+    if chosen != st.session_state.get("lang"):
+        st.session_state.lang = chosen
+        st.rerun()
 
 
 # ────────────────────────────────────────────────
@@ -180,48 +206,34 @@ def render_progress(current: int, total: int, label: str = ""):
 # ────────────────────────────────────────────────
 
 def render_welcome():
+    lang = get_lang()
     # 공유 링크로 접속 시 결과 미리보기 표시
     params = st.query_params
     if "r" in params:
         share_data = _decode_share_param(params["r"])
         if share_data:
-            st.markdown('<div class="main-title">공유된 진로 탐색 결과</div>', unsafe_allow_html=True)
-            st.success(f"**{share_data.get('n', '')}** 님의 결과를 공유받았습니다.")
-            st.markdown(f"**흥미 코드:** `{share_data.get('h', '')}`")
-            st.markdown("**추천 직업 Top 5:**")
+            st.markdown(f'<div class="main-title">{t("shared_result", lang)}</div>', unsafe_allow_html=True)
+            st.success(f"**{share_data.get('n', '')}**")
+            st.markdown(f"**{t('interest_code', lang)}:** `{share_data.get('h', '')}`")
+            st.markdown("**Top 5:**")
             for rank, (cname, cscore) in enumerate(share_data.get("t", []), 1):
-                st.markdown(f"{rank}. **{cname}** — {cscore}점")
+                st.markdown(f"{rank}. **{cname}** — {cscore}")
             st.markdown("---")
-            st.markdown("나도 직접 검사해 볼까요?")
-            if st.button("진로 탐색 시작하기", use_container_width=True, key="shared_start"):
+            st.markdown(t("try_yourself", lang))
+            if st.button(t("start_btn", lang), use_container_width=True, key="shared_start"):
                 st.query_params.clear()
                 st.rerun()
             return
 
-    st.markdown('<div class="main-title">진로 탐색 시스템</div>', unsafe_allow_html=True)
-    st.markdown('<div class="sub-title">흥미·강점·성격·가치관을 종합 분석해 나에게 딱 맞는 직업을 찾아드립니다</div>',
-                unsafe_allow_html=True)
+    st.markdown(f'<div class="main-title">{t("app_title", lang)}</div>', unsafe_allow_html=True)
+    st.markdown(f'<div class="sub-title">{t("app_subtitle", lang)}</div>', unsafe_allow_html=True)
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
         st.markdown("---")
-        st.markdown("""
-        **소요 시간: 약 10분**
-
-        단순한 흥미 검사가 아닙니다.
-        4~5가지 심리 검사를 동시에 분석해 정확도를 높인 종합 진로 탐색 시스템입니다.
-
-        - 내가 좋아하는 활동 유형
-        - 내가 잘하는 강점 영역
-        - 나의 성격 특성
-        - 직업에서 중요하게 여기는 가치
-        - (청소년) 현재 진로 탐색 수준
-
-        ---
-        """)
-
-        st.markdown("")
-        if st.button("검사 시작하기", type="primary", use_container_width=True):
+        st.markdown(f"**{t('time_hint', lang)}**")
+        st.markdown("---")
+        if st.button(t("start_btn", lang), type="primary", use_container_width=True):
             go_to("info")
 
 
@@ -299,7 +311,11 @@ def render_info():
 # 화면 3: 설문 화면
 # ────────────────────────────────────────────────
 
-LIKERT_OPTIONS = ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"]
+LIKERT_OPTIONS_KO = ["전혀 아니다", "아니다", "보통이다", "그렇다", "매우 그렇다"]
+
+
+def get_likert_options(lang: str) -> list:
+    return [t(k, lang) for k in ["scale_1", "scale_2", "scale_3", "scale_4", "scale_5"]]
 
 def render_survey():
     plan = st.session_state.plan
@@ -344,25 +360,28 @@ def _get_dim_label(dim: str, sec_key: str) -> str:
 
 def _render_likert_section(sec_key, questions, current_answers, current_sec_idx, total_sections):
     """리커트 5점 척도 섹션 렌더링 (Holland, MI, Big5, Maturity)"""
+    lang = get_lang()
+    likert_opts = get_likert_options(lang)
     # 모든 문항 키를 세션 상태에 강제 초기화 (보통이다 기본값)
     for q in questions:
         widget_key = f"q_{q['id']}"
         saved_score = current_answers.get(q["id"], None)
         if saved_score is not None:
-            st.session_state[widget_key] = LIKERT_OPTIONS[saved_score - 1]
+            st.session_state[widget_key] = likert_opts[saved_score - 1]
         else:
-            st.session_state[widget_key] = LIKERT_OPTIONS[2]  # "보통이다"
+            st.session_state[widget_key] = likert_opts[2]
 
     with st.form(key=f"survey_form_{current_sec_idx}"):
         for q in questions:
             qid = q["id"]
+            q_text = tq(qid, lang)
             resp = st.radio(
-                label=f"**{q['text']}**",
-                options=LIKERT_OPTIONS,
+                label=f"**{q_text}**",
+                options=likert_opts,
                 horizontal=True,
                 key=f"q_{qid}",
             )
-            current_answers[qid] = LIKERT_OPTIONS.index(resp) + 1
+            current_answers[qid] = likert_opts.index(resp) + 1
 
         st.session_state.answers[sec_key] = current_answers
         prev_btn, next_btn = _render_nav_buttons(current_sec_idx, total_sections)
@@ -944,15 +963,17 @@ def render_result():
             if guide_msg:
                 st.info(f"**현재 상황:** {situation}\n\n{guide_msg}")
 
-        st.markdown("### 추천 직업 상위 12개")
-        st.markdown("_점수 = 적합도 (0~100). 오른쪽 그래프는 각 특성별 일치도입니다._")
+        lang = get_lang()
+        st.markdown(f"### {t('top12_title', lang)}")
 
         # 카테고리 필터
         categories = sorted(set(c["category"] for c in [r["career_data"] for r in ranked]))
-        all_cats = ["전체"] + categories
-        sel_cat = st.selectbox("카테고리 필터", all_cats)
+        all_cats_ko = ["전체"] + categories
+        all_cats_display = [t("all_category", lang)] + [tcat(c, lang) for c in categories]
+        sel_cat_display = st.selectbox(t("category_filter", lang), all_cats_display)
+        sel_cat_ko = all_cats_ko[all_cats_display.index(sel_cat_display)]
 
-        filtered = [r for r in ranked if sel_cat == "전체" or r["career_data"]["category"] == sel_cat]
+        filtered = [r for r in ranked if sel_cat_ko == "전체" or r["career_data"]["category"] == sel_cat_ko]
 
         for i, fit in enumerate(filtered):
             score = fit["score"]
@@ -961,11 +982,13 @@ def render_result():
             career = fit["career_data"]
             reasons = fit["top_reasons"]
             summary = get_career_fit_summary(fit)
+            career_display_name = tc(career["id"], lang)
 
-            badge_cls = "fit-badge-high" if score >= 65 else "fit-badge-mid" if score >= 50 else "fit-badge-low"
+            badge_cls = "fit-badge-high" if score >= 60 else "fit-badge-mid" if score >= 45 else "fit-badge-low"
+            rank_label = "[#1]" if i == 0 else f"#{i+1}"
 
             with st.expander(
-                f"{'[1위]' if i==0 else f'{i+1}위'}  {career['name']}  |  {score:.0f}점  ({lo:.0f}~{hi:.0f})",
+                f"{rank_label}  {career_display_name}  |  {score:.0f}  ({lo:.0f}~{hi:.0f})",
                 expanded=(i == 0)
             ):
                 col_l, col_r = st.columns([2, 1])
@@ -974,10 +997,12 @@ def render_result():
                     diff = career.get("difficulty", "보통")
                     diff_cls = {"낮음": "diff-low", "보통": "diff-mid",
                                 "높음": "diff-high", "매우 높음": "diff-very-high"}.get(diff, "diff-mid")
+                    diff_display = t({"낮음":"diff_low","보통":"diff_mid","높음":"diff_high","매우 높음":"diff_very_high"}.get(diff,"diff_mid"), lang)
+                    cat_display = tcat(career["category"], lang)
                     st.markdown(
                         f"<span class='{badge_cls}'>{summary}</span> "
-                        f"<span class='theory-badge'>{career['category']}</span> "
-                        f"<span class='{diff_cls}'>진입난이도: {diff}</span>",
+                        f"<span class='theory-badge'>{cat_display}</span> "
+                        f"<span class='{diff_cls}'>{t('difficulty_label', lang)}: {diff_display}</span>",
                         unsafe_allow_html=True
                     )
                     st.markdown(f"**{career['description']}**")
@@ -996,10 +1021,10 @@ def render_result():
                     detail = CAREER_DETAIL_DB.get(career["id"], {})
                     salary_display = detail.get("salary_range") or career["salary_level"]
                     st.markdown(f"""
-                    - **필요 학력:** {career['education']}
-                    - **예상 연봉:** {salary_display}
-                    - **성장성:** {career['job_growth']}
-                    - **관련 전공:** {', '.join(career.get('related_majors', []))}
+                    - **{t('education_label', lang)}:** {career['education']}
+                    - **{t('salary_label', lang)}:** {salary_display}
+                    - **{t('growth_label', lang)}:** {career['job_growth']}
+                    - **{t('major_label', lang)}:** {', '.join(career.get('related_majors', []))}
                     """)
 
                     # 취업 경로 (있을 때만)
@@ -1009,7 +1034,7 @@ def render_result():
                         st.markdown(
                             f"<div style='background:#f0f4ff;border-radius:8px;padding:0.5rem 0.8rem;"
                             f"margin-top:0.3rem;font-size:0.84rem;border-left:3px solid #667eea;'>"
-                            f"<b>취업 경로:</b> {steps}</div>",
+                            f"<b>{t('path_label', lang)}:</b> {steps}</div>",
                             unsafe_allow_html=True
                         )
 
@@ -1019,7 +1044,7 @@ def render_result():
                         st.markdown(
                             f"<div style='background:#fff7ed;border-radius:8px;padding:0.5rem 0.8rem;"
                             f"margin-top:0.4rem;border-left:3px solid #f97316;font-size:0.85rem;'>"
-                            f"<b>주의:</b> {talent_note}</div>",
+                            f"<b>{t('notice_caution', lang)}:</b> {talent_note}</div>",
                             unsafe_allow_html=True
                         )
 
@@ -1029,7 +1054,7 @@ def render_result():
                         alts_str = " · ".join(alt_careers)
                         st.markdown(
                             f"<div class='alt-careers-box'>"
-                            f"<b>더 접근하기 쉬운 관련 직업:</b> {alts_str}"
+                            f"<b>{t('alt_label', lang)}:</b> {alts_str}"
                             f"</div>",
                             unsafe_allow_html=True
                         )
@@ -1038,10 +1063,16 @@ def render_result():
                     # 나와 이 직업의 특성별 일치도
                     module_sc = fit["module_scores"]
                     if module_sc:
-                        module_names = {
-                            "holland": "활동 흥미", "mi": "강점 능력", "big5": "성격",
-                            "values": "직업 가치관", "anchors": "성장 방향"
+                        _mn = {
+                            "ko": {"holland":"활동 흥미","mi":"강점 능력","big5":"성격","values":"직업 가치관","anchors":"성장 방향"},
+                            "en": {"holland":"Interests","mi":"Strengths","big5":"Personality","values":"Values","anchors":"Career Dir."},
+                            "zh": {"holland":"兴趣","mi":"优势","big5":"性格","values":"价值观","anchors":"职业方向"},
+                            "es": {"holland":"Intereses","mi":"Aptitudes","big5":"Personalidad","values":"Valores","anchors":"Dirección"},
+                            "hi": {"holland":"रुचि","mi":"ताकत","big5":"व्यक्तित्व","values":"मूल्य","anchors":"दिशा"},
+                            "ar": {"holland":"الاهتمامات","mi":"نقاط القوة","big5":"الشخصية","values":"القيم","anchors":"الاتجاه"},
+                            "pt": {"holland":"Interesses","mi":"Aptidões","big5":"Personalidade","values":"Valores","anchors":"Direção"},
                         }
+                        module_names = _mn.get(lang, _mn["ko"])
                         labels = [module_names.get(k, k) for k in module_sc.keys()]
                         values_list = list(module_sc.values())
                         # 색: 70+ 녹색, 50~70 노랑, 50미만 빨강
@@ -1056,14 +1087,14 @@ def render_result():
                             textposition="outside",
                         ))
                         fig.update_layout(
-                            title=dict(text="나와 이 직업의 특성별 일치도", font=dict(size=12)),
+                            title=dict(text=t("match_chart_title", lang), font=dict(size=12)),
                             height=240, margin=dict(l=5, r=5, t=35, b=5),
-                            yaxis=dict(range=[0, 110], showgrid=True, title="일치도 (0~100)"),
+                            yaxis=dict(range=[0, 110], showgrid=True),
                             showlegend=False,
                             plot_bgcolor="rgba(0,0,0,0)",
                         )
                         st.plotly_chart(fig, use_container_width=True)
-                        st.caption("녹색=잘 맞음 · 노랑=보통 · 빨강=차이 있음")
+                        st.caption(t("match_caption", lang))
 
     # ──────────────────────────────────
     # 탭 2: 나의 종합 프로파일 (심층 분석)
@@ -1313,31 +1344,30 @@ def render_result():
     # ──────────────────────────────────
     # 결과 공유 / 저장
     # ──────────────────────────────────
+    lang = get_lang()
     st.markdown("---")
-    st.markdown("### 결과 공유 / 저장")
+    st.markdown(f"### {t('share_title', lang)}")
     share_col, dl_col = st.columns(2)
     with share_col:
         share_url = _generate_share_url(name, holland_code, ranked)
-        st.text_input("공유 링크 (복사 후 공유)", value=share_url, key="share_url_input")
-        st.caption("링크를 복사해서 친구·가족과 결과를 공유할 수 있습니다.")
+        st.text_input(t("share_link", lang), value=share_url, key="share_url_input")
     with dl_col:
         html_report = _generate_html_report(name, age_group, holland_code, results, ranked)
         st.download_button(
-            label="HTML 보고서 다운로드",
+            label=t("download_btn", lang),
             data=html_report.encode("utf-8"),
-            file_name=f"진로결과_{name}.html",
+            file_name=f"career_result_{name}.html",
             mime="text/html",
             use_container_width=True,
         )
-        st.caption("다운로드 후 브라우저에서 열고 인쇄(Ctrl+P)하면 PDF로 저장 가능합니다.")
 
     st.markdown("---")
     col_r1, col_r2 = st.columns(2)
     with col_r1:
-        if st.button("다시 검사하기", use_container_width=True):
+        if st.button(t("retake_btn", lang), use_container_width=True):
             reset()
     with col_r2:
-        if st.button("처음으로", use_container_width=True):
+        if st.button(t("home_btn", lang), use_container_width=True):
             go_to("welcome")
 
 
@@ -1347,15 +1377,18 @@ def render_result():
 
 def main():
     step = st.session_state.step
+    lang = get_lang()
 
-    # 사이드바 (완료 후)
-    if step == "result":
-        with st.sidebar:
-            st.markdown("### 빠른 탐색")
+    # 사이드바: 언어 선택 + 결과 후 빠른 탐색
+    with st.sidebar:
+        _render_lang_selector()
+        if step == "result":
+            st.markdown("---")
             if st.session_state.ranked_careers:
                 for i, fit in enumerate(st.session_state.ranked_careers[:5]):
-                    st.markdown(f"**{i+1}.** {fit['career_name']} ({fit['score']:.0f}점)")
-            if st.button("다시 시작"):
+                    cname = tc(fit["career_id"], lang) if lang != "ko" else fit["career_name"]
+                    st.markdown(f"**{i+1}.** {cname} ({fit['score']:.0f})")
+            if st.button(t("retake_btn", lang)):
                 reset()
 
     if step == "welcome":
