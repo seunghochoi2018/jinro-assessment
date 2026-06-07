@@ -82,7 +82,7 @@
               <span class="badge {{ badge_cls }}">{{ fit_label }}</span>
               <span class="badge badge-category">{{ tcat(career.category) }}</span>
             </div>
-            <p style="color:#555;margin-bottom:0.7rem;">{{ career.description }}</p>
+            <p style="color:#555;margin-bottom:0.7rem;">{{ career.desc_display or career.description }}</p>
 
             {% if fit.top_reasons %}
             <p style="font-weight:700;margin-bottom:0.3rem;">{{ t('reason_title') }}</p>

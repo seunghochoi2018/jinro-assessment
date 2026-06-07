@@ -13,6 +13,10 @@ import pandas as pd
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from data.i18n import t, tq, tc, tcat, LANG_CONFIG, UI
+try:
+    from data.career_descriptions import CAREER_DESC_EN
+except ImportError:
+    CAREER_DESC_EN = {}
 from data.questions import (
     get_assessment_plan, get_age_group,
     HOLLAND_LABELS, MI_LABELS, BIG5_LABELS, VALUES_LABELS, ANCHOR_LABELS,
@@ -600,12 +604,16 @@ def result():
     big5_chart = _make_big5_chart(results) if results.get("big5") else None
     values_chart = _make_values_chart(results) if results.get("values") else None
 
-    # Enrich ranked with CAREER_DETAIL_DB salary info
+    # Enrich ranked with detail info + English descriptions
     for fit in ranked:
         cid = fit["career_data"].get("id", "")
         detail = CAREER_DETAIL_DB.get(cid, {})
         fit["salary_range"] = detail.get("salary_range", fit["career_data"].get("salary_level", ""))
         fit["career_path"] = detail.get("career_path", [])
+        if lang != "ko" and cid in CAREER_DESC_EN:
+            fit["desc_display"] = CAREER_DESC_EN[cid]
+        else:
+            fit["desc_display"] = None
 
     top_career = ranked[0] if ranked else None
     top1_name = top_career["career_name"] if top_career else "-"
