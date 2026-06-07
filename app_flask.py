@@ -17,6 +17,16 @@ try:
     from data.career_descriptions import CAREER_DESC_EN
 except ImportError:
     CAREER_DESC_EN = {}
+
+try:
+    from data.career_global import CAREER_GLOBAL_DATA
+except ImportError:
+    CAREER_GLOBAL_DATA = {}
+
+try:
+    from engine.interpreter import generate_insight
+except ImportError:
+    generate_insight = None
 from data.questions import (
     get_assessment_plan, get_age_group,
     HOLLAND_LABELS, MI_LABELS, BIG5_LABELS, VALUES_LABELS, ANCHOR_LABELS,
@@ -604,16 +614,34 @@ def result():
     big5_chart = _make_big5_chart(results) if results.get("big5") else None
     values_chart = _make_values_chart(results) if results.get("values") else None
 
-    # Enrich ranked with detail info + English descriptions
+    # Enrich ranked with detail info + English descriptions + global data
     for fit in ranked:
         cid = fit["career_data"].get("id", "")
         detail = CAREER_DETAIL_DB.get(cid, {})
-        fit["salary_range"] = detail.get("salary_range", fit["career_data"].get("salary_level", ""))
-        fit["career_path"] = detail.get("career_path", [])
+        global_d = CAREER_GLOBAL_DATA.get(cid, {})
+        # Salary: global USD if non-Korean, else Korean won
+        if lang == "ko":
+            fit["salary_display"] = detail.get("salary_range", fit["career_data"].get("salary_level", ""))
+        else:
+            fit["salary_display"] = global_d.get("salary_global", detail.get("salary_range", ""))
+        # Roadmap: global English steps if non-Korean
+        if lang == "ko":
+            fit["roadmap_display"] = detail.get("career_path", [])
+        else:
+            fit["roadmap_display"] = global_d.get("roadmap", detail.get("career_path", []))
+        # Description
         if lang != "ko" and cid in CAREER_DESC_EN:
             fit["desc_display"] = CAREER_DESC_EN[cid]
         else:
             fit["desc_display"] = None
+
+    # AI-style insight
+    insight = None
+    if generate_insight and results:
+        try:
+            insight = generate_insight(results, lang)
+        except Exception:
+            insight = None
 
     top_career = ranked[0] if ranked else None
     top1_name = top_career["career_name"] if top_career else "-"
@@ -638,6 +666,7 @@ def result():
         has_maturity=has_maturity,
         profile_html=profile_html,
         career_situation=session.get("career_situation", ""),
+        insight=insight,
         holland_chart=holland_chart,
         mi_chart=mi_chart,
         big5_chart=big5_chart,

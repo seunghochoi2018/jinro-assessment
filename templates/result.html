@@ -22,6 +22,22 @@
 
   <hr>
 
+  <!-- AI Insight Card -->
+  {% if insight %}
+  <div style="background:linear-gradient(135deg,#667eea15,#764ba215);border:1px solid #667eea40;border-radius:14px;padding:1.2rem 1.5rem;margin-bottom:1.5rem;">
+    <div style="font-size:1.1rem;font-weight:800;color:#667eea;margin-bottom:0.5rem;">{{ insight.headline }}</div>
+    <p style="color:#333;margin-bottom:0.8rem;line-height:1.6;">{{ insight.summary }}</p>
+    <div style="display:flex;flex-wrap:wrap;gap:0.5rem;margin-bottom:0.7rem;">
+      {% for s in insight.strengths %}
+      <span style="background:#667eea20;color:#667eea;border-radius:20px;padding:3px 12px;font-size:0.85rem;font-weight:600;">{{ s }}</span>
+      {% endfor %}
+    </div>
+    {% if insight.watch_out %}
+    <p style="font-size:0.85rem;color:#888;">⚠ {{ insight.watch_out }}</p>
+    {% endif %}
+  </div>
+  {% endif %}
+
   <!-- Tabs -->
   <div class="tabs">
     <button class="tab-btn active" data-tab="recommend">{{ t('tab_recommend') }}</button>
@@ -63,7 +79,7 @@
     {% set badge_cls = 'badge-high' if score >= 60 else ('badge-mid' if score >= 45 else 'badge-low') %}
     {% set fit_label = '매우 높음' if score >= 75 else ('높음' if score >= 60 else ('보통' if score >= 45 else '낮음')) %}
     {% set detail = career_detail_db.get(career.id, {}) %}
-    {% set salary_display = detail.get('salary_range') or career.salary_level %}
+    {% set salary_display = fit.salary_display or detail.get('salary_range') or career.salary_level %}
     {% set diff = career.get('difficulty', '보통') %}
     {% set diff_cls = {'낮음':'diff-low','보통':'diff-mid','높음':'diff-high','매우 높음':'diff-very-high'}.get(diff,'diff-mid') %}
 
@@ -98,9 +114,17 @@
               <p><strong>{{ t('major_label') }}:</strong> {{ career.get('related_majors', [])|join(', ') }}</p>
             </div>
 
-            {% if detail.career_path %}
+            {% set roadmap = fit.roadmap_display or detail.career_path %}
+            {% if roadmap %}
             <div class="career-path-box">
-              <strong>{{ t('path_label') }}:</strong> {{ detail.career_path|join(' → ') }}
+              <strong>{{ t('path_label') }}:</strong>
+              {% if fit.roadmap_display and fit.roadmap_display[0].startswith('Step') %}
+              <ol style="margin:0.3rem 0 0 1rem;padding:0;font-size:0.83rem;">
+                {% for step in roadmap %}<li>{{ step }}</li>{% endfor %}
+              </ol>
+              {% else %}
+              {{ roadmap|join(' → ') }}
+              {% endif %}
             </div>
             {% endif %}
 
