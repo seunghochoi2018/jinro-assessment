@@ -230,8 +230,26 @@ def render_welcome():
 
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:
+        # 언어 선택
+        lang_options = list(LANG_CONFIG.keys())
+        current_idx = lang_options.index(st.session_state.get("lang", "ko"))
+        chosen = st.selectbox(
+            t("lang_select", lang),
+            options=lang_options,
+            format_func=lambda l: f"{LANG_CONFIG[l]['flag']} {LANG_CONFIG[l]['name']}",
+            index=current_idx,
+            key="lang_selector_welcome",
+        )
+        if chosen != st.session_state.get("lang"):
+            st.session_state.lang = chosen
+            st.rerun()
+
         st.markdown("---")
+        # 간단한 안내문
         st.markdown(f"**{t('time_hint', lang)}**")
+        st.markdown(f"- {t('feat1', lang)}")
+        st.markdown(f"- {t('feat2', lang)}")
+        st.markdown(f"- {t('feat3', lang)}")
         st.markdown("---")
         if st.button(t("start_btn", lang), type="primary", use_container_width=True):
             go_to("info")
@@ -1398,9 +1416,10 @@ def main():
     step = st.session_state.step
     lang = get_lang()
 
-    # 사이드바: 언어 선택 + 결과 후 빠른 탐색
+    # 사이드바: 결과 후 빠른 탐색 / 웰컴 이외 화면에서 언어 변경
     with st.sidebar:
-        _render_lang_selector()
+        if step != "welcome":
+            _render_lang_selector()
         if step == "result":
             st.markdown("---")
             if st.session_state.ranked_careers:
