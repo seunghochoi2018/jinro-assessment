@@ -831,6 +831,16 @@ def render_result():
                     - **관련 전공:** {', '.join(career.get('related_majors', []))}
                     """)
 
+                    # 재능 전제 경고
+                    talent_note = career.get("talent_note", "")
+                    if talent_note:
+                        st.markdown(
+                            f"<div style='background:#fff7ed;border-radius:8px;padding:0.5rem 0.8rem;"
+                            f"margin-top:0.4rem;border-left:3px solid #f97316;font-size:0.85rem;'>"
+                            f"<b>주의:</b> {talent_note}</div>",
+                            unsafe_allow_html=True
+                        )
+
                     # 대안 직업 (접근하기 쉬운 경로)
                     alt_careers = career.get("alt_careers", [])
                     if alt_careers:
