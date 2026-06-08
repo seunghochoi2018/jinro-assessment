@@ -1,6 +1,38 @@
 {% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ (career.display_name ~ ' Career Fit')|tojson }},
+  "description": {{ career.display_description|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.q|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.a|tojson }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
 {% block content %}
 <article class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'career_detail', career_id: {{ career.id|tojson }}, category: {{ career.category|tojson }} };
+  </script>
   <p class="eyebrow">{{ tcat(career.category) }}</p>
   <h1>{{ career.display_name }}</h1>
   <p class="lead">{{ career.display_description }}</p>
@@ -10,7 +42,7 @@
       <strong>Is this career a good fit for you?</strong>
       <span>Take the assessment to compare this path with 173 other careers.</span>
     </div>
-    <a href="/info" class="btn-primary">Check my fit</a>
+    <a href="/info" class="btn-primary" data-track="click_start_from_career">Check my fit</a>
   </div>
 
   <section>
@@ -102,7 +134,7 @@
     <h2>Related careers</h2>
     <div class="career-teaser-grid">
       {% for item in related %}
-      <a class="career-teaser" href="/career/{{ item.id }}">
+      <a class="career-teaser" href="/career/{{ item.id }}" data-track="click_related_career">
         <strong>{{ item.display_name }}</strong>
         <span>{{ item.display_description }}</span>
       </a>
@@ -110,5 +142,17 @@
     </div>
   </section>
   {% endif %}
+
+  <section>
+    <h2>Common questions</h2>
+    <div class="faq-list">
+      {% for item in faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
 </article>
 {% endblock %}

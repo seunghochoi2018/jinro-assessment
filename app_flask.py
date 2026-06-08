@@ -593,6 +593,41 @@ def _top_career_sample(limit: int = 12) -> list[dict]:
     return selected[:limit]
 
 
+def _test_faq(page: dict) -> list[dict]:
+    return [
+        {
+            "q": f"Who is the {page['title']} for?",
+            "a": f"It is for people who want to compare career options using interests, strengths, personality, and work values. The page is especially relevant for the {page['age_hint']} age range.",
+        },
+        {
+            "q": "Does the test guarantee the right career?",
+            "a": "No. The result is an exploration tool. It shows career paths worth researching, not a guarantee of income, admission, hiring, or long-term satisfaction.",
+        },
+        {
+            "q": "How should I use the result?",
+            "a": "Use the result to compare several careers, read career profiles, ask better questions, and plan small experiments such as courses, interviews, projects, or internships.",
+        },
+    ]
+
+
+def _career_faq(career: dict, display: dict) -> list[dict]:
+    name = display.get("display_name", career.get("name", "this career"))
+    return [
+        {
+            "q": f"How do I know if {name} fits me?",
+            "a": f"Compare the daily work with your interests, strengths, personality, and values. This page gives a profile overview, and the full assessment compares {name} with other career options.",
+        },
+        {
+            "q": f"What should I check before choosing {name}?",
+            "a": "Check current education requirements, hiring demand, salary ranges, licensing rules, and local entry paths. Career data can vary by country, region, and employer.",
+        },
+        {
+            "q": f"What are related paths to {name}?",
+            "a": "Look at related careers in the same field and compare work style, preparation difficulty, and long-term growth before committing.",
+        },
+    ]
+
+
 # ────────────────────────────────────────────────
 # 라우트
 # ────────────────────────────────────────────────
@@ -627,6 +662,7 @@ def seo_test_page(slug):
         "seo_test.html",
         lang=lang,
         page=page,
+        faq=_test_faq(page),
         slug=slug,
         related_tests={k: v for k, v in SEO_TEST_PAGES.items() if k != slug},
         featured_careers=[_career_display(c, lang) for c in _top_career_sample(6)],
@@ -665,6 +701,7 @@ def career_detail(career_id):
     related = [_career_display(c, lang) for c in _related_careers(career)]
     review = CAREER_REVIEWS.get(career_id, {}).get(lang) or CAREER_REVIEWS.get(career_id, {}).get("en")
     article = _career_article_sections(career, lang)
+    faq = _career_faq(career, display)
     return render_template(
         "career_detail.html",
         lang=lang,
@@ -672,6 +709,7 @@ def career_detail(career_id):
         related=related,
         review=review,
         article=article,
+        faq=faq,
         meta_title=f"{display['display_name']} Career Fit | Career Assessment",
         meta_description=f"Learn what {display['display_name']} does, which strengths fit this career, and whether it may match your interests and values.",
         canonical_url=_canonical_url(f"/career/{career_id}"),

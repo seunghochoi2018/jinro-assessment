@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'careers_index' };
+  </script>
   <p class="eyebrow">Career library</p>
   <h1>Browse {{ total_careers }} career profiles</h1>
   <p class="lead">Compare work descriptions, education paths, growth signals, and related majors. Then take the assessment to see which options fit your current profile.</p>
@@ -10,7 +13,7 @@
       <strong>Not sure where to start?</strong>
       <span>Use the assessment to rank careers by your interests, strengths, personality, and values.</span>
     </div>
-    <a href="/info" class="btn-primary">Take the test</a>
+    <a href="/info" class="btn-primary" data-track="click_start_from_careers_index">Take the test</a>
   </div>
 
   {% for category, careers in grouped.items() %}
@@ -18,7 +21,7 @@
     <h2>{{ tcat(category) }}</h2>
     <div class="career-teaser-grid">
       {% for career in careers %}
-      <a class="career-teaser" href="/career/{{ career.id }}">
+      <a class="career-teaser" href="/career/{{ career.id }}" data-track="click_careers_index_item">
         <strong>{{ career.display_name }}</strong>
         <span>{{ career.display_description }}</span>
       </a>

@@ -1,6 +1,16 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="survey-page">
+  <script>
+    window.CAREERSDNA_PAGE = {
+      type: 'survey',
+      section_key: {{ sec_key|tojson }},
+      section_index: {{ section_idx }},
+      total_sections: {{ total_sections }},
+      progress_pct: {{ progress_pct }},
+      is_final_section: {{ (section_idx == total_sections - 1)|tojson }}
+    };
+  </script>
   <h1 class="main-title">{{ section_title }}</h1>
 
   <!-- Progress bar -->
@@ -16,7 +26,9 @@
 
   <p class="sub-title">{{ section_desc }}</p>
 
-  <form method="post" action="/survey" class="survey-form" id="survey-form">
+  <form method="post" action="/survey" class="survey-form" id="survey-form"
+        data-section-key="{{ sec_key }}" data-section-index="{{ section_idx }}"
+        data-total-sections="{{ total_sections }}">
 
     {% if is_forced_choice %}
     <!-- Forced choice (values/anchors) -->
@@ -90,6 +102,12 @@
 
 <script>
 function goBack() {
+  if (typeof trackEvent === 'function') {
+    trackEvent('survey_back', {
+      section_key: {{ sec_key|tojson }},
+      section_index: {{ section_idx }}
+    });
+  }
   {% if section_idx > 0 %}
   // POST to /survey-back to decrement session current_section
   const f = document.createElement('form');
@@ -106,6 +124,41 @@ function goBack() {
 const fcCheckboxes = document.querySelectorAll('.fc-checkbox');
 const fcSubmit = document.getElementById('fc-submit');
 const fcMsg = document.getElementById('fc-count-msg');
+const surveyForm = document.getElementById('survey-form');
+let surveySubmitted = false;
+
+if (typeof trackEvent === 'function') {
+  trackEvent('view_survey_section', {
+    section_key: {{ sec_key|tojson }},
+    section_index: {{ section_idx }},
+    total_sections: {{ total_sections }},
+    progress_pct: {{ progress_pct }}
+  });
+}
+
+if (surveyForm) {
+  surveyForm.addEventListener('submit', function() {
+    surveySubmitted = true;
+    const checked = document.querySelectorAll('.fc-checkbox:checked').length;
+    trackEvent('complete_section', {
+      section_key: {{ sec_key|tojson }},
+      section_index: {{ section_idx }},
+      total_sections: {{ total_sections }},
+      is_final_section: {{ (section_idx == total_sections - 1)|tojson }},
+      selected_count: checked || undefined
+    });
+  });
+}
+
+document.addEventListener('visibilitychange', function() {
+  if (document.visibilityState === 'hidden' && !surveySubmitted) {
+    trackEvent('survey_section_exit', {
+      section_key: {{ sec_key|tojson }},
+      section_index: {{ section_idx }},
+      progress_pct: {{ progress_pct }}
+    });
+  }
+});
 
 function updateFcCount() {
   if (!fcCheckboxes.length) return;

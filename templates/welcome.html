@@ -1,6 +1,9 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="welcome-page wide-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'home' };
+  </script>
 
   {% if shared_data %}
   <div class="shared-result-box">
@@ -23,8 +26,8 @@
       <h1 class="main-title">Find career paths worth exploring</h1>
       <p class="sub-title">Answer practical questions about interests, strengths, personality, and work values. Get matched against 174 career profiles with reasons you can actually review.</p>
       <div class="hero-actions">
-        <a href="/info" class="btn-primary">Start the assessment</a>
-        <a href="/careers" class="btn-secondary">Browse careers</a>
+        <a href="/info" class="btn-primary" data-track="click_start_from_home">Start the assessment</a>
+        <a href="/careers" class="btn-secondary" data-track="click_home_careers">Browse careers</a>
       </div>
     </div>
     <div class="hero-facts" aria-label="Assessment facts">
@@ -38,7 +41,7 @@
     <h2>Choose a starting point</h2>
     <div class="link-grid">
       {% for slug, page in test_pages.items() %}
-      <a class="info-card" href="/tests/{{ slug }}">
+      <a class="info-card" href="/tests/{{ slug }}" data-track="click_home_test">
         <span class="card-kicker">{{ page.age_hint }}</span>
         <strong>{{ page.title }}</strong>
         <span>{{ page.description }}</span>
@@ -51,7 +54,7 @@
     <h2>Popular career profiles</h2>
     <div class="career-teaser-grid">
       {% for career in featured_careers %}
-      <a class="career-teaser" href="/career/{{ career.id }}">
+      <a class="career-teaser" href="/career/{{ career.id }}" data-track="click_home_career">
         <strong>{{ career.display_name }}</strong>
         <span>{{ career.display_description }}</span>
       </a>

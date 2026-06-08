@@ -5,8 +5,42 @@ function trackEvent(name, params = {}) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+  const pageMeta = window.CAREERSDNA_PAGE || {};
   trackEvent('page_view_custom', {
-    page_path: window.location.pathname
+    page_path: window.location.pathname,
+    page_type: pageMeta.type || 'standard'
+  });
+  if (pageMeta.type) {
+    trackEvent('view_' + pageMeta.type, pageMeta);
+  }
+
+  const scrollMarks = [25, 50, 75, 90];
+  const seenScrollMarks = new Set();
+  function trackScrollDepth() {
+    const doc = document.documentElement;
+    const scrollable = Math.max(1, doc.scrollHeight - window.innerHeight);
+    const depth = Math.round((window.scrollY / scrollable) * 100);
+    scrollMarks.forEach(mark => {
+      if (depth >= mark && !seenScrollMarks.has(mark)) {
+        seenScrollMarks.add(mark);
+        trackEvent('scroll_depth', {
+          page_path: window.location.pathname,
+          page_type: pageMeta.type || 'standard',
+          percent: mark
+        });
+      }
+    });
+  }
+  window.addEventListener('scroll', trackScrollDepth, { passive: true });
+
+  [15, 45, 90].forEach(seconds => {
+    window.setTimeout(() => {
+      trackEvent('engaged_time', {
+        page_path: window.location.pathname,
+        page_type: pageMeta.type || 'standard',
+        seconds: seconds
+      });
+    }, seconds * 1000);
   });
 
   const tabBtns = document.querySelectorAll('.tab-btn');

@@ -1,6 +1,29 @@
 {% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.q|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.a|tojson }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
 {% block content %}
 <article class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'test_landing', slug: {{ slug|tojson }} };
+  </script>
   <p class="eyebrow">Career exploration</p>
   <h1>{{ page.headline }}</h1>
   <p class="lead">{{ page.description }}</p>
@@ -10,7 +33,7 @@
       <strong>Get a personalized career match</strong>
       <span>The full assessment adapts by age and compares your answers with 174 career profiles.</span>
     </div>
-    <a href="/info" class="btn-primary">Start free test</a>
+    <a href="/info" class="btn-primary" data-track="click_start_from_landing">Start free test</a>
   </div>
 
   <section>
@@ -27,7 +50,7 @@
     <h2>Career profiles to compare</h2>
     <div class="career-teaser-grid">
       {% for career in featured_careers %}
-      <a class="career-teaser" href="/career/{{ career.id }}">
+      <a class="career-teaser" href="/career/{{ career.id }}" data-track="click_landing_career">
         <strong>{{ career.display_name }}</strong>
         <span>{{ career.display_description }}</span>
       </a>
@@ -39,10 +62,22 @@
     <h2>Related tests</h2>
     <div class="link-grid">
       {% for related_slug, related in related_tests.items() %}
-      <a class="info-card" href="/tests/{{ related_slug }}">
+      <a class="info-card" href="/tests/{{ related_slug }}" data-track="click_related_test">
         <strong>{{ related.title }}</strong>
         <span>{{ related.description }}</span>
       </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Common questions</h2>
+    <div class="faq-list">
+      {% for item in faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
       {% endfor %}
     </div>
   </section>
