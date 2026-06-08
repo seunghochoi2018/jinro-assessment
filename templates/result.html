@@ -139,6 +139,22 @@
               <strong>{{ t('alt_label') }}:</strong> {{ career.alt_careers|join(' · ') }}
             </div>
             {% endif %}
+
+            {% if fit.review %}
+            <div style="margin-top:0.8rem;background:#fffbf0;border-radius:10px;padding:0.8rem 1rem;border-left:3px solid #f59e0b;">
+              <div style="font-weight:700;font-size:0.85rem;color:#d97706;margin-bottom:0.5rem;">
+                {% if lang == 'ko' %}현직자 이야기{% elif lang == 'zh' %}从业者说{% else %}From People in This Career{% endif %}
+              </div>
+              <div style="margin-bottom:0.4rem;">
+                <span style="color:#16a34a;font-weight:600;font-size:0.82rem;">✓ </span>
+                {% for pro in fit.review.pros %}<div style="font-size:0.85rem;color:#444;margin-bottom:0.2rem;">{{ pro }}</div>{% endfor %}
+              </div>
+              <div>
+                <span style="color:#dc2626;font-weight:600;font-size:0.82rem;">✗ </span>
+                {% for con in fit.review.cons %}<div style="font-size:0.85rem;color:#666;margin-bottom:0.2rem;">{{ con }}</div>{% endfor %}
+              </div>
+            </div>
+            {% endif %}
           </div>
 
           <!-- Module scores bar chart -->

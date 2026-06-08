@@ -24,6 +24,11 @@ except ImportError:
     CAREER_GLOBAL_DATA = {}
 
 try:
+    from data.career_reviews import CAREER_REVIEWS
+except ImportError:
+    CAREER_REVIEWS = {}
+
+try:
     from engine.interpreter import generate_insight
 except ImportError:
     generate_insight = None
@@ -634,6 +639,8 @@ def result():
             fit["desc_display"] = CAREER_DESC_EN[cid]
         else:
             fit["desc_display"] = None
+        rev = CAREER_REVIEWS.get(cid, {})
+        fit["review"] = rev.get(lang, rev.get("en", None))
 
     # AI-style insight
     insight = None
