@@ -38,6 +38,7 @@ from data.questions import (
 )
 from engine.scorer import score_all_modules
 from engine.matcher import rank_careers, get_career_fit_summary
+from data.careers import CAREERS_DB, get_careers_by_category
 
 # ────────────────────────────────────────────────
 # Flask app setup
@@ -45,6 +46,129 @@ from engine.matcher import rank_careers, get_career_fit_summary
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-prod")
 DEFAULT_LANG = "en"
+APP_URL = os.environ.get("APP_URL", "https://jinro-assessment.onrender.com").rstrip("/")
+
+SEO_TEST_PAGES = {
+    "high-school-career-test": {
+        "title": "High School Career Test",
+        "headline": "Career test for high school students",
+        "description": "Explore career directions based on interests, strengths, personality, and work values. Built for students who want practical next steps.",
+        "age_hint": "13-18",
+        "keywords": ["high school career test", "student career quiz", "career aptitude test"],
+    },
+    "job-aptitude-test": {
+        "title": "Job Aptitude Test",
+        "headline": "Find career paths that fit how you think and work",
+        "description": "A multi-theory assessment that compares your answers with 174 career profiles and explains why each path may fit.",
+        "age_hint": "19-29",
+        "keywords": ["job aptitude test", "career match test", "work personality test"],
+    },
+    "career-change-test": {
+        "title": "Career Change Test",
+        "headline": "Career change test for adults",
+        "description": "Use your interests, values, personality, and career anchors to identify realistic career-change options.",
+        "age_hint": "30+",
+        "keywords": ["career change test", "career switch quiz", "adult career assessment"],
+    },
+    "middle-school-career-test": {
+        "title": "Middle School Career Test",
+        "headline": "A simple career test for middle school students",
+        "description": "Start with interests and strengths, then compare possible career areas without forcing one final answer.",
+        "age_hint": "13-15",
+        "keywords": ["middle school career test", "student aptitude quiz"],
+    },
+    "college-career-test": {
+        "title": "College Career Test",
+        "headline": "Career test for college students choosing a direction",
+        "description": "Compare careers by interests, personality, values, and practical preparation paths before choosing internships or majors.",
+        "age_hint": "19-29",
+        "keywords": ["college career test", "major career test", "graduate career quiz"],
+    },
+    "personality-career-test": {
+        "title": "Personality Career Test",
+        "headline": "Match career options with your personality and work style",
+        "description": "Use personality signals alongside interests and values so the result is not just about what sounds fun.",
+        "age_hint": "All",
+        "keywords": ["personality career test", "work style test"],
+    },
+    "career-values-test": {
+        "title": "Career Values Test",
+        "headline": "Find careers that fit what you value at work",
+        "description": "Compare income, stability, autonomy, creativity, social contribution, and growth as part of your career decision.",
+        "age_hint": "16+",
+        "keywords": ["career values test", "work values quiz"],
+    },
+    "developer-aptitude-test": {
+        "title": "Developer Aptitude Test",
+        "headline": "See whether software development is worth exploring",
+        "description": "Compare developer work with your problem-solving style, patience for detail, learning habits, and related career alternatives.",
+        "age_hint": "16+",
+        "keywords": ["developer aptitude test", "software engineer career test"],
+    },
+    "designer-aptitude-test": {
+        "title": "Designer Aptitude Test",
+        "headline": "Explore design careers that match your strengths",
+        "description": "Look beyond creativity and compare design careers by spatial thinking, empathy, communication, and work values.",
+        "age_hint": "16+",
+        "keywords": ["designer aptitude test", "design career quiz"],
+    },
+    "nurse-aptitude-test": {
+        "title": "Nurse Aptitude Test",
+        "headline": "Check whether nursing is a realistic career option",
+        "description": "Explore fit signals for nursing, including social motivation, detail orientation, stress tolerance, and related healthcare paths.",
+        "age_hint": "16+",
+        "keywords": ["nurse aptitude test", "nursing career test"],
+    },
+    "teacher-aptitude-test": {
+        "title": "Teacher Aptitude Test",
+        "headline": "Explore whether teaching fits your strengths",
+        "description": "Compare teaching with your communication style, patience, social motivation, structure, and long-term work values.",
+        "age_hint": "16+",
+        "keywords": ["teacher aptitude test", "teaching career quiz"],
+    },
+    "business-career-test": {
+        "title": "Business Career Test",
+        "headline": "Find business careers that match your work style",
+        "description": "Compare marketing, finance, management, entrepreneurship, and operations paths by strengths and values.",
+        "age_hint": "16+",
+        "keywords": ["business career test", "business aptitude quiz"],
+    },
+    "creative-career-test": {
+        "title": "Creative Career Test",
+        "headline": "Explore creative careers without guessing",
+        "description": "Compare creative careers by expression, independence, collaboration, income expectations, and practical alternatives.",
+        "age_hint": "16+",
+        "keywords": ["creative career test", "arts career quiz"],
+    },
+    "stem-career-test": {
+        "title": "STEM Career Test",
+        "headline": "Explore science, technology, engineering, and math careers",
+        "description": "Compare analytical and technical career paths by interests, strengths, values, and preparation difficulty.",
+        "age_hint": "13+",
+        "keywords": ["STEM career test", "science career quiz"],
+    },
+    "healthcare-career-test": {
+        "title": "Healthcare Career Test",
+        "headline": "Compare healthcare careers that may fit you",
+        "description": "Explore healthcare careers by people skills, detail orientation, science interest, stress tolerance, and education path.",
+        "age_hint": "16+",
+        "keywords": ["healthcare career test", "medical career quiz"],
+    },
+    "remote-work-career-test": {
+        "title": "Remote Work Career Test",
+        "headline": "Find careers that may fit remote or flexible work",
+        "description": "Compare autonomy, communication, focus, and digital work patterns before choosing remote-friendly paths.",
+        "age_hint": "19+",
+        "keywords": ["remote work career test", "work from home career quiz"],
+    },
+    "burnout-career-test": {
+        "title": "Burnout Career Test",
+        "headline": "Career reflection test for burnout or career confusion",
+        "description": "Use a calmer framework to compare work values, energy patterns, and career alternatives when your current path feels unclear.",
+        "age_hint": "19+",
+        "keywords": ["burnout career test", "career confusion test"],
+    },
+}
 
 
 @app.context_processor
@@ -57,6 +181,10 @@ def inject_globals():
         "t": lambda key: t(key, lang),
         "tc": lambda cid: tc(cid, lang),
         "tcat": lambda cat: tcat(cat, lang),
+        "app_url": APP_URL,
+        "adsense_client": os.environ.get("ADSENSE_CLIENT", ""),
+        "adsense_bottom_slot": os.environ.get("ADSENSE_SLOT_BOTTOM", ""),
+        "contact_email": os.environ.get("CONTACT_EMAIL", "contact@example.com"),
     }
 
 
@@ -367,6 +495,104 @@ def _compute_holland_code(holland_scores: dict) -> str:
     return "".join(d for d, _ in sorted_dims[:3])
 
 
+def _canonical_url(path: str) -> str:
+    return f"{APP_URL}{path}"
+
+
+def _career_lookup(career_id: str) -> dict | None:
+    for career in CAREERS_DB:
+        if career.get("id") == career_id:
+            return career
+    return None
+
+
+def _career_display(career: dict, lang: str) -> dict:
+    cid = career.get("id", "")
+    detail = CAREER_DETAIL_DB.get(cid, {})
+    global_data = CAREER_GLOBAL_DATA.get(cid, {})
+    name = tc(cid, lang) if lang != "ko" else career.get("name", cid)
+    desc = CAREER_DESC_EN.get(cid) if lang != "ko" else None
+    return {
+        **career,
+        "display_name": name,
+        "display_description": desc or career.get("description", ""),
+        "salary_display": global_data.get("salary_global") if lang != "ko" else detail.get("salary_range"),
+        "roadmap_display": global_data.get("roadmap") if lang != "ko" else detail.get("career_path", []),
+    }
+
+
+def _related_careers(career: dict, limit: int = 6) -> list[dict]:
+    category = career.get("category")
+    current_id = career.get("id")
+    related = [c for c in CAREERS_DB if c.get("category") == category and c.get("id") != current_id]
+    return related[:limit]
+
+
+def _top_dims(score_map: dict, limit: int = 3) -> list[tuple[str, float]]:
+    return sorted(score_map.items(), key=lambda item: item[1], reverse=True)[:limit]
+
+
+def _career_article_sections(career: dict, lang: str) -> dict:
+    name = tc(career.get("id", ""), lang) if lang != "ko" else career.get("name", "this career")
+    category = tcat(career.get("category", ""), lang)
+    holland = _top_dims(career.get("holland", {}), 3)
+    values = _top_dims(career.get("values", {}), 3)
+    big5 = _top_dims(career.get("big5", {}), 2)
+    majors = career.get("related_majors", [])[:4]
+
+    interest_labels = {
+        "R": "hands-on work",
+        "I": "analysis and research",
+        "A": "creative expression",
+        "S": "helping and teaching",
+        "E": "leading and persuading",
+        "C": "organizing and detail work",
+    }
+    top_interest = ", ".join(interest_labels.get(dim, dim) for dim, _ in holland) or "mixed work styles"
+    top_values = ", ".join(str(dim) for dim, _ in values) or "personal work values"
+    top_traits = ", ".join(str(dim) for dim, _ in big5) or "work habits"
+    major_text = ", ".join(majors) if majors else "related courses, projects, and entry-level experience"
+
+    return {
+        "daily_work": [
+            f"People in {name} usually spend time solving problems inside the {category} field.",
+            f"The work often rewards {top_interest}, especially when paired with steady learning and feedback.",
+            "Actual tasks vary by country, employer, seniority, and whether the role is in a large organization or a smaller team.",
+        ],
+        "fit_signs": [
+            f"You may want to explore this path if you enjoy {top_interest}.",
+            f"This profile also emphasizes values such as {top_values}.",
+            f"Personality fit is not fixed, but this career profile tends to reward habits related to {top_traits}.",
+        ],
+        "starter_steps": [
+            f"Review courses or majors connected to {major_text}.",
+            "Interview someone in the field and ask what their week actually looks like.",
+            "Try a small project, shadowing experience, volunteer role, internship, or beginner portfolio piece before committing deeply.",
+        ],
+        "watch_out": [
+            "Do not choose a career only because the match score is high.",
+            "Check current salary, licensing, hiring demand, and local education requirements before making important decisions.",
+            "Compare this path with at least three related careers so you can see whether the attraction is the field, the work style, or a specific job title.",
+        ],
+    }
+
+
+def _top_career_sample(limit: int = 12) -> list[dict]:
+    priority_ids = [
+        "software_dev", "data_scientist", "ai_engineer", "nurse",
+        "teacher", "ux_designer", "financial_analyst", "counselor",
+        "doctor", "marketing_manager", "game_developer", "architect",
+    ]
+    by_id = {c.get("id"): c for c in CAREERS_DB}
+    selected = [by_id[cid] for cid in priority_ids if cid in by_id]
+    for career in CAREERS_DB:
+        if len(selected) >= limit:
+            break
+        if career not in selected:
+            selected.append(career)
+    return selected[:limit]
+
+
 # ────────────────────────────────────────────────
 # 라우트
 # ────────────────────────────────────────────────
@@ -378,7 +604,102 @@ def index():
     r_param = request.args.get("r")
     if r_param:
         shared_data = _decode_share_param(r_param)
-    return render_template("welcome.html", lang=lang, LANG_CONFIG=LANG_CONFIG, shared_data=shared_data)
+    return render_template(
+        "welcome.html",
+        lang=lang,
+        LANG_CONFIG=LANG_CONFIG,
+        shared_data=shared_data,
+        test_pages=SEO_TEST_PAGES,
+        featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
+        meta_title="Career Assessment | Free Career Test and Job Match",
+        meta_description="Take a free career assessment and explore 174 career profiles based on interests, strengths, personality, and values.",
+        canonical_url=_canonical_url("/"),
+    )
+
+
+@app.route("/tests/<slug>")
+def seo_test_page(slug):
+    page = SEO_TEST_PAGES.get(slug)
+    if not page:
+        return redirect(url_for("index"))
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "seo_test.html",
+        lang=lang,
+        page=page,
+        slug=slug,
+        related_tests={k: v for k, v in SEO_TEST_PAGES.items() if k != slug},
+        featured_careers=[_career_display(c, lang) for c in _top_career_sample(6)],
+        meta_title=f"{page['title']} | Career Assessment",
+        meta_description=page["description"],
+        canonical_url=_canonical_url(f"/tests/{slug}"),
+    )
+
+
+@app.route("/careers")
+def careers_index():
+    lang = session.get("lang", DEFAULT_LANG)
+    grouped = get_careers_by_category()
+    display_grouped = {
+        category: [_career_display(c, lang) for c in careers]
+        for category, careers in grouped.items()
+    }
+    return render_template(
+        "careers.html",
+        lang=lang,
+        grouped=display_grouped,
+        total_careers=len(CAREERS_DB),
+        meta_title="Career Library | 174 Career Profiles",
+        meta_description="Browse 174 career profiles and compare education, growth, work style, and related majors before taking the career test.",
+        canonical_url=_canonical_url("/careers"),
+    )
+
+
+@app.route("/career/<career_id>")
+def career_detail(career_id):
+    lang = session.get("lang", DEFAULT_LANG)
+    career = _career_lookup(career_id)
+    if not career:
+        return redirect(url_for("careers_index"))
+    display = _career_display(career, lang)
+    related = [_career_display(c, lang) for c in _related_careers(career)]
+    review = CAREER_REVIEWS.get(career_id, {}).get(lang) or CAREER_REVIEWS.get(career_id, {}).get("en")
+    article = _career_article_sections(career, lang)
+    return render_template(
+        "career_detail.html",
+        lang=lang,
+        career=display,
+        related=related,
+        review=review,
+        article=article,
+        meta_title=f"{display['display_name']} Career Fit | Career Assessment",
+        meta_description=f"Learn what {display['display_name']} does, which strengths fit this career, and whether it may match your interests and values.",
+        canonical_url=_canonical_url(f"/career/{career_id}"),
+    )
+
+
+@app.route("/privacy")
+def privacy():
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "privacy.html",
+        lang=lang,
+        meta_title="Privacy Policy | Career Assessment",
+        meta_description="Privacy policy for Career Assessment, including cookies, analytics, advertising, and assessment data handling.",
+        canonical_url=_canonical_url("/privacy"),
+    )
+
+
+@app.route("/terms")
+def terms():
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "terms.html",
+        lang=lang,
+        meta_title="Terms and Disclaimer | Career Assessment",
+        meta_description="Terms, educational-use disclaimer, and limitations of the Career Assessment service.",
+        canonical_url=_canonical_url("/terms"),
+    )
 
 
 @app.route("/set-lang", methods=["POST"])
@@ -576,19 +897,6 @@ def _compute_and_store_results():
     share_url = _build_share_url(name, holland_code, ranked)
 
     session["results"] = results
-    session["ranked"] = [
-        {
-            "career_id": r.get("career_id", ""),
-            "career_name": r.get("career_name", ""),
-            "score": r.get("score", 0),
-            "confidence_lo": r.get("confidence_lo", 0),
-            "confidence_hi": r.get("confidence_hi", 0),
-            "career_data": r.get("career_data", {}),
-            "top_reasons": r.get("top_reasons", []),
-            "module_scores": r.get("module_scores", {}),
-        }
-        for r in ranked
-    ]
     session["holland_code"] = holland_code
     session["share_url"] = share_url
     session.modified = True
@@ -606,10 +914,10 @@ def result():
     if error:
         return render_template("result.html", lang=lang, error=error)
 
-    results = session["results"]
-    ranked = session.get("ranked", [])
     name = session.get("name", "")
     age_group = session.get("age_group", "young_adult")
+    results = session["results"]
+    ranked = rank_careers(results, age_group, top_n=12)
     holland_code = session.get("holland_code", "---")
     share_url = session.get("share_url", "")
 
@@ -705,6 +1013,8 @@ def download_report():
     holland_code = session.get("holland_code", "---")
     results = session["results"]
     ranked = session.get("ranked", [])
+    if results:
+        ranked = rank_careers(results, age_group, top_n=12)
 
     html_content = _generate_html_report(name, age_group, holland_code, results, ranked)
 
@@ -718,6 +1028,42 @@ def download_report():
 # ────────────────────────────────────────────────
 # Entry point
 # ────────────────────────────────────────────────
+
+@app.route("/robots.txt")
+def robots_txt():
+    body = "\n".join([
+        "User-agent: *",
+        "Allow: /",
+        f"Sitemap: {APP_URL}/sitemap.xml",
+        "",
+    ])
+    response = make_response(body)
+    response.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return response
+
+
+@app.route("/sitemap.xml")
+def sitemap_xml():
+    paths = ["/", "/careers", "/privacy", "/terms"]
+    paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
+    paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))
+    today = datetime.utcnow().strftime("%Y-%m-%d")
+    urls = "\n".join(
+        f"""  <url>
+    <loc>{APP_URL}{path}</loc>
+    <lastmod>{today}</lastmod>
+  </url>"""
+        for path in paths
+    )
+    body = f"""<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+{urls}
+</urlset>
+"""
+    response = make_response(body)
+    response.headers["Content-Type"] = "application/xml; charset=utf-8"
+    return response
+
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))

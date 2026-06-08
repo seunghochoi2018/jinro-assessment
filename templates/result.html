@@ -1,6 +1,11 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="result-page">
+  <script>
+    window.addEventListener('load', function() {
+      if (typeof gtag === 'function') gtag('event', 'view_result');
+    });
+  </script>
   {% set result_titles = {'ko': name ~ '님의 진로 탐색 결과', 'en': name ~ "'s Career Results", 'zh': name ~ '的职业探索结果', 'es': 'Resultados de ' ~ name, 'hi': name ~ ' के करियर परिणाम', 'ar': 'نتائج ' ~ name, 'pt': 'Resultados de ' ~ name} %}
   <h1 class="main-title">{{ result_titles.get(lang, result_titles.ko) }}</h1>
 
@@ -221,6 +226,11 @@
   <!-- Share + Download -->
   <div class="share-box">
     <h3 style="margin-bottom:1rem;">{{ t('share_title') }}</h3>
+    <div class="result-summary-card">
+      <p class="eyebrow">Shareable summary</p>
+      <strong>{{ name }}: {{ holland_code }} / {{ top1_name }}</strong>
+      <span>This is a career exploration summary, not a final decision. Share it to compare ideas with friends, family, teachers, or mentors.</span>
+    </div>
     <div style="margin-bottom:0.8rem;">
       <label style="font-weight:600;display:block;margin-bottom:0.3rem;">{{ t('share_link') }}</label>
       <div style="display:flex;gap:0.5rem;">
@@ -228,7 +238,22 @@
         <button id="copy-url-btn" class="btn-secondary" style="flex:0 0 auto;padding:0.5rem 1rem;">복사</button>
       </div>
     </div>
-    <a href="/download-report" class="btn-secondary">{{ t('download_btn') }}</a>
+    <div class="share-actions">
+      <button type="button" id="native-share-btn" class="btn-secondary" data-track="native_share">Share</button>
+      <a href="https://www.facebook.com/sharer/sharer.php?u={{ share_url|urlencode }}" target="_blank" rel="noopener" class="btn-secondary" data-track="facebook_share">Facebook</a>
+      <a href="https://twitter.com/intent/tweet?url={{ share_url|urlencode }}&text={{ ('My career assessment result: ' ~ holland_code ~ ' / ' ~ top1_name)|urlencode }}" target="_blank" rel="noopener" class="btn-secondary" data-track="x_share">X</a>
+      <a href="/download-report" class="btn-secondary" data-track="download_report">{{ t('download_btn') }}</a>
+    </div>
+    {% if ranked %}
+    <div class="next-read-box">
+      <strong>Explore your top matches</strong>
+      <div class="next-read-links">
+        {% for fit in ranked[:3] %}
+        <a href="/career/{{ fit.career_data.id }}" data-track="result_career_detail">{{ fit.career_name }}</a>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
   </div>
 
   <!-- Bottom action buttons -->

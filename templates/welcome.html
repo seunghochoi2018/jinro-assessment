@@ -1,39 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="welcome-page">
+<div class="welcome-page wide-page">
 
   {% if shared_data %}
-  <!-- Shared result preview -->
   <div class="shared-result-box">
-    <h2>{{ t('shared_result') }}</h2>
+    <h1>Shared Career Result</h1>
     <p><strong>{{ shared_data.n }}</strong></p>
-    <p><strong>{{ t('interest_code') }}:</strong> {{ shared_data.h }}</p>
-    <ol>{% for cname, cscore in shared_data.t %}<li>{{ cname }} &mdash; {{ cscore }}점</li>{% endfor %}</ol>
-    <p>{{ t('try_yourself') }}</p>
-    <a href="/" class="btn-primary">{{ t('start_btn') }}</a>
+    <p><strong>Interest code:</strong> {{ shared_data.h }}</p>
+    <ol class="clean-list">
+      {% for cname, cscore in shared_data.t %}
+      <li>{{ cname }} - {{ cscore }} points</li>
+      {% endfor %}
+    </ol>
+    <p>Use this as a starting point, not a final decision. Your own answers may lead to different career matches.</p>
+    <a href="/info" class="btn-primary">Take the test</a>
   </div>
   {% else %}
 
-  <h1 class="main-title">{{ t('app_title') }}</h1>
-  <p class="sub-title">{{ t('app_subtitle') }}</p>
+  <section class="hero-panel">
+    <div>
+      <p class="eyebrow">Free career test</p>
+      <h1 class="main-title">Find career paths worth exploring</h1>
+      <p class="sub-title">Answer practical questions about interests, strengths, personality, and work values. Get matched against 174 career profiles with reasons you can actually review.</p>
+      <div class="hero-actions">
+        <a href="/info" class="btn-primary">Start the assessment</a>
+        <a href="/careers" class="btn-secondary">Browse careers</a>
+      </div>
+    </div>
+    <div class="hero-facts" aria-label="Assessment facts">
+      <div><strong>174</strong><span>career profiles</span></div>
+      <div><strong>4</strong><span>age-based paths</span></div>
+      <div><strong>10 min</strong><span>typical time</span></div>
+    </div>
+  </section>
 
-  <div class="welcome-card">
-    <p class="time-hint"><strong>{{ t('time_hint') }}</strong></p>
-    <ul class="feature-list">
-      <li>{{ t('feat1') }}</li>
-      <li>{{ t('feat2') }}</li>
-      <li>{{ t('feat3') }}</li>
-    </ul>
-    <hr>
-    <a href="/info" class="btn-primary btn-large">{{ t('start_btn') }}</a>
-  </div>
+  <section class="content-section">
+    <h2>Choose a starting point</h2>
+    <div class="link-grid">
+      {% for slug, page in test_pages.items() %}
+      <a class="info-card" href="/tests/{{ slug }}">
+        <span class="card-kicker">{{ page.age_hint }}</span>
+        <strong>{{ page.title }}</strong>
+        <span>{{ page.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
 
-  <!-- AdSense unit (optional second placement) -->
-  <div class="ad-inline">
-    <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXX"
-         data-ad-slot="XXXXXXXXXX" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
-  </div>
+  <section class="content-section">
+    <h2>Popular career profiles</h2>
+    <div class="career-teaser-grid">
+      {% for career in featured_careers %}
+      <a class="career-teaser" href="/career/{{ career.id }}">
+        <strong>{{ career.display_name }}</strong>
+        <span>{{ career.display_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="content-section muted-section">
+    <h2>How to use your result</h2>
+    <p>This assessment is designed for exploration. A high match means your current answers resemble the profile of that career; it does not guarantee admission, hiring, income, or long-term satisfaction. Use the result to compare options, plan questions, and decide what to research next.</p>
+  </section>
 
   {% endif %}
 </div>

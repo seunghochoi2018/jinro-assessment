@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="article-page">
+  <p class="eyebrow">{{ tcat(career.category) }}</p>
+  <h1>{{ career.display_name }}</h1>
+  <p class="lead">{{ career.display_description }}</p>
+
+  <div class="cta-band">
+    <div>
+      <strong>Is this career a good fit for you?</strong>
+      <span>Take the assessment to compare this path with 173 other careers.</span>
+    </div>
+    <a href="/info" class="btn-primary">Check my fit</a>
+  </div>
+
+  <section>
+    <h2>Career snapshot</h2>
+    <div class="snapshot-grid">
+      <div><strong>Education</strong><span>{{ career.education }}</span></div>
+      <div><strong>Growth</strong><span>{{ career.job_growth }}</span></div>
+      <div><strong>Salary signal</strong><span>{{ career.salary_display or career.salary_level }}</span></div>
+      <div><strong>Entry difficulty</strong><span>{{ career.difficulty }}</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What the work can involve</h2>
+    <ul class="article-list">
+      {% for item in article.daily_work %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>What may fit this career</h2>
+    <div class="feature-grid">
+      {% set holland_top = career.holland.items()|sort(attribute='1', reverse=True) %}
+      {% for dim, score in holland_top[:3] %}
+      <div><strong>Interest {{ dim }}</strong><span>Profile strength: {{ (score * 100)|round|int }}</span></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Signs this path may be worth exploring</h2>
+    <ul class="article-list">
+      {% for item in article.fit_signs %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if career.related_majors %}
+  <section>
+    <h2>Related majors</h2>
+    <p>{{ career.related_majors|join(', ') }}</p>
+  </section>
+  {% endif %}
+
+  {% if career.roadmap_display %}
+  <section>
+    <h2>Typical path</h2>
+    <ol class="roadmap-list">
+      {% for step in career.roadmap_display %}
+      <li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>How to test this direction before committing</h2>
+    <ol class="roadmap-list">
+      {% for item in article.starter_steps %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  <section class="muted-section">
+    <h2>Before making a decision</h2>
+    <ul class="article-list">
+      {% for item in article.watch_out %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if review %}
+  <section>
+    <h2>People in this career often mention</h2>
+    <div class="review-grid">
+      <div><strong>Good parts</strong>{% for item in review.pros %}<span>{{ item }}</span>{% endfor %}</div>
+      <div><strong>Hard parts</strong>{% for item in review.cons %}<span>{{ item }}</span>{% endfor %}</div>
+    </div>
+  </section>
+  {% endif %}
+
+  {% if related %}
+  <section>
+    <h2>Related careers</h2>
+    <div class="career-teaser-grid">
+      {% for item in related %}
+      <a class="career-teaser" href="/career/{{ item.id }}">
+        <strong>{{ item.display_name }}</strong>
+        <span>{{ item.display_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</article>
+{% endblock %}

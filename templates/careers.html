@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="article-page">
+  <p class="eyebrow">Career library</p>
+  <h1>Browse {{ total_careers }} career profiles</h1>
+  <p class="lead">Compare work descriptions, education paths, growth signals, and related majors. Then take the assessment to see which options fit your current profile.</p>
+
+  <div class="cta-band">
+    <div>
+      <strong>Not sure where to start?</strong>
+      <span>Use the assessment to rank careers by your interests, strengths, personality, and values.</span>
+    </div>
+    <a href="/info" class="btn-primary">Take the test</a>
+  </div>
+
+  {% for category, careers in grouped.items() %}
+  <section class="career-category">
+    <h2>{{ tcat(category) }}</h2>
+    <div class="career-teaser-grid">
+      {% for career in careers %}
+      <a class="career-teaser" href="/career/{{ career.id }}">
+        <strong>{{ career.display_name }}</strong>
+        <span>{{ career.display_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

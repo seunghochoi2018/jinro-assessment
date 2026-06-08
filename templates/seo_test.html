@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<article class="article-page">
+  <p class="eyebrow">Career exploration</p>
+  <h1>{{ page.headline }}</h1>
+  <p class="lead">{{ page.description }}</p>
+
+  <div class="cta-band">
+    <div>
+      <strong>Get a personalized career match</strong>
+      <span>The full assessment adapts by age and compares your answers with 174 career profiles.</span>
+    </div>
+    <a href="/info" class="btn-primary">Start free test</a>
+  </div>
+
+  <section>
+    <h2>What this test looks at</h2>
+    <div class="feature-grid">
+      <div><strong>Interests</strong><span>Activities and work styles you naturally prefer.</span></div>
+      <div><strong>Strengths</strong><span>Abilities that may support learning and performance.</span></div>
+      <div><strong>Personality</strong><span>Work environments that may feel more sustainable.</span></div>
+      <div><strong>Values</strong><span>What you want your work to provide or protect.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Career profiles to compare</h2>
+    <div class="career-teaser-grid">
+      {% for career in featured_careers %}
+      <a class="career-teaser" href="/career/{{ career.id }}">
+        <strong>{{ career.display_name }}</strong>
+        <span>{{ career.display_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Related tests</h2>
+    <div class="link-grid">
+      {% for related_slug, related in related_tests.items() %}
+      <a class="info-card" href="/tests/{{ related_slug }}">
+        <strong>{{ related.title }}</strong>
+        <span>{{ related.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</article>
+{% endblock %}
