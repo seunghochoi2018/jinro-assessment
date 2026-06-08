@@ -6,3 +6,5 @@ __pycache__/
 !requirements.txt
 streamlit_output.txt
 .streamlit/secrets.toml
+data/*.sqlite3
+data/*.db

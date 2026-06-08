@@ -2,9 +2,11 @@ import os
 import sys
 import json
 import base64
+import hashlib
+import sqlite3
 from datetime import datetime
 
-from flask import Flask, render_template, request, session, redirect, url_for, make_response
+from flask import Flask, render_template, request, session, redirect, url_for, make_response, jsonify
 import plotly.graph_objects as go
 import numpy as np
 import pandas as pd
@@ -47,6 +49,10 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-prod")
 DEFAULT_LANG = "en"
 APP_URL = os.environ.get("APP_URL", "https://jinro-assessment.onrender.com").rstrip("/")
+ANALYTICS_DB = os.environ.get(
+    "ANALYTICS_DB",
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "analytics.sqlite3"),
+)
 
 SEO_TEST_PAGES = {
     "high-school-career-test": {
@@ -593,6 +599,267 @@ def _top_career_sample(limit: int = 12) -> list[dict]:
     return selected[:limit]
 
 
+def _analytics_conn():
+    os.makedirs(os.path.dirname(ANALYTICS_DB), exist_ok=True)
+    conn = sqlite3.connect(ANALYTICS_DB, timeout=5)
+    conn.row_factory = sqlite3.Row
+    conn.execute(
+        """
+        CREATE TABLE IF NOT EXISTS analytics_events (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            created_at TEXT NOT NULL,
+            event_name TEXT NOT NULL,
+            visitor_id TEXT,
+            page_path TEXT,
+            page_type TEXT,
+            target_path TEXT,
+            section_key TEXT,
+            section_index INTEGER,
+            percent INTEGER,
+            seconds INTEGER,
+            params_json TEXT,
+            referrer TEXT,
+            user_agent TEXT,
+            ip_hash TEXT
+        )
+        """
+    )
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_analytics_created ON analytics_events(created_at)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_analytics_event ON analytics_events(event_name)")
+    conn.execute("CREATE INDEX IF NOT EXISTS idx_analytics_page ON analytics_events(page_path)")
+    return conn
+
+
+def _safe_int(value):
+    try:
+        if value is None:
+            return None
+        return int(value)
+    except (TypeError, ValueError):
+        return None
+
+
+def _hash_ip(ip: str) -> str:
+    salt = app.secret_key or "careersdna"
+    return hashlib.sha256(f"{salt}:{ip or ''}".encode("utf-8")).hexdigest()[:24]
+
+
+def _store_analytics_event(payload: dict) -> None:
+    params = payload.get("params") if isinstance(payload.get("params"), dict) else {}
+    event_name = str(payload.get("event") or "")[:80]
+    if not event_name:
+        return
+    page_path = str(params.get("page_path") or payload.get("page_path") or request.path)[:300]
+    page_type = str(params.get("page_type") or params.get("type") or "")[:80]
+    target_path = str(params.get("target_path") or "")[:300]
+    section_key = str(params.get("section_key") or "")[:120]
+    visitor_id = str(payload.get("visitor_id") or "")[:80]
+    user_agent = (request.headers.get("User-Agent") or "")[:300]
+    referrer = (request.headers.get("Referer") or "")[:300]
+    ip_hash = _hash_ip(request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip())
+
+    conn = _analytics_conn()
+    try:
+        conn.execute(
+            """
+            INSERT INTO analytics_events (
+                created_at, event_name, visitor_id, page_path, page_type, target_path,
+                section_key, section_index, percent, seconds, params_json,
+                referrer, user_agent, ip_hash
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                datetime.utcnow().isoformat(timespec="seconds"),
+                event_name,
+                visitor_id,
+                page_path,
+                page_type,
+                target_path,
+                section_key,
+                _safe_int(params.get("section_index")),
+                _safe_int(params.get("percent")),
+                _safe_int(params.get("seconds")),
+                json.dumps(params, ensure_ascii=False)[:2000],
+                referrer,
+                user_agent,
+                ip_hash,
+            ),
+        )
+        conn.commit()
+    finally:
+        conn.close()
+
+
+def _fetch_all(query: str, args: tuple = ()) -> list[dict]:
+    conn = _analytics_conn()
+    try:
+        rows = conn.execute(query, args).fetchall()
+        return [dict(r) for r in rows]
+    finally:
+        conn.close()
+
+
+def _fetch_one(query: str, args: tuple = ()) -> dict:
+    rows = _fetch_all(query, args)
+    return rows[0] if rows else {}
+
+
+def _analytics_summary(days: int = 7) -> dict:
+    since = datetime.utcnow().timestamp() - days * 86400
+    since_iso = datetime.utcfromtimestamp(since).isoformat(timespec="seconds")
+    args = (since_iso,)
+    overview = _fetch_one(
+        """
+        SELECT
+          COUNT(*) AS events,
+          COUNT(DISTINCT visitor_id) AS visitors,
+          SUM(CASE WHEN event_name='page_view_custom' THEN 1 ELSE 0 END) AS pageviews,
+          SUM(CASE WHEN event_name='view_result' THEN 1 ELSE 0 END) AS results
+        FROM analytics_events
+        WHERE created_at >= ?
+        """,
+        args,
+    )
+    starts = _fetch_one(
+        """
+        SELECT COUNT(*) AS starts
+        FROM analytics_events
+        WHERE created_at >= ? AND event_name IN (
+          'start_assessment','click_start_from_home','click_start_from_landing',
+          'click_start_from_career','click_start_from_careers_index'
+        )
+        """,
+        args,
+    )
+    top_pages = _fetch_all(
+        """
+        SELECT page_path, page_type, COUNT(*) AS views
+        FROM analytics_events
+        WHERE created_at >= ? AND event_name='page_view_custom'
+        GROUP BY page_path, page_type
+        ORDER BY views DESC
+        LIMIT 20
+        """,
+        args,
+    )
+    liked_pages = _fetch_all(
+        """
+        SELECT page_path,
+          SUM(CASE WHEN event_name='engaged_time' AND seconds >= 45 THEN 1 ELSE 0 END) AS long_reads,
+          SUM(CASE WHEN event_name='scroll_depth' AND percent >= 75 THEN 1 ELSE 0 END) AS deep_scrolls,
+          SUM(CASE WHEN event_name LIKE 'click_start_%' THEN 1 ELSE 0 END) AS starts,
+          COUNT(*) AS signals
+        FROM analytics_events
+        WHERE created_at >= ?
+        GROUP BY page_path
+        HAVING long_reads > 0 OR deep_scrolls > 0 OR starts > 0
+        ORDER BY (long_reads * 3 + deep_scrolls * 2 + starts * 4) DESC
+        LIMIT 15
+        """,
+        args,
+    )
+    weak_pages = _fetch_all(
+        """
+        SELECT v.page_path, COUNT(*) AS views,
+          COALESCE(e.engaged, 0) AS engaged,
+          ROUND((COUNT(*) - COALESCE(e.engaged, 0)) * 100.0 / COUNT(*), 1) AS weak_rate
+        FROM analytics_events v
+        LEFT JOIN (
+          SELECT page_path, COUNT(*) AS engaged
+          FROM analytics_events
+          WHERE created_at >= ? AND (
+            (event_name='engaged_time' AND seconds >= 45)
+            OR (event_name='scroll_depth' AND percent >= 75)
+            OR event_name LIKE 'click_start_%'
+          )
+          GROUP BY page_path
+        ) e ON e.page_path = v.page_path
+        WHERE v.created_at >= ? AND v.event_name='page_view_custom'
+        GROUP BY v.page_path
+        HAVING views >= 3
+        ORDER BY weak_rate DESC, views DESC
+        LIMIT 15
+        """,
+        (since_iso, since_iso),
+    )
+    survey_dropoff = _fetch_all(
+        """
+        SELECT
+          COALESCE(v.section_key, c.section_key, x.section_key) AS section_key,
+          COALESCE(v.section_index, c.section_index, x.section_index) AS section_index,
+          COALESCE(v.views, 0) AS views,
+          COALESCE(c.completes, 0) AS completes,
+          COALESCE(x.exits, 0) AS exits,
+          CASE WHEN COALESCE(v.views, 0) = 0 THEN 0
+               ELSE ROUND((COALESCE(v.views, 0) - COALESCE(c.completes, 0)) * 100.0 / COALESCE(v.views, 1), 1)
+          END AS drop_rate
+        FROM (
+          SELECT section_key, section_index, COUNT(*) AS views
+          FROM analytics_events
+          WHERE created_at >= ? AND event_name='view_survey_section'
+          GROUP BY section_key, section_index
+        ) v
+        LEFT JOIN (
+          SELECT section_key, section_index, COUNT(*) AS completes
+          FROM analytics_events
+          WHERE created_at >= ? AND event_name='complete_section'
+          GROUP BY section_key, section_index
+        ) c ON c.section_key = v.section_key AND c.section_index = v.section_index
+        LEFT JOIN (
+          SELECT section_key, section_index, COUNT(*) AS exits
+          FROM analytics_events
+          WHERE created_at >= ? AND event_name='survey_section_exit'
+          GROUP BY section_key, section_index
+        ) x ON x.section_key = v.section_key AND x.section_index = v.section_index
+        ORDER BY section_index ASC
+        """,
+        (since_iso, since_iso, since_iso),
+    )
+    top_clicks = _fetch_all(
+        """
+        SELECT event_name, target_path, COUNT(*) AS clicks
+        FROM analytics_events
+        WHERE created_at >= ? AND event_name LIKE 'click_%'
+        GROUP BY event_name, target_path
+        ORDER BY clicks DESC
+        LIMIT 20
+        """,
+        args,
+    )
+    referrers = _fetch_all(
+        """
+        SELECT referrer, COUNT(*) AS visits
+        FROM analytics_events
+        WHERE created_at >= ? AND event_name='page_view_custom' AND referrer != ''
+        GROUP BY referrer
+        ORDER BY visits DESC
+        LIMIT 15
+        """,
+        args,
+    )
+    return {
+        "days": days,
+        "overview": overview,
+        "starts": starts.get("starts", 0),
+        "top_pages": top_pages,
+        "liked_pages": liked_pages,
+        "weak_pages": weak_pages,
+        "survey_dropoff": survey_dropoff,
+        "top_clicks": top_clicks,
+        "referrers": referrers,
+    }
+
+
+def _analytics_allowed() -> bool:
+    token = os.environ.get("ANALYTICS_TOKEN", "")
+    if request.remote_addr in ("127.0.0.1", "::1", "localhost"):
+        return True
+    if token and request.args.get("token") == token:
+        session["analytics_allowed"] = True
+        return True
+    return bool(token and session.get("analytics_allowed"))
+
+
 def _test_faq(page: dict) -> list[dict]:
     return [
         {
@@ -1066,6 +1333,43 @@ def download_report():
 # ────────────────────────────────────────────────
 # Entry point
 # ────────────────────────────────────────────────
+
+@app.route("/analytics/event", methods=["POST"])
+def analytics_event():
+    payload = request.get_json(silent=True) or {}
+    try:
+        _store_analytics_event(payload)
+    except Exception:
+        # Analytics must never break the user-facing app.
+        pass
+    return ("", 204)
+
+
+@app.route("/admin/analytics")
+def admin_analytics():
+    if not _analytics_allowed():
+        return make_response("Analytics token required. Set ANALYTICS_TOKEN and open /admin/analytics?token=YOUR_TOKEN.", 403)
+    days = _safe_int(request.args.get("days")) or 7
+    days = max(1, min(days, 90))
+    summary = _analytics_summary(days)
+    return render_template(
+        "analytics_dashboard.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        summary=summary,
+        meta_title="Analytics | CareersDNA",
+        meta_description="Private CareersDNA analytics dashboard.",
+        canonical_url=None,
+    )
+
+
+@app.route("/admin/analytics.json")
+def admin_analytics_json():
+    if not _analytics_allowed():
+        return jsonify({"error": "analytics token required"}), 403
+    days = _safe_int(request.args.get("days")) or 7
+    days = max(1, min(days, 90))
+    return jsonify(_analytics_summary(days))
+
 
 @app.route("/robots.txt")
 def robots_txt():

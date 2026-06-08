@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="article-page analytics-page">
+  <h1>CareersDNA Analytics</h1>
+  <p class="lead">Last {{ summary.days }} days. This dashboard uses first-party anonymous events collected by the site.</p>
+
+  <div class="analytics-controls">
+    <a href="/admin/analytics?days=1" class="btn-secondary">1 day</a>
+    <a href="/admin/analytics?days=7" class="btn-secondary">7 days</a>
+    <a href="/admin/analytics?days=30" class="btn-secondary">30 days</a>
+    <a href="/admin/analytics.json?days={{ summary.days }}" class="btn-secondary">JSON</a>
+  </div>
+
+  <section>
+    <h2>Overview</h2>
+    <div class="metrics-row">
+      <div class="metric-box"><div class="metric-val">{{ summary.overview.visitors or 0 }}</div><div class="metric-label">Visitors</div></div>
+      <div class="metric-box"><div class="metric-val">{{ summary.overview.pageviews or 0 }}</div><div class="metric-label">Pageviews</div></div>
+      <div class="metric-box"><div class="metric-val">{{ summary.starts or 0 }}</div><div class="metric-label">Assessment starts</div></div>
+      <div class="metric-box"><div class="metric-val">{{ summary.overview.results or 0 }}</div><div class="metric-label">Results viewed</div></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>What people like</h2>
+    <p class="analytics-note">Ranked by long reads, deep scrolls, and assessment-start clicks.</p>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Page</th><th>45s reads</th><th>75% scrolls</th><th>Starts</th><th>Signals</th></tr></thead>
+        <tbody>
+          {% for row in summary.liked_pages %}
+          <tr><td><a href="{{ row.page_path }}">{{ row.page_path }}</a></td><td>{{ row.long_reads }}</td><td>{{ row.deep_scrolls }}</td><td>{{ row.starts }}</td><td>{{ row.signals }}</td></tr>
+          {% else %}
+          <tr><td colspan="5">No engagement signals yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Weak or disliked pages</h2>
+    <p class="analytics-note">Pages with views but few engagement signals. Treat this as a rewrite/prune list after enough traffic.</p>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Page</th><th>Views</th><th>Engaged</th><th>Weak rate</th></tr></thead>
+        <tbody>
+          {% for row in summary.weak_pages %}
+          <tr><td><a href="{{ row.page_path }}">{{ row.page_path }}</a></td><td>{{ row.views }}</td><td>{{ row.engaged }}</td><td>{{ row.weak_rate }}%</td></tr>
+          {% else %}
+          <tr><td colspan="4">No weak-page signal yet. Need at least 3 views per page.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Survey dropoff</h2>
+    <p class="analytics-note">If a section has high exits or low completion, shorten copy or split the section.</p>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Section</th><th>Index</th><th>Views</th><th>Completes</th><th>Exit signals</th><th>Drop rate</th></tr></thead>
+        <tbody>
+          {% for row in summary.survey_dropoff %}
+          <tr><td>{{ row.section_key }}</td><td>{{ row.section_index }}</td><td>{{ row.views }}</td><td>{{ row.completes }}</td><td>{{ row.exits }}</td><td>{{ row.drop_rate }}%</td></tr>
+          {% else %}
+          <tr><td colspan="6">No survey events yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Top pages</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Page</th><th>Type</th><th>Views</th></tr></thead>
+        <tbody>
+          {% for row in summary.top_pages %}
+          <tr><td><a href="{{ row.page_path }}">{{ row.page_path }}</a></td><td>{{ row.page_type }}</td><td>{{ row.views }}</td></tr>
+          {% else %}
+          <tr><td colspan="3">No page views yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Top clicks</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Event</th><th>Target</th><th>Clicks</th></tr></thead>
+        <tbody>
+          {% for row in summary.top_clicks %}
+          <tr><td>{{ row.event_name }}</td><td>{{ row.target_path }}</td><td>{{ row.clicks }}</td></tr>
+          {% else %}
+          <tr><td colspan="3">No click events yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Referrers</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Referrer</th><th>Visits</th></tr></thead>
+        <tbody>
+          {% for row in summary.referrers %}
+          <tr><td>{{ row.referrer }}</td><td>{{ row.visits }}</td></tr>
+          {% else %}
+          <tr><td colspan="2">No referrer data yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

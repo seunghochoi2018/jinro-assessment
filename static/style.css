@@ -190,6 +190,15 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .next-read-box { background: #f0f4ff; border-left: 4px solid #667eea; border-radius: 8px; padding: 0.9rem 1rem; margin-top: 1rem; }
 .next-read-links { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.55rem; }
 .next-read-links a { background: white; border: 1px solid #dfe6ff; border-radius: 8px; color: #667eea; padding: 0.4rem 0.65rem; text-decoration: none; font-size: 0.88rem; font-weight: 650; }
+.analytics-controls { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 1.5rem; }
+.analytics-page .metrics-row { grid-template-columns: repeat(4, 1fr); }
+.analytics-note { color: #666; font-size: 0.92rem; margin-bottom: 0.65rem; }
+.analytics-table-wrap { overflow-x: auto; background: white; border: 1px solid #e8eaf6; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.analytics-table { width: 100%; border-collapse: collapse; min-width: 640px; }
+.analytics-table th, .analytics-table td { padding: 0.65rem 0.75rem; border-bottom: 1px solid #eef0f7; text-align: left; font-size: 0.9rem; vertical-align: top; }
+.analytics-table th { background: #f8f9ff; color: #444; font-weight: 800; }
+.analytics-table a { color: #667eea; text-decoration: none; font-weight: 650; }
+.analytics-table tr:last-child td { border-bottom: none; }
 
 @media (max-width: 768px) {
   .top-nav { width: 100%; justify-content: center; }
@@ -199,4 +208,5 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
   .article-page h1 { font-size: 1.55rem; }
   .share-actions { flex-direction: column; }
   .share-actions .btn-secondary { flex-basis: auto; }
+  .analytics-page .metrics-row { grid-template-columns: 1fr; }
 }

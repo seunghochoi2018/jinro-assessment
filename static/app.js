@@ -2,6 +2,29 @@ function trackEvent(name, params = {}) {
   if (typeof window.gtag === 'function') {
     window.gtag('event', name, params);
   }
+  try {
+    let visitorId = window.localStorage.getItem('careersdna_vid');
+    if (!visitorId) {
+      visitorId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
+      window.localStorage.setItem('careersdna_vid', visitorId);
+    }
+    const payload = JSON.stringify({
+      event: name,
+      visitor_id: visitorId,
+      page_path: window.location.pathname,
+      params: params
+    });
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon('/analytics/event', new Blob([payload], { type: 'application/json' }));
+    } else {
+      fetch('/analytics/event', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: payload,
+        keepalive: true
+      }).catch(() => {});
+    }
+  } catch (e) {}
 }
 
 document.addEventListener('DOMContentLoaded', function() {
