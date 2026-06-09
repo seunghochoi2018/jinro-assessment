@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ guide.headline|tojson }},
+  "description": {{ guide.description|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.q|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.a|tojson }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'seo_guide', slug: {{ slug|tojson }} };
+  </script>
+  <p class="eyebrow">Career guide</p>
+  <h1>{{ guide.headline }}</h1>
+  <p class="lead">{{ guide.description }}</p>
+
+  <section>
+    <h2>{{ guide.title }} overview</h2>
+    <p>{{ guide.intro }}</p>
+  </section>
+
+  <div class="cta-band">
+    <div>
+      <strong>Turn this guide into a career shortlist</strong>
+      <span>Use the free assessment to compare your profile with 174 career paths.</span>
+    </div>
+    <a href="/info" class="btn-primary" data-track="click_start_from_guide">Start free test</a>
+  </div>
+
+  {% for heading, body in guide.sections %}
+  <section>
+    <h2>{{ heading }}</h2>
+    <p>{{ body }}</p>
+  </section>
+  {% endfor %}
+
+  {% if related_tests %}
+  <section>
+    <h2>Recommended career tests</h2>
+    <div class="link-grid">
+      {% for slug, test in related_tests %}
+      <a class="info-card" href="/tests/{{ slug }}" data-track="click_guide_test">
+        <strong>{{ test.title }}</strong>
+        <span>{{ test.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  {% if related_careers %}
+  <section>
+    <h2>Career profiles to compare</h2>
+    <div class="career-teaser-grid">
+      {% for career in related_careers %}
+      <a class="career-teaser" href="/career/{{ career.id }}" data-track="click_guide_career">
+        <strong>{{ career.display_name }}</strong>
+        <span>{{ career.display_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Common questions</h2>
+    <div class="faq-list">
+      {% for item in faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {% endfor %}
+    </div>
+  </section>
+</article>
+{% endblock %}

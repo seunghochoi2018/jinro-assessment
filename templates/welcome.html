@@ -63,6 +63,18 @@
   </section>
 
   <section class="content-section">
+    <h2>Career guides for common searches</h2>
+    <div class="link-grid">
+      {% for slug, guide in guide_pages.items() %}
+      <a class="info-card" href="/guides/{{ slug }}" data-track="click_home_guide">
+        <strong>{{ guide.title }}</strong>
+        <span>{{ guide.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="content-section">
     <h2>Popular career profiles</h2>
     <div class="career-teaser-grid">
       {% for career in featured_careers %}

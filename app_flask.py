@@ -249,6 +249,93 @@ SEO_TEST_DETAILS = {
     },
 }
 
+SEO_GUIDE_PAGES = {
+    "what-career-is-right-for-me": {
+        "title": "What Career Is Right for Me?",
+        "headline": "What career is right for me?",
+        "description": "A practical way to narrow career options using interests, strengths, personality, values, and small real-world experiments.",
+        "keyword": "what career is right for me",
+        "intro": "If you are asking what career is right for me, the useful answer is rarely one job title. A better answer is a shortlist of careers that match how you like to work, what you can build skill in, and what tradeoffs you can accept.",
+        "sections": [
+            ("Start with work patterns, not job titles", "List the activities that give you energy, the tasks you avoid, the subjects you learn quickly, and the environments where you can stay consistent."),
+            ("Compare values early", "A career can look attractive but fail because the daily tradeoffs are wrong. Compare income, autonomy, stability, creativity, growth, and social contribution before committing."),
+            ("Use a test as a sorting tool", "A career test should help you compare paths, not declare a final identity. Read the reasons behind the result and review related careers with similar work styles."),
+        ],
+        "related_tests": ["job-aptitude-test", "personality-career-test", "career-values-test"],
+        "related_careers": ["software_dev", "data_scientist", "nurse", "secondary_teacher", "financial_analyst", "ux_designer"],
+    },
+    "best-careers-for-introverts": {
+        "title": "Best Careers for Introverts",
+        "headline": "Best careers for introverts to explore",
+        "description": "Compare introvert-friendly career paths by focus time, collaboration style, autonomy, communication load, and growth.",
+        "keyword": "best careers for introverts",
+        "intro": "The best careers for introverts are not always isolated jobs. Many introverts do well in roles with deep focus, clear expectations, thoughtful communication, and enough control over energy-draining interaction.",
+        "sections": [
+            ("Look for focus and predictable communication", "Roles with project-based work, written communication, research, analysis, design, or technical problem solving can fit many introverted work styles."),
+            ("Avoid using introvert as the only filter", "Personality matters, but values, skill growth, income needs, and stress tolerance matter too. Compare the whole career profile."),
+            ("Test the environment", "Before choosing a path, ask people in the field how meetings, deadlines, collaboration, and customer contact actually work day to day."),
+        ],
+        "related_tests": ["personality-career-test", "remote-work-career-test", "job-aptitude-test"],
+        "related_careers": ["software_dev", "data_scientist", "writer", "accountant", "biotech_researcher", "ux_designer"],
+    },
+    "career-test-for-students": {
+        "title": "Career Test for Students",
+        "headline": "Career test for students choosing a direction",
+        "description": "A student-focused guide to using career tests before choosing subjects, majors, clubs, internships, or projects.",
+        "keyword": "career test for students",
+        "intro": "A career test for students should keep options open while making the next step clearer. The goal is to connect interests and strengths with courses, projects, and careers worth exploring.",
+        "sections": [
+            ("Do not force one final answer too early", "Students change quickly as they meet new subjects and experiences. A useful result gives several directions to compare."),
+            ("Connect careers to school choices", "Use the result to choose classes, clubs, projects, reading topics, internships, or people to interview."),
+            ("Review careers by preparation path", "Some careers require licensing or long education. Others can be tested through small projects or entry-level experience."),
+        ],
+        "related_tests": ["middle-school-career-test", "high-school-career-test", "college-career-test"],
+        "related_careers": ["software_dev", "doctor", "secondary_teacher", "graphic_designer", "mechanical_engineer", "financial_analyst"],
+    },
+    "free-career-aptitude-test": {
+        "title": "Free Career Aptitude Test",
+        "headline": "Free career aptitude test: how to use the result",
+        "description": "Learn what a career aptitude test can and cannot tell you, and how to turn the result into useful next steps.",
+        "keyword": "free career aptitude test",
+        "intro": "A free career aptitude test is most useful when it compares multiple signals: interests, strengths, personality, values, and practical career data. It should help you decide what to research next.",
+        "sections": [
+            ("Aptitude is broader than talent", "Career aptitude includes learning speed, motivation, work habits, stress fit, values, and the kind of problems you want to solve."),
+            ("The score is a starting point", "High scores should lead to research, not automatic decisions. Compare the daily work, education path, and alternatives."),
+            ("Use the result for experiments", "Pick one small test: a course, portfolio task, informational interview, shadowing opportunity, or volunteer experience."),
+        ],
+        "related_tests": ["job-aptitude-test", "career-values-test", "personality-career-test"],
+        "related_careers": ["software_dev", "nurse", "marketer", "counselor", "architect", "data_analyst"],
+    },
+    "career-change-ideas": {
+        "title": "Career Change Ideas",
+        "headline": "Career change ideas when your current path does not fit",
+        "description": "A practical guide for adults comparing career change options without ignoring income, stability, skills, and burnout.",
+        "keyword": "career change ideas",
+        "intro": "Career change ideas are only useful if they fit your constraints. The right shortlist should consider transferable skills, income needs, energy, learning time, and the type of work you want to repeat.",
+        "sections": [
+            ("Separate field change from role change", "Sometimes the issue is not the industry, but the daily tasks, manager style, workload, or growth path."),
+            ("Map transferable skills", "Communication, analysis, operations, teaching, sales, design, writing, and technical skills can move across many fields."),
+            ("Protect against fantasy careers", "Research salary, entry difficulty, licensing, portfolio requirements, and the first realistic job in the new path."),
+        ],
+        "related_tests": ["career-change-test", "burnout-career-test", "remote-work-career-test"],
+        "related_careers": ["product_manager", "data_analyst", "technical_writer", "corporate_trainer", "business_consultant", "ux_ui_designer"],
+    },
+    "high-paying-careers-that-fit-your-personality": {
+        "title": "High Paying Careers That Fit Your Personality",
+        "headline": "High paying careers that may fit your personality",
+        "description": "Compare higher-income career paths without ignoring personality fit, work values, preparation difficulty, and stress.",
+        "keyword": "high paying careers that fit your personality",
+        "intro": "High paying careers are easier to sustain when the work style fits you. Income matters, but so do stress tolerance, detail orientation, social energy, independence, and long-term learning.",
+        "sections": [
+            ("Income is only one fit signal", "A strong career choice balances earning potential with daily work, preparation time, and the kind of pressure you can handle."),
+            ("Compare paths by personality demands", "Some roles reward persuasion and ambiguity. Others reward deep focus, precision, persistence, or structured execution."),
+            ("Check the preparation path", "Many high-paying careers require years of education, credentials, portfolio proof, or specialized experience."),
+        ],
+        "related_tests": ["personality-career-test", "career-values-test", "business-career-test"],
+        "related_careers": ["software_dev", "doctor", "lawyer", "financial_analyst", "ai_engineer", "investment_banker"],
+    },
+}
+
 
 @app.context_processor
 def inject_globals():
@@ -633,6 +720,42 @@ def _test_seo_detail(slug: str, page: dict) -> dict:
         "compare": ["Job Aptitude Test", "Personality Career Test", "Career Values Test"],
     }
     return {**fallback, **SEO_TEST_DETAILS.get(slug, {})}
+
+
+def _guide_related_careers(guide: dict, lang: str) -> list[dict]:
+    by_id = {career.get("id"): career for career in CAREERS_DB}
+    selected = []
+    for cid in guide.get("related_careers", []):
+        career = by_id.get(cid)
+        if career:
+            selected.append(_career_display(career, lang))
+    return selected
+
+
+def _guide_related_tests(guide: dict) -> list[tuple[str, dict]]:
+    return [
+        (slug, SEO_TEST_PAGES[slug])
+        for slug in guide.get("related_tests", [])
+        if slug in SEO_TEST_PAGES
+    ]
+
+
+def _guide_faq(guide: dict) -> list[dict]:
+    keyword = guide.get("keyword", "career test")
+    return [
+        {
+            "q": f"How should I use this guide for {keyword}?",
+            "a": "Use it to create a shortlist of careers, then compare daily work, preparation, values, and related paths before making a decision.",
+        },
+        {
+            "q": "Can a career test choose the right career for me?",
+            "a": "No. A career test is a sorting and reflection tool. It can highlight promising options, but you still need research and small real-world experiments.",
+        },
+        {
+            "q": "What is the next step after reading this guide?",
+            "a": "Take a relevant career test, read several career profiles, and choose one small action such as a course, project, interview, or shadowing experience.",
+        },
+    ]
 
 
 def _top_dims(score_map: dict, limit: int = 3) -> list[tuple[str, float]]:
@@ -1031,6 +1154,7 @@ def index():
         LANG_CONFIG=LANG_CONFIG,
         shared_data=shared_data,
         test_pages=SEO_TEST_PAGES,
+        guide_pages=SEO_GUIDE_PAGES,
         featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
         meta_title="Free Career Test | Career Aptitude Test and Job Match",
         meta_description="Take a free career test to compare interests, strengths, personality, and work values against 174 career profiles with practical next steps.",
@@ -1059,6 +1183,26 @@ def seo_test_page(slug):
         meta_title=f"{seo_detail['search_title']} | Career Aptitude Test",
         meta_description=f"{seo_detail['intent']} Free assessment with 174 career profiles and practical comparison points.",
         canonical_url=_canonical_url(f"/tests/{slug}"),
+    )
+
+
+@app.route("/guides/<slug>")
+def seo_guide_page(slug):
+    guide = SEO_GUIDE_PAGES.get(slug)
+    if not guide:
+        return redirect(url_for("index"))
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "seo_guide.html",
+        lang=lang,
+        slug=slug,
+        guide=guide,
+        faq=_guide_faq(guide),
+        related_tests=_guide_related_tests(guide),
+        related_careers=_guide_related_careers(guide, lang),
+        meta_title=f"{guide['title']} | Free Career Test",
+        meta_description=guide["description"],
+        canonical_url=_canonical_url(f"/guides/{slug}"),
     )
 
 
@@ -1512,6 +1656,7 @@ def robots_txt():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     paths = ["/", "/careers", "/privacy", "/terms"]
+    paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
     paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))
     today = datetime.utcnow().strftime("%Y-%m-%d")
@@ -1519,6 +1664,8 @@ def sitemap_xml():
         if path == "/":
             return "daily", "1.0"
         if path.startswith("/tests/"):
+            return "weekly", "0.9"
+        if path.startswith("/guides/"):
             return "weekly", "0.9"
         if path == "/careers":
             return "weekly", "0.8"
