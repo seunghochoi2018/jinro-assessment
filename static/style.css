@@ -216,6 +216,9 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .tool-grid label { display: flex; flex-direction: column; gap: 0.35rem; font-weight: 650; color: #444; }
 .tool-grid label:has(input[type="checkbox"]) { flex-direction: row; align-items: center; background: #f8f9ff; border: 1px solid #e8eaf6; border-radius: 8px; padding: 0.75rem; }
 .tool-result, .wheel-result { background: #f8f9ff; border: 1px solid #e8eaf6; border-radius: 10px; padding: 1rem; margin-top: 1rem; font-size: 1.25rem; font-weight: 800; color: #1a1a2e; min-height: 64px; display: flex; align-items: center; justify-content: center; text-align: center; }
+.mono-result, .tool-pre { white-space: pre-wrap; word-break: break-word; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 0.9rem; text-align: left; align-items: flex-start; justify-content: flex-start; }
+.tool-pre, .markdown-preview, .invoice-preview { background: white; border: 1px solid #e8eaf6; border-radius: 8px; padding: 1rem; min-height: 180px; overflow: auto; }
+.two-col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .timer-display { font-size: 4rem; font-weight: 900; text-align: center; color: #667eea; padding: 1rem; font-variant-numeric: tabular-nums; }
 .habit-list { display: grid; gap: 0.55rem; }
 .habit-row { display: flex; gap: 0.7rem; align-items: center; background: #f8f9ff; border: 1px solid #e8eaf6; border-radius: 8px; padding: 0.75rem; cursor: pointer; }
@@ -232,5 +235,6 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
   .analytics-page .metrics-row { grid-template-columns: 1fr; }
   .tool-metrics { grid-template-columns: 1fr 1fr; }
   .tool-grid { grid-template-columns: 1fr; }
+  .two-col { grid-template-columns: 1fr; }
   .timer-display { font-size: 3rem; }
 }

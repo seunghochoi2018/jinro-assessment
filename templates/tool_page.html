@@ -14,6 +14,9 @@
 {% if tool.type in ["pdf_merge", "pdf_split", "pdf_extract", "pdf_rotate"] %}
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 {% endif %}
+{% if tool.type == "qr_code_generator" %}
+<script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+{% endif %}
 {% endblock %}
 {% block content %}
 <article class="article-page tool-page">
@@ -206,6 +209,63 @@
       <textarea id="diff-right" class="tool-textarea" rows="10" placeholder="Changed text"></textarea>
     </div>
     <div class="tool-result mono-result" id="diff-output">Enter both text blocks.</div>
+    {% elif tool.type == "image_resizer" %}
+    <input id="image-resize-file" class="form-input" type="file" accept="image/*">
+    <div class="tool-grid">
+      <input id="image-resize-width" class="form-input" type="number" min="1" placeholder="Width px">
+      <input id="image-resize-height" class="form-input" type="number" min="1" placeholder="Height px">
+      <select id="image-resize-format" class="form-input">
+        <option value="image/png">PNG</option>
+        <option value="image/jpeg">JPG</option>
+        <option value="image/webp">WebP</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" id="image-resize-run">Resize image</button>
+    <div class="tool-result" id="image-resize-result">Choose an image.</div>
+    {% elif tool.type == "image_compressor" %}
+    <input id="image-compress-file" class="form-input" type="file" accept="image/*">
+    <div class="tool-grid">
+      <label>Quality <input id="image-compress-quality" class="form-input" type="number" min="10" max="100" value="75"></label>
+      <select id="image-compress-format" class="form-input">
+        <option value="image/jpeg">JPG</option>
+        <option value="image/webp">WebP</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" id="image-compress-run">Compress image</button>
+    <div class="tool-result" id="image-compress-result">Choose an image.</div>
+    {% elif tool.type == "image_to_webp" %}
+    <input id="image-webp-file" class="form-input" type="file" accept="image/*">
+    <button type="button" class="btn-primary" id="image-webp-run">Convert to WebP</button>
+    <div class="tool-result" id="image-webp-result">Choose an image.</div>
+    {% elif tool.type == "qr_code_generator" %}
+    <textarea id="qr-input" class="tool-textarea" rows="4" placeholder="URL or text for the QR code"></textarea>
+    <button type="button" class="btn-primary" id="qr-run">Generate QR code</button>
+    <div class="tool-result" id="qr-output">Enter text.</div>
+    {% elif tool.type == "invoice_generator" %}
+    <div class="tool-grid">
+      <input id="invoice-from" class="form-input" placeholder="From">
+      <input id="invoice-to" class="form-input" placeholder="Bill to">
+      <input id="invoice-tax" class="form-input" type="number" min="0" value="0" placeholder="Tax %">
+    </div>
+    <textarea id="invoice-items" class="tool-textarea" rows="6" placeholder="One item per line: Description, quantity, price"></textarea>
+    <button type="button" class="btn-primary" id="invoice-run">Generate invoice</button>
+    <div class="invoice-preview" id="invoice-preview"></div>
+    {% elif tool.type == "markdown_previewer" %}
+    <div class="tool-grid two-col">
+      <textarea id="markdown-input" class="tool-textarea" rows="12" placeholder="# Heading&#10;&#10;**Bold text**&#10;&#10;- List item"></textarea>
+      <div id="markdown-output" class="markdown-preview"></div>
+    </div>
+    {% elif tool.type == "jwt_decoder" %}
+    <textarea id="jwt-input" class="tool-textarea" rows="6" placeholder="Paste JWT here"></textarea>
+    <button type="button" class="btn-primary" id="jwt-run">Decode JWT</button>
+    <div class="tool-grid two-col">
+      <pre class="tool-pre" id="jwt-header">Header</pre>
+      <pre class="tool-pre" id="jwt-payload">Payload</pre>
+    </div>
+    {% elif tool.type == "csv_to_json" %}
+    <textarea id="csv-input" class="tool-textarea" rows="10" placeholder="name,age&#10;Alex,28&#10;Sam,35"></textarea>
+    <button type="button" class="btn-primary" id="csv-run">Convert CSV to JSON</button>
+    <textarea id="csv-output" class="tool-textarea" rows="10" readonly placeholder="JSON appears here..."></textarea>
     {% endif %}
   </section>
 
@@ -674,6 +734,157 @@
     };
     document.getElementById('diff-left').addEventListener('input', run);
     document.getElementById('diff-right').addEventListener('input', run);
+  }
+  const loadImage = file => new Promise((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(file);
+  });
+  const exportCanvas = (canvas, mime, quality, filename) => {
+    canvas.toBlob(blob => {
+      if (!blob) return;
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    }, mime, quality);
+  };
+  if (type === 'image_resizer') {
+    document.getElementById('image-resize-run').addEventListener('click', async () => {
+      const result = document.getElementById('image-resize-result');
+      const file = document.getElementById('image-resize-file').files[0];
+      if (!file) {
+        result.textContent = 'Choose an image.';
+        return;
+      }
+      const img = await loadImage(file);
+      const width = Number(document.getElementById('image-resize-width').value) || img.naturalWidth;
+      const height = Number(document.getElementById('image-resize-height').value) || img.naturalHeight;
+      const mime = document.getElementById('image-resize-format').value;
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height);
+      exportCanvas(canvas, mime, 0.9, `resized.${mime.split('/')[1].replace('jpeg', 'jpg')}`);
+      result.textContent = `Resized to ${width} x ${height}.`;
+    });
+  }
+  if (type === 'image_compressor') {
+    document.getElementById('image-compress-run').addEventListener('click', async () => {
+      const result = document.getElementById('image-compress-result');
+      const file = document.getElementById('image-compress-file').files[0];
+      if (!file) {
+        result.textContent = 'Choose an image.';
+        return;
+      }
+      const img = await loadImage(file);
+      const mime = document.getElementById('image-compress-format').value;
+      const quality = Math.max(0.1, Math.min(1, Number(document.getElementById('image-compress-quality').value) / 100 || 0.75));
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      exportCanvas(canvas, mime, quality, `compressed.${mime.split('/')[1].replace('jpeg', 'jpg')}`);
+      result.textContent = `Compressed at ${Math.round(quality * 100)}% quality.`;
+    });
+  }
+  if (type === 'image_to_webp') {
+    document.getElementById('image-webp-run').addEventListener('click', async () => {
+      const result = document.getElementById('image-webp-result');
+      const file = document.getElementById('image-webp-file').files[0];
+      if (!file) {
+        result.textContent = 'Choose an image.';
+        return;
+      }
+      const img = await loadImage(file);
+      const canvas = document.createElement('canvas');
+      canvas.width = img.naturalWidth;
+      canvas.height = img.naturalHeight;
+      canvas.getContext('2d').drawImage(img, 0, 0);
+      exportCanvas(canvas, 'image/webp', 0.85, 'converted.webp');
+      result.textContent = 'Converted to WebP.';
+    });
+  }
+  if (type === 'qr_code_generator') {
+    document.getElementById('qr-run').addEventListener('click', async () => {
+      const out = document.getElementById('qr-output');
+      const text = document.getElementById('qr-input').value.trim();
+      if (!text || !window.QRCode) {
+        out.textContent = 'Enter text.';
+        return;
+      }
+      out.innerHTML = '';
+      const canvas = document.createElement('canvas');
+      await QRCode.toCanvas(canvas, text, { width: 220, margin: 2 });
+      out.appendChild(canvas);
+    });
+  }
+  if (type === 'invoice_generator') {
+    document.getElementById('invoice-run').addEventListener('click', () => {
+      const from = document.getElementById('invoice-from').value || 'From';
+      const to = document.getElementById('invoice-to').value || 'Bill to';
+      const taxPct = Number(document.getElementById('invoice-tax').value) || 0;
+      const items = document.getElementById('invoice-items').value.split('\n').map(line => {
+        const [desc, qty, price] = line.split(',').map(part => (part || '').trim());
+        return { desc: desc || 'Item', qty: Number(qty) || 1, price: Number(price) || 0 };
+      }).filter(item => item.desc || item.price);
+      const subtotal = items.reduce((sum, item) => sum + item.qty * item.price, 0);
+      const tax = subtotal * taxPct / 100;
+      const total = subtotal + tax;
+      document.getElementById('invoice-preview').innerHTML = `
+        <h3>Invoice</h3>
+        <p><strong>${from}</strong><br>Bill to: ${to}</p>
+        <table class="analytics-table"><thead><tr><th>Item</th><th>Qty</th><th>Price</th><th>Total</th></tr></thead><tbody>
+          ${items.map(item => `<tr><td>${item.desc}</td><td>${item.qty}</td><td>${item.price.toFixed(2)}</td><td>${(item.qty * item.price).toFixed(2)}</td></tr>`).join('')}
+        </tbody></table>
+        <p><strong>Subtotal:</strong> ${subtotal.toFixed(2)}<br><strong>Tax:</strong> ${tax.toFixed(2)}<br><strong>Total:</strong> ${total.toFixed(2)}</p>
+      `;
+    });
+  }
+  if (type === 'markdown_previewer') {
+    const escapeHtml = text => text.replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+    const renderMarkdown = () => {
+      const lines = document.getElementById('markdown-input').value.split('\n');
+      const html = lines.map(line => {
+        let safe = escapeHtml(line);
+        safe = safe.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        safe = safe.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2">$1</a>');
+        if (safe.startsWith('### ')) return `<h3>${safe.slice(4)}</h3>`;
+        if (safe.startsWith('## ')) return `<h2>${safe.slice(3)}</h2>`;
+        if (safe.startsWith('# ')) return `<h1>${safe.slice(2)}</h1>`;
+        if (safe.startsWith('- ')) return `<p>• ${safe.slice(2)}</p>`;
+        return safe ? `<p>${safe}</p>` : '<br>';
+      }).join('');
+      document.getElementById('markdown-output').innerHTML = html;
+    };
+    document.getElementById('markdown-input').addEventListener('input', renderMarkdown);
+    renderMarkdown();
+  }
+  if (type === 'jwt_decoder') {
+    const decodePart = part => JSON.parse(decodeURIComponent(escape(atob(part.replace(/-/g, '+').replace(/_/g, '/')))));
+    document.getElementById('jwt-run').addEventListener('click', () => {
+      const parts = document.getElementById('jwt-input').value.trim().split('.');
+      try {
+        document.getElementById('jwt-header').textContent = JSON.stringify(decodePart(parts[0] || ''), null, 2);
+        document.getElementById('jwt-payload').textContent = JSON.stringify(decodePart(parts[1] || ''), null, 2);
+      } catch (error) {
+        document.getElementById('jwt-header').textContent = 'Invalid JWT';
+        document.getElementById('jwt-payload').textContent = error.message;
+      }
+    });
+  }
+  if (type === 'csv_to_json') {
+    document.getElementById('csv-run').addEventListener('click', () => {
+      const rows = document.getElementById('csv-input').value.trim().split('\n').map(row => row.split(',').map(cell => cell.trim()));
+      const headers = rows.shift() || [];
+      const data = rows.filter(row => row.length).map(row => Object.fromEntries(headers.map((header, idx) => [header, row[idx] || ''])));
+      document.getElementById('csv-output').value = JSON.stringify(data, null, 2);
+    });
   }
 })();
 </script>

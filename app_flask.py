@@ -513,6 +513,62 @@ DAILY_TOOLS = {
         "keyword": "text diff checker",
         "type": "text_diff",
     },
+    "image-resizer": {
+        "title": "Image Resizer",
+        "headline": "Image resizer",
+        "description": "Resize JPG, PNG, and WebP images in your browser and download the resized file.",
+        "keyword": "image resizer",
+        "type": "image_resizer",
+    },
+    "image-compressor": {
+        "title": "Image Compressor",
+        "headline": "Image compressor",
+        "description": "Reduce image file size by adjusting quality and exporting a smaller image from your browser.",
+        "keyword": "image compressor",
+        "type": "image_compressor",
+    },
+    "image-to-webp": {
+        "title": "Image to WebP Converter",
+        "headline": "Image to WebP converter",
+        "description": "Convert JPG or PNG images to WebP format for smaller web-friendly files.",
+        "keyword": "image to WebP",
+        "type": "image_to_webp",
+    },
+    "qr-code-generator": {
+        "title": "QR Code Generator",
+        "headline": "QR code generator",
+        "description": "Generate a QR code for a URL, text, email, phone number, or short message.",
+        "keyword": "QR code generator",
+        "type": "qr_code_generator",
+    },
+    "invoice-generator": {
+        "title": "Invoice Generator",
+        "headline": "Simple invoice generator",
+        "description": "Create a simple invoice preview with item totals, tax, and a printable layout.",
+        "keyword": "invoice generator",
+        "type": "invoice_generator",
+    },
+    "markdown-previewer": {
+        "title": "Markdown Previewer",
+        "headline": "Markdown previewer",
+        "description": "Write Markdown and preview headings, lists, bold text, links, and code blocks instantly.",
+        "keyword": "Markdown previewer",
+        "type": "markdown_previewer",
+    },
+    "jwt-decoder": {
+        "title": "JWT Decoder",
+        "headline": "JWT decoder",
+        "description": "Decode a JSON Web Token header and payload in your browser without sending it to a server.",
+        "keyword": "JWT decoder",
+        "type": "jwt_decoder",
+    },
+    "csv-to-json": {
+        "title": "CSV to JSON Converter",
+        "headline": "CSV to JSON converter",
+        "description": "Convert simple CSV data into JSON for APIs, spreadsheets, mock data, and developer workflows.",
+        "keyword": "CSV to JSON",
+        "type": "csv_to_json",
+    },
 }
 
 TOOL_CATEGORIES = {
@@ -524,7 +580,17 @@ TOOL_CATEGORIES = {
     "developer": {
         "title": "Developer Tools",
         "headline": "Free developer tools",
-        "description": "Format JSON, encode Base64, test regex, generate hashes, convert timestamps, and create UUIDs.",
+        "description": "Format JSON, encode Base64, test regex, decode JWTs, generate hashes, convert timestamps, and create UUIDs.",
+    },
+    "image": {
+        "title": "Image Tools",
+        "headline": "Free image tools",
+        "description": "Resize, compress, and convert images to WebP directly in your browser.",
+    },
+    "business": {
+        "title": "Business Tools",
+        "headline": "Free business tools",
+        "description": "Generate QR codes, invoices, and small business assets without creating an account.",
     },
     "text": {
         "title": "Text Tools",
@@ -1354,10 +1420,15 @@ def _tool_category(slug: str, tool: dict) -> str:
         return "pdf"
     if tool_type in {
         "json_formatter", "base64_converter", "url_encoder", "hash_generator",
-        "timestamp_converter", "regex_tester", "uuid_generator",
+        "timestamp_converter", "regex_tester", "uuid_generator", "jwt_decoder",
+        "csv_to_json",
     }:
         return "developer"
-    if tool_type in {"word_counter", "case_converter", "text_repeater", "text_diff"}:
+    if tool_type in {"image_resizer", "image_compressor", "image_to_webp"}:
+        return "image"
+    if tool_type in {"qr_code_generator", "invoice_generator"}:
+        return "business"
+    if tool_type in {"word_counter", "case_converter", "text_repeater", "text_diff", "markdown_previewer"}:
         return "text"
     if tool_type in {
         "percentage_calculator", "age_calculator", "time_calculator",
