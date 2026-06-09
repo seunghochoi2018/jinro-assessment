@@ -336,6 +336,44 @@ SEO_GUIDE_PAGES = {
     },
 }
 
+DAILY_TOOLS = {
+    "word-counter": {
+        "title": "Word Counter",
+        "headline": "Word counter and character counter",
+        "description": "Count words, characters, sentences, paragraphs, and reading time for essays, posts, resumes, and emails.",
+        "keyword": "word counter",
+        "type": "word_counter",
+    },
+    "random-picker": {
+        "title": "Random Picker",
+        "headline": "Random picker for names, tasks, and choices",
+        "description": "Paste a list and pick a random item. Useful for teams, classrooms, chores, giveaways, and daily decisions.",
+        "keyword": "random picker",
+        "type": "random_picker",
+    },
+    "pomodoro-timer": {
+        "title": "Pomodoro Timer",
+        "headline": "Simple Pomodoro timer for focus sessions",
+        "description": "Run repeatable 25-minute focus sessions with short breaks. Designed for studying, writing, and deep work.",
+        "keyword": "pomodoro timer",
+        "type": "pomodoro",
+    },
+    "habit-tracker": {
+        "title": "Daily Habit Tracker",
+        "headline": "Daily habit tracker",
+        "description": "Track a few habits locally in your browser and reset each day. No account required.",
+        "keyword": "daily habit tracker",
+        "type": "habit_tracker",
+    },
+    "decision-wheel": {
+        "title": "Decision Wheel",
+        "headline": "Decision wheel for quick choices",
+        "description": "Add options and spin a simple decision wheel when you need a fast, low-stakes choice.",
+        "keyword": "decision wheel",
+        "type": "decision_wheel",
+    },
+}
+
 
 @app.context_processor
 def inject_globals():
@@ -1206,6 +1244,38 @@ def seo_guide_page(slug):
     )
 
 
+@app.route("/tools")
+def tools_index():
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "tools_index.html",
+        lang=lang,
+        tools=DAILY_TOOLS,
+        meta_title="Daily Tools | Free Word Counter, Timer, Picker, and Habit Tracker",
+        meta_description="Free daily tools for repeat use: word counter, random picker, Pomodoro timer, habit tracker, and decision wheel.",
+        canonical_url=_canonical_url("/tools"),
+    )
+
+
+@app.route("/tools/<slug>")
+def tool_page(slug):
+    tool = DAILY_TOOLS.get(slug)
+    if not tool:
+        return redirect(url_for("tools_index"))
+    lang = session.get("lang", DEFAULT_LANG)
+    related_tools = {k: v for k, v in DAILY_TOOLS.items() if k != slug}
+    return render_template(
+        "tool_page.html",
+        lang=lang,
+        slug=slug,
+        tool=tool,
+        related_tools=related_tools,
+        meta_title=f"{tool['title']} | Free Daily Tool",
+        meta_description=tool["description"],
+        canonical_url=_canonical_url(f"/tools/{slug}"),
+    )
+
+
 @app.route("/careers")
 def careers_index():
     lang = session.get("lang", DEFAULT_LANG)
@@ -1656,6 +1726,8 @@ def robots_txt():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     paths = ["/", "/careers", "/privacy", "/terms"]
+    paths.append("/tools")
+    paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
     paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))
@@ -1667,6 +1739,10 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path.startswith("/guides/"):
             return "weekly", "0.9"
+        if path == "/tools":
+            return "daily", "0.9"
+        if path.startswith("/tools/"):
+            return "weekly", "0.8"
         if path == "/careers":
             return "weekly", "0.8"
         if path.startswith("/career/"):

@@ -1,0 +1,187 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": {{ tool.title|tojson }},
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "Any",
+  "description": {{ tool.description|tojson }},
+  "url": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page tool-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'tool', slug: {{ slug|tojson }} };
+  </script>
+  <p class="eyebrow">Free daily tool</p>
+  <h1>{{ tool.headline }}</h1>
+  <p class="lead">{{ tool.description }}</p>
+
+  <section class="tool-panel" data-tool="{{ tool.type }}">
+    {% if tool.type == "word_counter" %}
+    <textarea id="word-input" class="tool-textarea" rows="10" placeholder="Paste or type text here..."></textarea>
+    <div class="metrics-row tool-metrics">
+      <div class="metric-box"><div class="metric-val" id="word-count">0</div><div class="metric-label">Words</div></div>
+      <div class="metric-box"><div class="metric-val" id="char-count">0</div><div class="metric-label">Characters</div></div>
+      <div class="metric-box"><div class="metric-val" id="sentence-count">0</div><div class="metric-label">Sentences</div></div>
+      <div class="metric-box"><div class="metric-val" id="read-time">0m</div><div class="metric-label">Reading time</div></div>
+    </div>
+    {% elif tool.type == "random_picker" %}
+    <textarea id="picker-input" class="tool-textarea" rows="8" placeholder="One option per line"></textarea>
+    <button type="button" class="btn-primary" id="pick-btn">Pick one</button>
+    <div class="tool-result" id="picker-result">Add options, then pick.</div>
+    {% elif tool.type == "pomodoro" %}
+    <div class="timer-display" id="timer-display">25:00</div>
+    <div class="tool-actions">
+      <button type="button" class="btn-primary" id="timer-start">Start</button>
+      <button type="button" class="btn-secondary" id="timer-reset">Reset</button>
+    </div>
+    <p class="analytics-note">Runs locally in this browser tab. Keep the tab open during a focus session.</p>
+    {% elif tool.type == "habit_tracker" %}
+    <div class="habit-list" id="habit-list"></div>
+    <div class="tool-actions">
+      <input id="habit-input" class="form-input" placeholder="Add a habit">
+      <button type="button" class="btn-primary" id="habit-add">Add</button>
+    </div>
+    <p class="analytics-note">Saved in local storage on this device.</p>
+    {% elif tool.type == "decision_wheel" %}
+    <textarea id="wheel-input" class="tool-textarea" rows="7" placeholder="One choice per line"></textarea>
+    <button type="button" class="btn-primary" id="wheel-spin">Spin</button>
+    <div class="wheel-result" id="wheel-result">Add choices and spin.</div>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>How to use this {{ tool.keyword }}</h2>
+    <ol class="roadmap-list">
+      <li>Open the tool whenever you need the task done quickly.</li>
+      <li>Use it in the browser without creating an account.</li>
+      <li>Bookmark the page if it is something you repeat daily or weekly.</li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Related tools</h2>
+    <div class="link-grid">
+      {% for related_slug, related in related_tools.items() %}
+      <a class="info-card" href="/tools/{{ related_slug }}" data-track="click_related_tool">
+        <strong>{{ related.title }}</strong>
+        <span>{{ related.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</article>
+
+<script>
+(function() {
+  const panel = document.querySelector('.tool-panel');
+  if (!panel) return;
+  const type = panel.dataset.tool;
+  if (type === 'word_counter') {
+    const input = document.getElementById('word-input');
+    const update = () => {
+      const text = input.value.trim();
+      const words = text ? text.split(/\s+/).filter(Boolean).length : 0;
+      const chars = input.value.length;
+      const sentences = text ? (text.match(/[.!?]+/g) || []).length || 1 : 0;
+      document.getElementById('word-count').textContent = words;
+      document.getElementById('char-count').textContent = chars;
+      document.getElementById('sentence-count').textContent = sentences;
+      document.getElementById('read-time').textContent = Math.max(0, Math.ceil(words / 220)) + 'm';
+    };
+    input.addEventListener('input', update);
+    update();
+  }
+  if (type === 'random_picker') {
+    document.getElementById('pick-btn').addEventListener('click', () => {
+      const items = document.getElementById('picker-input').value.split(/\n/).map(s => s.trim()).filter(Boolean);
+      document.getElementById('picker-result').textContent = items.length ? items[Math.floor(Math.random() * items.length)] : 'Add at least one option.';
+    });
+  }
+  if (type === 'pomodoro') {
+    let seconds = 25 * 60;
+    let timer = null;
+    const display = document.getElementById('timer-display');
+    const render = () => {
+      const m = String(Math.floor(seconds / 60)).padStart(2, '0');
+      const s = String(seconds % 60).padStart(2, '0');
+      display.textContent = `${m}:${s}`;
+    };
+    document.getElementById('timer-start').addEventListener('click', () => {
+      if (timer) return;
+      timer = setInterval(() => {
+        seconds = Math.max(0, seconds - 1);
+        render();
+        if (seconds === 0) {
+          clearInterval(timer);
+          timer = null;
+        }
+      }, 1000);
+    });
+    document.getElementById('timer-reset').addEventListener('click', () => {
+      clearInterval(timer);
+      timer = null;
+      seconds = 25 * 60;
+      render();
+    });
+    render();
+  }
+  if (type === 'habit_tracker') {
+    const key = 'daily_tools_habits';
+    const list = document.getElementById('habit-list');
+    const load = () => JSON.parse(localStorage.getItem(key) || '[]');
+    const save = habits => localStorage.setItem(key, JSON.stringify(habits));
+    const today = new Date().toISOString().slice(0, 10);
+    const render = () => {
+      const habits = load();
+      list.innerHTML = habits.map((habit, idx) => `
+        <label class="habit-row">
+          <input type="checkbox" data-idx="${idx}" ${habit.done === today ? 'checked' : ''}>
+          <span>${habit.name}</span>
+        </label>
+      `).join('') || '<p class="analytics-note">Add one habit to start.</p>';
+    };
+    document.getElementById('habit-add').addEventListener('click', () => {
+      const input = document.getElementById('habit-input');
+      const name = input.value.trim();
+      if (!name) return;
+      const habits = load();
+      habits.push({ name, done: '' });
+      save(habits);
+      input.value = '';
+      render();
+    });
+    list.addEventListener('change', event => {
+      const idx = Number(event.target.dataset.idx);
+      const habits = load();
+      if (habits[idx]) {
+        habits[idx].done = event.target.checked ? today : '';
+        save(habits);
+      }
+    });
+    render();
+  }
+  if (type === 'decision_wheel') {
+    document.getElementById('wheel-spin').addEventListener('click', () => {
+      const items = document.getElementById('wheel-input').value.split(/\n/).map(s => s.trim()).filter(Boolean);
+      const result = document.getElementById('wheel-result');
+      if (!items.length) {
+        result.textContent = 'Add at least one choice.';
+        return;
+      }
+      let ticks = 0;
+      const spin = setInterval(() => {
+        result.textContent = items[Math.floor(Math.random() * items.length)];
+        ticks += 1;
+        if (ticks > 18) clearInterval(spin);
+      }, 80);
+    });
+  }
+})();
+</script>
+{% endblock %}

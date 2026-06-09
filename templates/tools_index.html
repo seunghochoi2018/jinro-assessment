@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Daily Tools",
+  "description": "Free browser tools for writing, focus, choices, and daily tracking.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'tools_index' };
+  </script>
+  <p class="eyebrow">Daily tools</p>
+  <h1>Free daily tools for focus, writing, and quick decisions</h1>
+  <p class="lead">Small browser tools people can use repeatedly: count text, pick from a list, run a focus timer, track habits, or make a fast decision.</p>
+
+  <section>
+    <h2>Tools</h2>
+    <div class="link-grid">
+      {% for slug, tool in tools.items() %}
+      <a class="info-card" href="/tools/{{ slug }}" data-track="click_tool_index">
+        <strong>{{ tool.title }}</strong>
+        <span>{{ tool.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="muted-section">
+    <h2>Why these tools are useful every day</h2>
+    <p>Most people do not need a big app for small recurring tasks. These tools run in the browser, do not require an account, and are designed for quick repeat visits.</p>
+  </section>
+</div>
+{% endblock %}
