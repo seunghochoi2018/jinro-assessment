@@ -1,4 +1,5 @@
 function trackEvent(name, params = {}) {
+  if (window.location.pathname.startsWith('/admin')) return;
   if (typeof window.gtag === 'function') {
     window.gtag('event', name, params);
   }
@@ -140,5 +141,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.querySelectorAll('a[href="/info"]').forEach(el => {
     el.addEventListener('click', () => trackEvent('start_assessment'));
+  });
+
+  document.querySelectorAll('[data-feedback]').forEach(btn => {
+    btn.addEventListener('click', function() {
+      const value = this.dataset.feedback;
+      const box = this.closest('.feedback-box');
+      trackEvent(value === 'useful' ? 'feedback_useful' : 'feedback_not_useful', {
+        page_path: window.location.pathname,
+        page_type: pageMeta.type || 'standard',
+        feedback_value: value
+      });
+      if (box) {
+        box.classList.add('feedback-sent');
+        const msg = box.querySelector('.feedback-message');
+        if (msg) msg.textContent = 'Thanks. This helps improve the recommendations.';
+      }
+    });
   });
 });

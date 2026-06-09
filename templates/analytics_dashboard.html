@@ -26,12 +26,29 @@
     <p class="analytics-note">Ranked by long reads, deep scrolls, and assessment-start clicks.</p>
     <div class="analytics-table-wrap">
       <table class="analytics-table">
-        <thead><tr><th>Page</th><th>45s reads</th><th>75% scrolls</th><th>Starts</th><th>Signals</th></tr></thead>
+        <thead><tr><th>Page</th><th>45s reads</th><th>75% scrolls</th><th>Starts</th><th>Useful</th><th>Signals</th></tr></thead>
         <tbody>
           {% for row in summary.liked_pages %}
-          <tr><td><a href="{{ row.page_path }}">{{ row.page_path }}</a></td><td>{{ row.long_reads }}</td><td>{{ row.deep_scrolls }}</td><td>{{ row.starts }}</td><td>{{ row.signals }}</td></tr>
+          <tr><td><a href="{{ row.page_path }}">{{ row.page_path }}</a></td><td>{{ row.long_reads }}</td><td>{{ row.deep_scrolls }}</td><td>{{ row.starts }}</td><td>{{ row.useful }}</td><td>{{ row.signals }}</td></tr>
           {% else %}
-          <tr><td colspan="5">No engagement signals yet.</td></tr>
+          <tr><td colspan="6">No engagement signals yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Direct feedback</h2>
+    <p class="analytics-note">Explicit useful/not-useful clicks. This is the strongest like/dislike signal.</p>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Page</th><th>Useful</th><th>Not useful</th><th>Total</th></tr></thead>
+        <tbody>
+          {% for row in summary.feedback %}
+          <tr><td><a href="{{ row.page_path }}">{{ row.page_path }}</a></td><td>{{ row.useful }}</td><td>{{ row.not_useful }}</td><td>{{ row.total }}</td></tr>
+          {% else %}
+          <tr><td colspan="4">No direct feedback yet.</td></tr>
           {% endfor %}
         </tbody>
       </table>

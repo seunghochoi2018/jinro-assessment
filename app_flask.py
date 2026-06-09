@@ -708,23 +708,24 @@ def _analytics_summary(days: int = 7) -> dict:
     since = datetime.utcnow().timestamp() - days * 86400
     since_iso = datetime.utcfromtimestamp(since).isoformat(timespec="seconds")
     args = (since_iso,)
+    visible_filter = "created_at >= ? AND page_path NOT LIKE '/admin%' AND page_path != '/probe'"
     overview = _fetch_one(
-        """
+        f"""
         SELECT
           COUNT(*) AS events,
           COUNT(DISTINCT visitor_id) AS visitors,
           SUM(CASE WHEN event_name='page_view_custom' THEN 1 ELSE 0 END) AS pageviews,
           SUM(CASE WHEN event_name='view_result' THEN 1 ELSE 0 END) AS results
         FROM analytics_events
-        WHERE created_at >= ?
+        WHERE {visible_filter}
         """,
         args,
     )
     starts = _fetch_one(
-        """
+        f"""
         SELECT COUNT(*) AS starts
         FROM analytics_events
-        WHERE created_at >= ? AND event_name IN (
+        WHERE {visible_filter} AND event_name IN (
           'start_assessment','click_start_from_home','click_start_from_landing',
           'click_start_from_career','click_start_from_careers_index'
         )
@@ -732,10 +733,10 @@ def _analytics_summary(days: int = 7) -> dict:
         args,
     )
     top_pages = _fetch_all(
-        """
+        f"""
         SELECT page_path, page_type, COUNT(*) AS views
         FROM analytics_events
-        WHERE created_at >= ? AND event_name='page_view_custom'
+        WHERE {visible_filter} AND event_name='page_view_custom'
         GROUP BY page_path, page_type
         ORDER BY views DESC
         LIMIT 20
@@ -743,17 +744,18 @@ def _analytics_summary(days: int = 7) -> dict:
         args,
     )
     liked_pages = _fetch_all(
-        """
+        f"""
         SELECT page_path,
           SUM(CASE WHEN event_name='engaged_time' AND seconds >= 45 THEN 1 ELSE 0 END) AS long_reads,
           SUM(CASE WHEN event_name='scroll_depth' AND percent >= 75 THEN 1 ELSE 0 END) AS deep_scrolls,
           SUM(CASE WHEN event_name LIKE 'click_start_%' THEN 1 ELSE 0 END) AS starts,
+          SUM(CASE WHEN event_name='feedback_useful' THEN 1 ELSE 0 END) AS useful,
           COUNT(*) AS signals
         FROM analytics_events
-        WHERE created_at >= ?
+        WHERE {visible_filter}
         GROUP BY page_path
-        HAVING long_reads > 0 OR deep_scrolls > 0 OR starts > 0
-        ORDER BY (long_reads * 3 + deep_scrolls * 2 + starts * 4) DESC
+        HAVING long_reads > 0 OR deep_scrolls > 0 OR starts > 0 OR useful > 0
+        ORDER BY (long_reads * 3 + deep_scrolls * 2 + starts * 4 + useful * 5) DESC
         LIMIT 15
         """,
         args,
@@ -767,14 +769,15 @@ def _analytics_summary(days: int = 7) -> dict:
         LEFT JOIN (
           SELECT page_path, COUNT(*) AS engaged
           FROM analytics_events
-          WHERE created_at >= ? AND (
+          WHERE created_at >= ? AND page_path NOT LIKE '/admin%' AND page_path != '/probe' AND (
             (event_name='engaged_time' AND seconds >= 45)
             OR (event_name='scroll_depth' AND percent >= 75)
             OR event_name LIKE 'click_start_%'
+            OR event_name='feedback_useful'
           )
           GROUP BY page_path
         ) e ON e.page_path = v.page_path
-        WHERE v.created_at >= ? AND v.event_name='page_view_custom'
+        WHERE v.created_at >= ? AND v.page_path NOT LIKE '/admin%' AND v.page_path != '/probe' AND v.event_name='page_view_custom'
         GROUP BY v.page_path
         HAVING views >= 3
         ORDER BY weak_rate DESC, views DESC
@@ -796,19 +799,19 @@ def _analytics_summary(days: int = 7) -> dict:
         FROM (
           SELECT section_key, section_index, COUNT(*) AS views
           FROM analytics_events
-          WHERE created_at >= ? AND event_name='view_survey_section'
+          WHERE created_at >= ? AND page_path NOT LIKE '/admin%' AND event_name='view_survey_section'
           GROUP BY section_key, section_index
         ) v
         LEFT JOIN (
           SELECT section_key, section_index, COUNT(*) AS completes
           FROM analytics_events
-          WHERE created_at >= ? AND event_name='complete_section'
+          WHERE created_at >= ? AND page_path NOT LIKE '/admin%' AND event_name='complete_section'
           GROUP BY section_key, section_index
         ) c ON c.section_key = v.section_key AND c.section_index = v.section_index
         LEFT JOIN (
           SELECT section_key, section_index, COUNT(*) AS exits
           FROM analytics_events
-          WHERE created_at >= ? AND event_name='survey_section_exit'
+          WHERE created_at >= ? AND page_path NOT LIKE '/admin%' AND event_name='survey_section_exit'
           GROUP BY section_key, section_index
         ) x ON x.section_key = v.section_key AND x.section_index = v.section_index
         ORDER BY section_index ASC
@@ -816,10 +819,10 @@ def _analytics_summary(days: int = 7) -> dict:
         (since_iso, since_iso, since_iso),
     )
     top_clicks = _fetch_all(
-        """
+        f"""
         SELECT event_name, target_path, COUNT(*) AS clicks
         FROM analytics_events
-        WHERE created_at >= ? AND event_name LIKE 'click_%'
+        WHERE {visible_filter} AND event_name LIKE 'click_%'
         GROUP BY event_name, target_path
         ORDER BY clicks DESC
         LIMIT 20
@@ -827,13 +830,27 @@ def _analytics_summary(days: int = 7) -> dict:
         args,
     )
     referrers = _fetch_all(
-        """
+        f"""
         SELECT referrer, COUNT(*) AS visits
         FROM analytics_events
-        WHERE created_at >= ? AND event_name='page_view_custom' AND referrer != ''
+        WHERE {visible_filter} AND event_name='page_view_custom' AND referrer != ''
         GROUP BY referrer
         ORDER BY visits DESC
         LIMIT 15
+        """,
+        args,
+    )
+    feedback = _fetch_all(
+        f"""
+        SELECT page_path,
+          SUM(CASE WHEN event_name='feedback_useful' THEN 1 ELSE 0 END) AS useful,
+          SUM(CASE WHEN event_name='feedback_not_useful' THEN 1 ELSE 0 END) AS not_useful,
+          COUNT(*) AS total
+        FROM analytics_events
+        WHERE {visible_filter} AND event_name IN ('feedback_useful', 'feedback_not_useful')
+        GROUP BY page_path
+        ORDER BY total DESC, useful DESC
+        LIMIT 20
         """,
         args,
     )
@@ -847,6 +864,7 @@ def _analytics_summary(days: int = 7) -> dict:
         "survey_dropoff": survey_dropoff,
         "top_clicks": top_clicks,
         "referrers": referrers,
+        "feedback": feedback,
     }
 
 
