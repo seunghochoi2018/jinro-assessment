@@ -49,6 +49,7 @@ app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-prod")
 DEFAULT_LANG = "en"
 APP_URL = os.environ.get("APP_URL", "https://jinro-assessment.onrender.com").rstrip("/")
+DEFAULT_ADSENSE_CLIENT = "ca-pub-6018524927950587"
 ANALYTICS_DB = os.environ.get(
     "ANALYTICS_DB",
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "analytics.sqlite3"),
@@ -386,7 +387,7 @@ def inject_globals():
         "tc": lambda cid: tc(cid, lang),
         "tcat": lambda cat: tcat(cat, lang),
         "app_url": APP_URL,
-        "adsense_client": os.environ.get("ADSENSE_CLIENT", ""),
+        "adsense_client": os.environ.get("ADSENSE_CLIENT", DEFAULT_ADSENSE_CLIENT),
         "adsense_bottom_slot": os.environ.get("ADSENSE_SLOT_BOTTOM", ""),
         "contact_email": os.environ.get("CONTACT_EMAIL", "contact@example.com"),
     }
@@ -1718,6 +1719,14 @@ def robots_txt():
         f"Sitemap: {APP_URL}/sitemap.xml",
         "",
     ])
+    response = make_response(body)
+    response.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return response
+
+
+@app.route("/ads.txt")
+def ads_txt():
+    body = "google.com, pub-6018524927950587, DIRECT, f08c47fec0942fa0\n"
     response = make_response(body)
     response.headers["Content-Type"] = "text/plain; charset=utf-8"
     return response
