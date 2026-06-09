@@ -143,6 +143,20 @@
   </section>
   {% endif %}
 
+  {% if related_tests %}
+  <section>
+    <h2>Career tests related to {{ career.display_name }}</h2>
+    <div class="link-grid">
+      {% for slug, test in related_tests %}
+      <a class="info-card" href="/tests/{{ slug }}" data-track="click_career_related_test">
+        <strong>{{ test.title }}</strong>
+        <span>{{ test.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <section>
     <h2>Common questions</h2>
     <div class="faq-list">

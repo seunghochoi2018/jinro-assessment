@@ -16,6 +16,24 @@
     <a href="/info" class="btn-primary" data-track="click_start_from_careers_index">Take the test</a>
   </div>
 
+  <section>
+    <h2>Start with a career test</h2>
+    <div class="link-grid">
+      <a class="info-card" href="/tests/job-aptitude-test" data-track="click_careers_test_link">
+        <strong>Free Job Aptitude Test</strong>
+        <span>Compare career options by interests, strengths, personality, and values.</span>
+      </a>
+      <a class="info-card" href="/tests/career-change-test" data-track="click_careers_test_link">
+        <strong>Career Change Test</strong>
+        <span>Explore realistic next paths if your current work no longer fits.</span>
+      </a>
+      <a class="info-card" href="/tests/personality-career-test" data-track="click_careers_test_link">
+        <strong>Personality Career Test</strong>
+        <span>Compare work environments and roles that may fit your style.</span>
+      </a>
+    </div>
+  </section>
+
   {% for category, careers in grouped.items() %}
   <section class="career-category">
     <h2>{{ tcat(category) }}</h2>

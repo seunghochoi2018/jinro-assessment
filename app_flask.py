@@ -176,6 +176,79 @@ SEO_TEST_PAGES = {
     },
 }
 
+SEO_TEST_DETAILS = {
+    "high-school-career-test": {
+        "primary_keyword": "career test for high school students",
+        "search_title": "Free Career Test for High School Students",
+        "intent": "Students can compare possible career directions before choosing classes, clubs, majors, or early projects.",
+        "best_for": ["Students choosing school subjects", "Families discussing future majors", "Teens who want realistic options"],
+        "compare": ["College Career Test", "STEM Career Test", "Creative Career Test"],
+    },
+    "job-aptitude-test": {
+        "primary_keyword": "job aptitude test",
+        "search_title": "Free Job Aptitude Test",
+        "intent": "Use this job aptitude test to compare careers by interests, strengths, work style, and values instead of choosing from a generic list.",
+        "best_for": ["First job decisions", "People comparing several industries", "Users who want a practical career match"],
+        "compare": ["Career Change Test", "Personality Career Test", "Career Values Test"],
+    },
+    "career-change-test": {
+        "primary_keyword": "career change test",
+        "search_title": "Free Career Change Test",
+        "intent": "Adults can compare new career directions while accounting for work values, transferable strengths, and burnout risk.",
+        "best_for": ["Career switch planning", "Burnout reflection", "Adults comparing realistic next steps"],
+        "compare": ["Burnout Career Test", "Remote Work Career Test", "Job Aptitude Test"],
+    },
+    "middle-school-career-test": {
+        "primary_keyword": "career test for middle school students",
+        "search_title": "Free Career Test for Middle School Students",
+        "intent": "Younger students can explore broad career areas without forcing one final job choice too early.",
+        "best_for": ["Early career exploration", "School counseling activities", "Students who need simple next steps"],
+        "compare": ["High School Career Test", "Creative Career Test", "STEM Career Test"],
+    },
+    "college-career-test": {
+        "primary_keyword": "career test for college students",
+        "search_title": "Free Career Test for College Students",
+        "intent": "College students can compare majors, internships, and entry-level roles with a career fit framework.",
+        "best_for": ["Major decisions", "Internship planning", "Graduation and first-job choices"],
+        "compare": ["Job Aptitude Test", "Career Values Test", "Developer Aptitude Test"],
+    },
+    "personality-career-test": {
+        "primary_keyword": "personality career test",
+        "search_title": "Free Personality Career Test",
+        "intent": "Compare career paths using personality signals alongside interests and values, so the result is not based on personality alone.",
+        "best_for": ["Work style comparison", "Introvert or extrovert fit questions", "People who want sustainable work environments"],
+        "compare": ["Career Values Test", "Job Aptitude Test", "Remote Work Career Test"],
+    },
+    "career-values-test": {
+        "primary_keyword": "career values test",
+        "search_title": "Free Career Values Test",
+        "intent": "Clarify whether income, autonomy, stability, creativity, growth, or contribution should guide your career shortlist.",
+        "best_for": ["Choosing between good options", "Work-life fit decisions", "People comparing tradeoffs"],
+        "compare": ["Personality Career Test", "Career Change Test", "Job Aptitude Test"],
+    },
+    "developer-aptitude-test": {
+        "primary_keyword": "software developer career test",
+        "search_title": "Software Developer Career Test",
+        "intent": "Check whether coding and software development are worth exploring by comparing problem-solving style, patience, learning habits, and alternatives.",
+        "best_for": ["Coding beginners", "Students considering computer science", "Career changers comparing tech roles"],
+        "compare": ["STEM Career Test", "Job Aptitude Test", "Remote Work Career Test"],
+    },
+    "designer-aptitude-test": {
+        "primary_keyword": "designer aptitude test",
+        "search_title": "Free Designer Aptitude Test",
+        "intent": "Compare design careers using creativity, empathy, visual thinking, communication, and practical preparation signals.",
+        "best_for": ["Students considering design", "Portfolio planning", "Creative career comparison"],
+        "compare": ["Creative Career Test", "Personality Career Test", "Career Values Test"],
+    },
+    "nurse-aptitude-test": {
+        "primary_keyword": "nursing career aptitude test",
+        "search_title": "Nursing Career Aptitude Test",
+        "intent": "Explore nursing fit using people skills, stress tolerance, detail orientation, science interest, and healthcare alternatives.",
+        "best_for": ["Students considering nursing", "Healthcare career comparison", "People checking service-oriented work fit"],
+        "compare": ["Healthcare Career Test", "Career Values Test", "Job Aptitude Test"],
+    },
+}
+
 
 @app.context_processor
 def inject_globals():
@@ -532,6 +605,34 @@ def _related_careers(career: dict, limit: int = 6) -> list[dict]:
     current_id = career.get("id")
     related = [c for c in CAREERS_DB if c.get("category") == category and c.get("id") != current_id]
     return related[:limit]
+
+
+def _related_tests_for_career(career: dict, limit: int = 4) -> list[tuple[str, dict]]:
+    cid = career.get("id", "")
+    category = career.get("category", "")
+    slugs = ["job-aptitude-test", "personality-career-test", "career-values-test"]
+    if any(term in category for term in ("IT", "개발", "공학", "기술", "이공계", "과학", "연구")) or any(term in cid for term in ("developer", "engineer", "data", "ai", "cyber")):
+        slugs = ["developer-aptitude-test", "stem-career-test", "remote-work-career-test", "job-aptitude-test"]
+    elif any(term in category for term in ("의료", "보건")) or any(term in cid for term in ("nurse", "doctor", "therapist", "medical")):
+        slugs = ["healthcare-career-test", "nurse-aptitude-test", "career-values-test", "job-aptitude-test"]
+    elif "교육" in category or "teacher" in cid:
+        slugs = ["teacher-aptitude-test", "personality-career-test", "career-values-test", "job-aptitude-test"]
+    elif any(term in category for term in ("예술", "문화", "미디어", "창작")) or any(term in cid for term in ("designer", "artist", "writer", "music")):
+        slugs = ["creative-career-test", "designer-aptitude-test", "personality-career-test", "career-values-test"]
+    elif any(term in category for term in ("경영", "금융", "기업")):
+        slugs = ["business-career-test", "job-aptitude-test", "career-values-test", "career-change-test"]
+    return [(slug, SEO_TEST_PAGES[slug]) for slug in slugs if slug in SEO_TEST_PAGES][:limit]
+
+
+def _test_seo_detail(slug: str, page: dict) -> dict:
+    fallback = {
+        "primary_keyword": page["title"].lower(),
+        "search_title": page["title"],
+        "intent": page["description"],
+        "best_for": ["People comparing career options", "Students and adults planning next steps", "Users who want a practical career match"],
+        "compare": ["Job Aptitude Test", "Personality Career Test", "Career Values Test"],
+    }
+    return {**fallback, **SEO_TEST_DETAILS.get(slug, {})}
 
 
 def _top_dims(score_map: dict, limit: int = 3) -> list[tuple[str, float]]:
@@ -931,8 +1032,8 @@ def index():
         shared_data=shared_data,
         test_pages=SEO_TEST_PAGES,
         featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
-        meta_title="Career Assessment | Free Career Test and Job Match",
-        meta_description="Take a free career assessment and explore 174 career profiles based on interests, strengths, personality, and values.",
+        meta_title="Free Career Test | Career Aptitude Test and Job Match",
+        meta_description="Take a free career test to compare interests, strengths, personality, and work values against 174 career profiles with practical next steps.",
         canonical_url=_canonical_url("/"),
     )
 
@@ -943,16 +1044,20 @@ def seo_test_page(slug):
     if not page:
         return redirect(url_for("index"))
     lang = session.get("lang", DEFAULT_LANG)
+    seo_detail = _test_seo_detail(slug, page)
+    related_tests = {k: v for k, v in SEO_TEST_PAGES.items() if k != slug}
+    related_tests = dict(list(related_tests.items())[:8])
     return render_template(
         "seo_test.html",
         lang=lang,
         page=page,
+        seo_detail=seo_detail,
         faq=_test_faq(page),
         slug=slug,
-        related_tests={k: v for k, v in SEO_TEST_PAGES.items() if k != slug},
+        related_tests=related_tests,
         featured_careers=[_career_display(c, lang) for c in _top_career_sample(6)],
-        meta_title=f"{page['title']} | Career Assessment",
-        meta_description=page["description"],
+        meta_title=f"{seo_detail['search_title']} | Career Aptitude Test",
+        meta_description=f"{seo_detail['intent']} Free assessment with 174 career profiles and practical comparison points.",
         canonical_url=_canonical_url(f"/tests/{slug}"),
     )
 
@@ -987,16 +1092,18 @@ def career_detail(career_id):
     review = CAREER_REVIEWS.get(career_id, {}).get(lang) or CAREER_REVIEWS.get(career_id, {}).get("en")
     article = _career_article_sections(career, lang)
     faq = _career_faq(career, display)
+    related_tests = _related_tests_for_career(career)
     return render_template(
         "career_detail.html",
         lang=lang,
         career=display,
         related=related,
+        related_tests=related_tests,
         review=review,
         article=article,
         faq=faq,
-        meta_title=f"{display['display_name']} Career Fit | Career Assessment",
-        meta_description=f"Learn what {display['display_name']} does, which strengths fit this career, and whether it may match your interests and values.",
+        meta_title=f"{display['display_name']} Career Test and Fit Guide",
+        meta_description=f"Explore {display['display_name']} career fit, daily work, education, salary signals, related paths, and tests to compare this career with your strengths.",
         canonical_url=_canonical_url(f"/career/{career_id}"),
     )
 
@@ -1408,12 +1515,25 @@ def sitemap_xml():
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
     paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))
     today = datetime.utcnow().strftime("%Y-%m-%d")
+    def sitemap_meta(path: str) -> tuple[str, str]:
+        if path == "/":
+            return "daily", "1.0"
+        if path.startswith("/tests/"):
+            return "weekly", "0.9"
+        if path == "/careers":
+            return "weekly", "0.8"
+        if path.startswith("/career/"):
+            return "monthly", "0.7"
+        return "monthly", "0.4"
     urls = "\n".join(
         f"""  <url>
     <loc>{APP_URL}{path}</loc>
     <lastmod>{today}</lastmod>
+    <changefreq>{changefreq}</changefreq>
+    <priority>{priority}</priority>
   </url>"""
         for path in paths
+        for changefreq, priority in [sitemap_meta(path)]
     )
     body = f"""<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

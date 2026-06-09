@@ -28,6 +28,12 @@
   <h1>{{ page.headline }}</h1>
   <p class="lead">{{ page.description }}</p>
 
+  <section>
+    <h2>{{ seo_detail.search_title }} overview</h2>
+    <p class="lead">{{ seo_detail.intent }}</p>
+    <p>This page is built around the search question "{{ seo_detail.primary_keyword }}". The goal is not to name one perfect job, but to create a better shortlist: careers to research, related paths to compare, and practical next steps to test before making a bigger decision.</p>
+  </section>
+
   <div class="cta-band">
     <div>
       <strong>Get a personalized career match</strong>
@@ -47,6 +53,25 @@
   </section>
 
   <section>
+    <h2>Who this test is best for</h2>
+    <div class="feature-grid">
+      {% for item in seo_detail.best_for %}
+      <div><strong>{{ item }}</strong><span>Use the result to compare several paths instead of locking into one title too early.</span></div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>How to read the result</h2>
+    <ol class="roadmap-list">
+      <li>Start with the top matched careers, but read the reasons behind the score.</li>
+      <li>Compare at least three related careers so you can separate field interest from job-title familiarity.</li>
+      <li>Check education, licensing, salary range, growth, and local hiring before making a major decision.</li>
+      <li>Choose one small experiment, such as a course, project, interview, volunteer role, or portfolio piece.</li>
+    </ol>
+  </section>
+
+  <section>
     <h2>Career profiles to compare</h2>
     <div class="career-teaser-grid">
       {% for career in featured_careers %}
@@ -60,6 +85,7 @@
 
   <section>
     <h2>Related tests</h2>
+    <p>For a broader comparison, also review: {{ seo_detail.compare|join(', ') }}.</p>
     <div class="link-grid">
       {% for related_slug, related in related_tests.items() %}
       <a class="info-card" href="/tests/{{ related_slug }}" data-track="click_related_test">

@@ -11,6 +11,15 @@
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ canonical_url|default(app_url) }}">
 <meta name="twitter:card" content="summary">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Career Assessment",
+  "url": {{ app_url|tojson }},
+  "description": "Free career test and career aptitude test with 174 career profiles."
+}
+</script>
 {% block extra_head %}{% endblock %}
 <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
