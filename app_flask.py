@@ -429,6 +429,118 @@ DAILY_TOOLS = {
         "keyword": "text repeater",
         "type": "text_repeater",
     },
+    "pdf-merge": {
+        "title": "PDF Merge",
+        "headline": "Merge PDF files online",
+        "description": "Combine multiple PDF files into one PDF in your browser. Files are processed locally and are not uploaded.",
+        "keyword": "merge PDF",
+        "type": "pdf_merge",
+    },
+    "pdf-split": {
+        "title": "PDF Split",
+        "headline": "Split a PDF into separate pages",
+        "description": "Split a PDF into individual page files directly in your browser without uploading the document.",
+        "keyword": "split PDF",
+        "type": "pdf_split",
+    },
+    "pdf-extract-pages": {
+        "title": "PDF Page Extractor",
+        "headline": "Extract pages from a PDF",
+        "description": "Choose page numbers from a PDF and download a new PDF containing only those pages.",
+        "keyword": "extract PDF pages",
+        "type": "pdf_extract",
+    },
+    "pdf-rotate": {
+        "title": "PDF Rotate",
+        "headline": "Rotate PDF pages",
+        "description": "Rotate all pages in a PDF by 90, 180, or 270 degrees and download the updated file.",
+        "keyword": "rotate PDF",
+        "type": "pdf_rotate",
+    },
+    "json-formatter": {
+        "title": "JSON Formatter",
+        "headline": "JSON formatter and validator",
+        "description": "Format, validate, and minify JSON in your browser for APIs, configs, and debugging.",
+        "keyword": "JSON formatter",
+        "type": "json_formatter",
+    },
+    "base64-converter": {
+        "title": "Base64 Converter",
+        "headline": "Base64 encoder and decoder",
+        "description": "Encode text to Base64 or decode Base64 back to readable text.",
+        "keyword": "Base64 converter",
+        "type": "base64_converter",
+    },
+    "url-encoder": {
+        "title": "URL Encoder",
+        "headline": "URL encoder and decoder",
+        "description": "Encode or decode URLs, query strings, and text for safe use in web links.",
+        "keyword": "URL encoder",
+        "type": "url_encoder",
+    },
+    "hash-generator": {
+        "title": "Hash Generator",
+        "headline": "SHA hash generator",
+        "description": "Generate SHA-256, SHA-384, or SHA-512 hashes from text in your browser.",
+        "keyword": "hash generator",
+        "type": "hash_generator",
+    },
+    "timestamp-converter": {
+        "title": "Timestamp Converter",
+        "headline": "Unix timestamp converter",
+        "description": "Convert Unix timestamps to readable dates and convert dates back to Unix time.",
+        "keyword": "timestamp converter",
+        "type": "timestamp_converter",
+    },
+    "regex-tester": {
+        "title": "Regex Tester",
+        "headline": "Regex tester",
+        "description": "Test a regular expression against sample text and view matches instantly.",
+        "keyword": "regex tester",
+        "type": "regex_tester",
+    },
+    "uuid-generator": {
+        "title": "UUID Generator",
+        "headline": "UUID generator",
+        "description": "Generate random UUIDs for development, testing, mock data, and identifiers.",
+        "keyword": "UUID generator",
+        "type": "uuid_generator",
+    },
+    "text-diff": {
+        "title": "Text Diff Checker",
+        "headline": "Text diff checker",
+        "description": "Compare two text blocks line by line and identify added, removed, and changed lines.",
+        "keyword": "text diff checker",
+        "type": "text_diff",
+    },
+}
+
+TOOL_CATEGORIES = {
+    "pdf": {
+        "title": "PDF Tools",
+        "headline": "Free PDF tools",
+        "description": "Merge, split, extract, and rotate PDF files in your browser without uploading documents.",
+    },
+    "developer": {
+        "title": "Developer Tools",
+        "headline": "Free developer tools",
+        "description": "Format JSON, encode Base64, test regex, generate hashes, convert timestamps, and create UUIDs.",
+    },
+    "text": {
+        "title": "Text Tools",
+        "headline": "Free text tools",
+        "description": "Count words, convert case, repeat text, compare text, and prepare content quickly.",
+    },
+    "calculator": {
+        "title": "Calculators",
+        "headline": "Free online calculators",
+        "description": "Calculate percentages, age, time, tips, and convert common units.",
+    },
+    "productivity": {
+        "title": "Productivity Tools",
+        "headline": "Free productivity tools",
+        "description": "Use quick tools for focus sessions, habits, random choices, and daily decisions.",
+    },
 }
 
 
@@ -1236,6 +1348,32 @@ def _career_faq(career: dict, display: dict) -> list[dict]:
 # 라우트
 # ────────────────────────────────────────────────
 
+def _tool_category(slug: str, tool: dict) -> str:
+    tool_type = tool.get("type", "")
+    if slug.startswith("pdf-"):
+        return "pdf"
+    if tool_type in {
+        "json_formatter", "base64_converter", "url_encoder", "hash_generator",
+        "timestamp_converter", "regex_tester", "uuid_generator",
+    }:
+        return "developer"
+    if tool_type in {"word_counter", "case_converter", "text_repeater", "text_diff"}:
+        return "text"
+    if tool_type in {
+        "percentage_calculator", "age_calculator", "time_calculator",
+        "tip_calculator", "unit_converter",
+    }:
+        return "calculator"
+    return "productivity"
+
+
+def _tools_by_category() -> dict[str, dict[str, dict]]:
+    grouped = {slug: {} for slug in TOOL_CATEGORIES}
+    for slug, tool in DAILY_TOOLS.items():
+        grouped.setdefault(_tool_category(slug, tool), {})[slug] = tool
+    return grouped
+
+
 @app.route("/")
 def index():
     lang = session.get("lang", DEFAULT_LANG)
@@ -1308,9 +1446,36 @@ def tools_index():
         "tools_index.html",
         lang=lang,
         tools=DAILY_TOOLS,
+        categories=TOOL_CATEGORIES,
+        grouped_tools=_tools_by_category(),
         meta_title="Daily Tools | Free Word Counter, Timer, Picker, and Habit Tracker",
         meta_description="Free daily tools for repeat use: word counter, random picker, Pomodoro timer, habit tracker, and decision wheel.",
         canonical_url=_canonical_url("/tools"),
+    )
+
+
+@app.route("/pdf-tools")
+def pdf_tools_index():
+    return redirect(url_for("tool_category_page", category_slug="pdf"))
+
+
+@app.route("/tools/category/<category_slug>")
+def tool_category_page(category_slug):
+    category = TOOL_CATEGORIES.get(category_slug)
+    if not category:
+        return redirect(url_for("tools_index"))
+    lang = session.get("lang", DEFAULT_LANG)
+    tools = _tools_by_category().get(category_slug, {})
+    return render_template(
+        "tools_category.html",
+        lang=lang,
+        category_slug=category_slug,
+        category=category,
+        tools=tools,
+        categories=TOOL_CATEGORIES,
+        meta_title=f"{category['title']} | Free Online Tools",
+        meta_description=category["description"],
+        canonical_url=_canonical_url(f"/tools/category/{category_slug}"),
     )
 
 
@@ -1792,6 +1957,8 @@ def ads_txt():
 def sitemap_xml():
     paths = ["/", "/careers", "/privacy", "/terms"]
     paths.append("/tools")
+    paths.append("/pdf-tools")
+    paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
@@ -1806,6 +1973,8 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path == "/tools":
             return "daily", "0.9"
+        if path.startswith("/tools/category/"):
+            return "weekly", "0.9"
         if path.startswith("/tools/"):
             return "weekly", "0.8"
         if path == "/careers":

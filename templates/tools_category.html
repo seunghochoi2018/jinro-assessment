@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": {{ category.title|tojson }},
+  "description": {{ category.description|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'tool_category', category: {{ category_slug|tojson }} };
+  </script>
+  <p class="eyebrow">Tool category</p>
+  <h1>{{ category.headline }}</h1>
+  <p class="lead">{{ category.description }}</p>
+
+  <section>
+    <h2>{{ category.title }}</h2>
+    <div class="link-grid">
+      {% for slug, tool in tools.items() %}
+      <a class="info-card" href="/tools/{{ slug }}" data-track="click_category_tool">
+        <strong>{{ tool.title }}</strong>
+        <span>{{ tool.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Other tool categories</h2>
+    <div class="link-grid">
+      {% for other_slug, other in categories.items() %}
+      {% if other_slug != category_slug %}
+      <a class="info-card" href="/tools/category/{{ other_slug }}" data-track="click_other_tool_category">
+        <strong>{{ other.title }}</strong>
+        <span>{{ other.description }}</span>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -207,6 +207,8 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .analytics-table tr:last-child td { border-bottom: none; }
 .tool-panel { background: white; border: 1px solid #e8eaf6; border-radius: 10px; padding: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
 .tool-textarea { width: 100%; border: 1px solid #dfe3f0; border-radius: 8px; padding: 0.85rem; font: inherit; line-height: 1.5; resize: vertical; }
+.tool-panel > .form-input, .tool-panel > input[type="file"], .tool-panel > select { display: block; width: 100%; margin-bottom: 0.8rem; }
+.tool-panel > input[type="file"] { border: 1px dashed #cfd6ea; border-radius: 8px; padding: 0.85rem; background: #f8f9ff; }
 .tool-metrics { grid-template-columns: repeat(4, 1fr); margin-top: 1rem; margin-bottom: 0; }
 .tool-actions { display: flex; gap: 0.7rem; flex-wrap: wrap; align-items: center; margin-top: 1rem; }
 .tool-actions .form-input { flex: 1 1 220px; }

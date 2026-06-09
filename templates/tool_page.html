@@ -11,6 +11,9 @@
   "url": {{ canonical_url|tojson }}
 }
 </script>
+{% if tool.type in ["pdf_merge", "pdf_split", "pdf_extract", "pdf_rotate"] %}
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+{% endif %}
 {% endblock %}
 {% block content %}
 <article class="article-page tool-page">
@@ -127,6 +130,82 @@
       </select>
     </div>
     <textarea id="repeat-output" class="tool-textarea" rows="8" readonly placeholder="Repeated text appears here..."></textarea>
+    {% elif tool.type == "pdf_merge" %}
+    <input id="pdf-merge-files" class="form-input" type="file" accept="application/pdf" multiple>
+    <button type="button" class="btn-primary" id="pdf-merge-run">Merge PDFs</button>
+    <div class="tool-result" id="pdf-merge-result">Choose two or more PDF files.</div>
+    {% elif tool.type == "pdf_split" %}
+    <input id="pdf-split-file" class="form-input" type="file" accept="application/pdf">
+    <button type="button" class="btn-primary" id="pdf-split-run">Split PDF</button>
+    <div class="tool-result" id="pdf-split-result">Choose one PDF file.</div>
+    {% elif tool.type == "pdf_extract" %}
+    <input id="pdf-extract-file" class="form-input" type="file" accept="application/pdf">
+    <input id="pdf-extract-pages" class="form-input" placeholder="Pages, e.g. 1,3,5-7">
+    <button type="button" class="btn-primary" id="pdf-extract-run">Extract pages</button>
+    <div class="tool-result" id="pdf-extract-result">Choose a PDF and enter pages.</div>
+    {% elif tool.type == "pdf_rotate" %}
+    <input id="pdf-rotate-file" class="form-input" type="file" accept="application/pdf">
+    <select id="pdf-rotate-degrees" class="form-input">
+      <option value="90">Rotate 90 degrees</option>
+      <option value="180">Rotate 180 degrees</option>
+      <option value="270">Rotate 270 degrees</option>
+    </select>
+    <button type="button" class="btn-primary" id="pdf-rotate-run">Rotate PDF</button>
+    <div class="tool-result" id="pdf-rotate-result">Choose one PDF file.</div>
+    {% elif tool.type == "json_formatter" %}
+    <textarea id="json-input" class="tool-textarea" rows="10" placeholder='Paste JSON here, e.g. {"name":"Alex"}'></textarea>
+    <div class="tool-actions">
+      <button type="button" class="btn-primary" id="json-format">Format JSON</button>
+      <button type="button" class="btn-secondary" id="json-minify">Minify</button>
+    </div>
+    <textarea id="json-output" class="tool-textarea" rows="10" readonly placeholder="Formatted JSON appears here..."></textarea>
+    <div class="tool-result" id="json-status">Waiting for JSON.</div>
+    {% elif tool.type == "base64_converter" %}
+    <textarea id="base64-input" class="tool-textarea" rows="7" placeholder="Text or Base64 input"></textarea>
+    <div class="tool-actions">
+      <button type="button" class="btn-primary" id="base64-encode">Encode</button>
+      <button type="button" class="btn-secondary" id="base64-decode">Decode</button>
+    </div>
+    <textarea id="base64-output" class="tool-textarea" rows="7" readonly placeholder="Result appears here..."></textarea>
+    {% elif tool.type == "url_encoder" %}
+    <textarea id="url-input" class="tool-textarea" rows="7" placeholder="URL or text"></textarea>
+    <div class="tool-actions">
+      <button type="button" class="btn-primary" id="url-encode">Encode</button>
+      <button type="button" class="btn-secondary" id="url-decode">Decode</button>
+    </div>
+    <textarea id="url-output" class="tool-textarea" rows="7" readonly placeholder="Result appears here..."></textarea>
+    {% elif tool.type == "hash_generator" %}
+    <textarea id="hash-input" class="tool-textarea" rows="7" placeholder="Text to hash"></textarea>
+    <div class="tool-grid">
+      <select id="hash-algo" class="form-input">
+        <option value="SHA-256">SHA-256</option>
+        <option value="SHA-384">SHA-384</option>
+        <option value="SHA-512">SHA-512</option>
+      </select>
+    </div>
+    <div class="tool-result mono-result" id="hash-output">Enter text.</div>
+    {% elif tool.type == "timestamp_converter" %}
+    <div class="tool-grid">
+      <input id="timestamp-input" class="form-input" type="number" placeholder="Unix timestamp">
+      <input id="date-input" class="form-input" type="datetime-local">
+    </div>
+    <div class="tool-result" id="timestamp-output">Enter timestamp or date.</div>
+    {% elif tool.type == "regex_tester" %}
+    <input id="regex-pattern" class="form-input" placeholder="Pattern, e.g. \\b\\w+@\\w+\\.com\\b">
+    <textarea id="regex-text" class="tool-textarea" rows="8" placeholder="Sample text"></textarea>
+    <div class="tool-result mono-result" id="regex-output">Enter a pattern and sample text.</div>
+    {% elif tool.type == "uuid_generator" %}
+    <div class="tool-grid">
+      <input id="uuid-count" class="form-input" type="number" min="1" max="100" value="5">
+    </div>
+    <button type="button" class="btn-primary" id="uuid-run">Generate UUIDs</button>
+    <textarea id="uuid-output" class="tool-textarea" rows="8" readonly placeholder="UUIDs appear here..."></textarea>
+    {% elif tool.type == "text_diff" %}
+    <div class="tool-grid two-col">
+      <textarea id="diff-left" class="tool-textarea" rows="10" placeholder="Original text"></textarea>
+      <textarea id="diff-right" class="tool-textarea" rows="10" placeholder="Changed text"></textarea>
+    </div>
+    <div class="tool-result mono-result" id="diff-output">Enter both text blocks.</div>
     {% endif %}
   </section>
 
@@ -374,6 +453,227 @@
     };
     ['repeat-input', 'repeat-count', 'repeat-separator'].forEach(id => document.getElementById(id).addEventListener('input', calc));
     calc();
+  }
+  const downloadBytes = (bytes, filename, mime = 'application/pdf') => {
+    const blob = new Blob([bytes], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+  };
+  const readArrayBuffer = file => file.arrayBuffer();
+  const parsePageSpec = (spec, pageCount) => {
+    const pages = new Set();
+    spec.split(',').map(part => part.trim()).filter(Boolean).forEach(part => {
+      if (part.includes('-')) {
+        const [start, end] = part.split('-').map(n => Number(n.trim()));
+        if (Number.isInteger(start) && Number.isInteger(end)) {
+          for (let i = Math.max(1, start); i <= Math.min(pageCount, end); i += 1) pages.add(i - 1);
+        }
+      } else {
+        const page = Number(part);
+        if (Number.isInteger(page) && page >= 1 && page <= pageCount) pages.add(page - 1);
+      }
+    });
+    return Array.from(pages).sort((a, b) => a - b);
+  };
+  if (type === 'pdf_merge') {
+    document.getElementById('pdf-merge-run').addEventListener('click', async () => {
+      const result = document.getElementById('pdf-merge-result');
+      const files = Array.from(document.getElementById('pdf-merge-files').files || []);
+      if (files.length < 2 || !window.PDFLib) {
+        result.textContent = 'Choose at least two PDF files.';
+        return;
+      }
+      result.textContent = 'Merging...';
+      const output = await PDFLib.PDFDocument.create();
+      for (const file of files) {
+        const source = await PDFLib.PDFDocument.load(await readArrayBuffer(file));
+        const copied = await output.copyPages(source, source.getPageIndices());
+        copied.forEach(page => output.addPage(page));
+      }
+      downloadBytes(await output.save(), 'merged.pdf');
+      result.textContent = `Merged ${files.length} files.`;
+    });
+  }
+  if (type === 'pdf_split') {
+    document.getElementById('pdf-split-run').addEventListener('click', async () => {
+      const result = document.getElementById('pdf-split-result');
+      const file = document.getElementById('pdf-split-file').files[0];
+      if (!file || !window.PDFLib) {
+        result.textContent = 'Choose one PDF file.';
+        return;
+      }
+      result.textContent = 'Splitting...';
+      const source = await PDFLib.PDFDocument.load(await readArrayBuffer(file));
+      for (let i = 0; i < source.getPageCount(); i += 1) {
+        const output = await PDFLib.PDFDocument.create();
+        const [page] = await output.copyPages(source, [i]);
+        output.addPage(page);
+        downloadBytes(await output.save(), `page-${i + 1}.pdf`);
+      }
+      result.textContent = `Downloaded ${source.getPageCount()} page file(s).`;
+    });
+  }
+  if (type === 'pdf_extract') {
+    document.getElementById('pdf-extract-run').addEventListener('click', async () => {
+      const result = document.getElementById('pdf-extract-result');
+      const file = document.getElementById('pdf-extract-file').files[0];
+      const spec = document.getElementById('pdf-extract-pages').value;
+      if (!file || !spec || !window.PDFLib) {
+        result.textContent = 'Choose a PDF and enter pages.';
+        return;
+      }
+      result.textContent = 'Extracting...';
+      const source = await PDFLib.PDFDocument.load(await readArrayBuffer(file));
+      const pages = parsePageSpec(spec, source.getPageCount());
+      if (!pages.length) {
+        result.textContent = 'No valid pages found.';
+        return;
+      }
+      const output = await PDFLib.PDFDocument.create();
+      const copied = await output.copyPages(source, pages);
+      copied.forEach(page => output.addPage(page));
+      downloadBytes(await output.save(), 'extracted-pages.pdf');
+      result.textContent = `Extracted ${pages.length} page(s).`;
+    });
+  }
+  if (type === 'pdf_rotate') {
+    document.getElementById('pdf-rotate-run').addEventListener('click', async () => {
+      const result = document.getElementById('pdf-rotate-result');
+      const file = document.getElementById('pdf-rotate-file').files[0];
+      const degrees = Number(document.getElementById('pdf-rotate-degrees').value);
+      if (!file || !window.PDFLib) {
+        result.textContent = 'Choose one PDF file.';
+        return;
+      }
+      result.textContent = 'Rotating...';
+      const doc = await PDFLib.PDFDocument.load(await readArrayBuffer(file));
+      doc.getPages().forEach(page => {
+        const current = page.getRotation().angle || 0;
+        page.setRotation(PDFLib.degrees((current + degrees) % 360));
+      });
+      downloadBytes(await doc.save(), 'rotated.pdf');
+      result.textContent = `Rotated ${doc.getPageCount()} page(s).`;
+    });
+  }
+  if (type === 'json_formatter') {
+    const input = document.getElementById('json-input');
+    const output = document.getElementById('json-output');
+    const status = document.getElementById('json-status');
+    const run = compact => {
+      try {
+        const parsed = JSON.parse(input.value);
+        output.value = JSON.stringify(parsed, null, compact ? 0 : 2);
+        status.textContent = 'Valid JSON.';
+      } catch (error) {
+        status.textContent = `Invalid JSON: ${error.message}`;
+      }
+    };
+    document.getElementById('json-format').addEventListener('click', () => run(false));
+    document.getElementById('json-minify').addEventListener('click', () => run(true));
+  }
+  if (type === 'base64_converter') {
+    const input = document.getElementById('base64-input');
+    const output = document.getElementById('base64-output');
+    document.getElementById('base64-encode').addEventListener('click', () => {
+      output.value = btoa(unescape(encodeURIComponent(input.value)));
+    });
+    document.getElementById('base64-decode').addEventListener('click', () => {
+      try {
+        output.value = decodeURIComponent(escape(atob(input.value.trim())));
+      } catch (error) {
+        output.value = `Invalid Base64: ${error.message}`;
+      }
+    });
+  }
+  if (type === 'url_encoder') {
+    const input = document.getElementById('url-input');
+    const output = document.getElementById('url-output');
+    document.getElementById('url-encode').addEventListener('click', () => output.value = encodeURIComponent(input.value));
+    document.getElementById('url-decode').addEventListener('click', () => {
+      try {
+        output.value = decodeURIComponent(input.value);
+      } catch (error) {
+        output.value = `Invalid encoded text: ${error.message}`;
+      }
+    });
+  }
+  if (type === 'hash_generator') {
+    const run = async () => {
+      const text = document.getElementById('hash-input').value;
+      if (!text) {
+        document.getElementById('hash-output').textContent = 'Enter text.';
+        return;
+      }
+      const algo = document.getElementById('hash-algo').value;
+      const bytes = await crypto.subtle.digest(algo, new TextEncoder().encode(text));
+      document.getElementById('hash-output').textContent = Array.from(new Uint8Array(bytes)).map(b => b.toString(16).padStart(2, '0')).join('');
+    };
+    document.getElementById('hash-input').addEventListener('input', run);
+    document.getElementById('hash-algo').addEventListener('input', run);
+  }
+  if (type === 'timestamp_converter') {
+    const ts = document.getElementById('timestamp-input');
+    const dt = document.getElementById('date-input');
+    const out = document.getElementById('timestamp-output');
+    ts.addEventListener('input', () => {
+      const value = Number(ts.value);
+      if (!ts.value || Number.isNaN(value)) return;
+      const ms = value > 100000000000 ? value : value * 1000;
+      const date = new Date(ms);
+      out.textContent = Number.isNaN(date.getTime()) ? 'Invalid timestamp.' : date.toString();
+    });
+    dt.addEventListener('input', () => {
+      const date = new Date(dt.value);
+      out.textContent = Number.isNaN(date.getTime()) ? 'Invalid date.' : `Unix seconds: ${Math.floor(date.getTime() / 1000)}`;
+    });
+  }
+  if (type === 'regex_tester') {
+    const run = () => {
+      const pattern = document.getElementById('regex-pattern').value;
+      const text = document.getElementById('regex-text').value;
+      const out = document.getElementById('regex-output');
+      if (!pattern) {
+        out.textContent = 'Enter a pattern.';
+        return;
+      }
+      try {
+        const re = new RegExp(pattern, 'g');
+        const matches = Array.from(text.matchAll(re)).map(match => match[0]);
+        out.textContent = matches.length ? matches.map((m, i) => `${i + 1}. ${m}`).join('\n') : 'No matches.';
+      } catch (error) {
+        out.textContent = `Invalid regex: ${error.message}`;
+      }
+    };
+    document.getElementById('regex-pattern').addEventListener('input', run);
+    document.getElementById('regex-text').addEventListener('input', run);
+  }
+  if (type === 'uuid_generator') {
+    document.getElementById('uuid-run').addEventListener('click', () => {
+      const count = Math.max(1, Math.min(100, Number(document.getElementById('uuid-count').value) || 5));
+      document.getElementById('uuid-output').value = Array.from({ length: count }, () => crypto.randomUUID()).join('\n');
+    });
+  }
+  if (type === 'text_diff') {
+    const run = () => {
+      const left = document.getElementById('diff-left').value.split('\n');
+      const right = document.getElementById('diff-right').value.split('\n');
+      const max = Math.max(left.length, right.length);
+      const rows = [];
+      for (let i = 0; i < max; i += 1) {
+        if ((left[i] || '') === (right[i] || '')) continue;
+        if (left[i] !== undefined) rows.push(`- ${i + 1}: ${left[i]}`);
+        if (right[i] !== undefined) rows.push(`+ ${i + 1}: ${right[i]}`);
+      }
+      document.getElementById('diff-output').textContent = rows.length ? rows.join('\n') : 'No line differences.';
+    };
+    document.getElementById('diff-left').addEventListener('input', run);
+    document.getElementById('diff-right').addEventListener('input', run);
   }
 })();
 </script>

@@ -20,9 +20,23 @@
   <p class="lead">Small browser tools people can use repeatedly: count text, pick from a list, run a focus timer, track habits, or make a fast decision.</p>
 
   <section>
-    <h2>Tools</h2>
+    <h2>Tool categories</h2>
     <div class="link-grid">
-      {% for slug, tool in tools.items() %}
+      {% for category_slug, category in categories.items() %}
+      <a class="info-card" href="/tools/category/{{ category_slug }}" data-track="click_tool_category">
+        <strong>{{ category.title }}</strong>
+        <span>{{ category.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% for category_slug, category_tools in grouped_tools.items() %}
+  {% if category_tools %}
+  <section>
+    <h2>{{ categories[category_slug].title }}</h2>
+    <div class="link-grid">
+      {% for slug, tool in category_tools.items() %}
       <a class="info-card" href="/tools/{{ slug }}" data-track="click_tool_index">
         <strong>{{ tool.title }}</strong>
         <span>{{ tool.description }}</span>
@@ -30,6 +44,8 @@
       {% endfor %}
     </div>
   </section>
+  {% endif %}
+  {% endfor %}
 
   <section class="muted-section">
     <h2>Why these tools are useful every day</h2>
