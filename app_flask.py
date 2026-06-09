@@ -373,6 +373,62 @@ DAILY_TOOLS = {
         "keyword": "decision wheel",
         "type": "decision_wheel",
     },
+    "case-converter": {
+        "title": "Case Converter",
+        "headline": "Case converter for text",
+        "description": "Convert text to uppercase, lowercase, title case, sentence case, slug case, and snake case.",
+        "keyword": "case converter",
+        "type": "case_converter",
+    },
+    "password-generator": {
+        "title": "Password Generator",
+        "headline": "Password generator",
+        "description": "Generate a random password with adjustable length, numbers, symbols, and mixed case.",
+        "keyword": "password generator",
+        "type": "password_generator",
+    },
+    "percentage-calculator": {
+        "title": "Percentage Calculator",
+        "headline": "Percentage calculator",
+        "description": "Calculate percentages, percentage change, and what percent one number is of another.",
+        "keyword": "percentage calculator",
+        "type": "percentage_calculator",
+    },
+    "age-calculator": {
+        "title": "Age Calculator",
+        "headline": "Age calculator",
+        "description": "Calculate age in years, months, and days from a date of birth.",
+        "keyword": "age calculator",
+        "type": "age_calculator",
+    },
+    "time-calculator": {
+        "title": "Time Calculator",
+        "headline": "Time calculator",
+        "description": "Add minutes and hours to a start time, or calculate the duration between two times.",
+        "keyword": "time calculator",
+        "type": "time_calculator",
+    },
+    "tip-calculator": {
+        "title": "Tip Calculator",
+        "headline": "Tip calculator",
+        "description": "Calculate tip, total bill, and split amount per person.",
+        "keyword": "tip calculator",
+        "type": "tip_calculator",
+    },
+    "unit-converter": {
+        "title": "Unit Converter",
+        "headline": "Unit converter",
+        "description": "Convert common length and weight units including miles, kilometers, pounds, and kilograms.",
+        "keyword": "unit converter",
+        "type": "unit_converter",
+    },
+    "text-repeater": {
+        "title": "Text Repeater",
+        "headline": "Text repeater",
+        "description": "Repeat text a set number of times with optional line breaks or spaces.",
+        "keyword": "text repeater",
+        "type": "text_repeater",
+    },
 }
 
 

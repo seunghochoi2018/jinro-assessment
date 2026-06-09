@@ -52,6 +52,81 @@
     <textarea id="wheel-input" class="tool-textarea" rows="7" placeholder="One choice per line"></textarea>
     <button type="button" class="btn-primary" id="wheel-spin">Spin</button>
     <div class="wheel-result" id="wheel-result">Add choices and spin.</div>
+    {% elif tool.type == "case_converter" %}
+    <textarea id="case-input" class="tool-textarea" rows="8" placeholder="Paste text to convert..."></textarea>
+    <div class="tool-actions">
+      <button type="button" class="btn-secondary" data-case="upper">UPPERCASE</button>
+      <button type="button" class="btn-secondary" data-case="lower">lowercase</button>
+      <button type="button" class="btn-secondary" data-case="title">Title Case</button>
+      <button type="button" class="btn-secondary" data-case="sentence">Sentence case</button>
+      <button type="button" class="btn-secondary" data-case="slug">slug-case</button>
+      <button type="button" class="btn-secondary" data-case="snake">snake_case</button>
+    </div>
+    <textarea id="case-output" class="tool-textarea" rows="8" readonly placeholder="Converted text appears here..."></textarea>
+    {% elif tool.type == "password_generator" %}
+    <div class="tool-grid">
+      <label>Length <input id="password-length" class="form-input" type="number" min="6" max="64" value="16"></label>
+      <label><input id="password-numbers" type="checkbox" checked> Include numbers</label>
+      <label><input id="password-symbols" type="checkbox" checked> Include symbols</label>
+      <label><input id="password-mixed" type="checkbox" checked> Mixed case</label>
+    </div>
+    <button type="button" class="btn-primary" id="password-generate">Generate password</button>
+    <div class="tool-result" id="password-result">Click generate.</div>
+    {% elif tool.type == "percentage_calculator" %}
+    <div class="tool-grid">
+      <input id="percent-a" class="form-input" type="number" placeholder="Value">
+      <input id="percent-b" class="form-input" type="number" placeholder="Percent or total">
+      <select id="percent-mode" class="form-input">
+        <option value="of">What is A% of B?</option>
+        <option value="is">A is what percent of B?</option>
+        <option value="change">Percent change from A to B</option>
+      </select>
+    </div>
+    <div class="tool-result" id="percent-result">Enter values.</div>
+    {% elif tool.type == "age_calculator" %}
+    <div class="tool-grid">
+      <label>Date of birth <input id="age-birth" class="form-input" type="date"></label>
+      <label>As of date <input id="age-asof" class="form-input" type="date"></label>
+    </div>
+    <div class="tool-result" id="age-result">Choose a date.</div>
+    {% elif tool.type == "time_calculator" %}
+    <div class="tool-grid">
+      <label>Start time <input id="time-start" class="form-input" type="time" value="09:00"></label>
+      <label>Add hours <input id="time-hours" class="form-input" type="number" value="1"></label>
+      <label>Add minutes <input id="time-minutes" class="form-input" type="number" value="30"></label>
+    </div>
+    <div class="tool-result" id="time-result">Enter time.</div>
+    {% elif tool.type == "tip_calculator" %}
+    <div class="tool-grid">
+      <input id="tip-bill" class="form-input" type="number" min="0" step="0.01" placeholder="Bill amount">
+      <input id="tip-percent" class="form-input" type="number" min="0" step="1" value="20" placeholder="Tip percent">
+      <input id="tip-people" class="form-input" type="number" min="1" step="1" value="1" placeholder="People">
+    </div>
+    <div class="tool-result" id="tip-result">Enter bill amount.</div>
+    {% elif tool.type == "unit_converter" %}
+    <div class="tool-grid">
+      <input id="unit-value" class="form-input" type="number" step="any" placeholder="Value">
+      <select id="unit-mode" class="form-input">
+        <option value="mi-km">Miles to kilometers</option>
+        <option value="km-mi">Kilometers to miles</option>
+        <option value="lb-kg">Pounds to kilograms</option>
+        <option value="kg-lb">Kilograms to pounds</option>
+        <option value="in-cm">Inches to centimeters</option>
+        <option value="cm-in">Centimeters to inches</option>
+      </select>
+    </div>
+    <div class="tool-result" id="unit-result">Enter a value.</div>
+    {% elif tool.type == "text_repeater" %}
+    <textarea id="repeat-input" class="tool-textarea" rows="4" placeholder="Text to repeat"></textarea>
+    <div class="tool-grid">
+      <input id="repeat-count" class="form-input" type="number" min="1" max="500" value="5">
+      <select id="repeat-separator" class="form-input">
+        <option value="newline">New line</option>
+        <option value="space">Space</option>
+        <option value="comma">Comma</option>
+      </select>
+    </div>
+    <textarea id="repeat-output" class="tool-textarea" rows="8" readonly placeholder="Repeated text appears here..."></textarea>
     {% endif %}
   </section>
 
@@ -181,6 +256,124 @@
         if (ticks > 18) clearInterval(spin);
       }, 80);
     });
+  }
+  if (type === 'case_converter') {
+    const input = document.getElementById('case-input');
+    const output = document.getElementById('case-output');
+    const titleCase = text => text.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+    const sentenceCase = text => text.toLowerCase().replace(/(^\s*\w|[.!?]\s*\w)/g, c => c.toUpperCase());
+    document.querySelectorAll('[data-case]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const text = input.value;
+        const mode = btn.dataset.case;
+        if (mode === 'upper') output.value = text.toUpperCase();
+        if (mode === 'lower') output.value = text.toLowerCase();
+        if (mode === 'title') output.value = titleCase(text);
+        if (mode === 'sentence') output.value = sentenceCase(text);
+        if (mode === 'slug') output.value = text.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+        if (mode === 'snake') output.value = text.toLowerCase().trim().replace(/[^a-z0-9]+/g, '_').replace(/^_|_$/g, '');
+      });
+    });
+  }
+  if (type === 'password_generator') {
+    document.getElementById('password-generate').addEventListener('click', () => {
+      const length = Math.max(6, Math.min(64, Number(document.getElementById('password-length').value) || 16));
+      let chars = 'abcdefghijklmnopqrstuvwxyz';
+      if (document.getElementById('password-mixed').checked) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+      if (document.getElementById('password-numbers').checked) chars += '0123456789';
+      if (document.getElementById('password-symbols').checked) chars += '!@#$%^&*()-_=+[]{};:,.?';
+      const values = new Uint32Array(length);
+      crypto.getRandomValues(values);
+      document.getElementById('password-result').textContent = Array.from(values, v => chars[v % chars.length]).join('');
+    });
+  }
+  if (type === 'percentage_calculator') {
+    const calc = () => {
+      const a = Number(document.getElementById('percent-a').value);
+      const b = Number(document.getElementById('percent-b').value);
+      const mode = document.getElementById('percent-mode').value;
+      let result = 'Enter values.';
+      if (!Number.isNaN(a) && !Number.isNaN(b) && document.getElementById('percent-a').value && document.getElementById('percent-b').value) {
+        if (mode === 'of') result = `${a}% of ${b} = ${(a / 100 * b).toFixed(2)}`;
+        if (mode === 'is') result = b === 0 ? 'Total cannot be zero.' : `${a} is ${(a / b * 100).toFixed(2)}% of ${b}`;
+        if (mode === 'change') result = a === 0 ? 'Start value cannot be zero.' : `Change = ${((b - a) / a * 100).toFixed(2)}%`;
+      }
+      document.getElementById('percent-result').textContent = result;
+    };
+    ['percent-a', 'percent-b', 'percent-mode'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+  }
+  if (type === 'age_calculator') {
+    const asof = document.getElementById('age-asof');
+    asof.value = new Date().toISOString().slice(0, 10);
+    const calc = () => {
+      const birth = new Date(document.getElementById('age-birth').value);
+      const end = new Date(asof.value);
+      if (Number.isNaN(birth.getTime()) || Number.isNaN(end.getTime()) || end < birth) {
+        document.getElementById('age-result').textContent = 'Choose a valid date.';
+        return;
+      }
+      let years = end.getFullYear() - birth.getFullYear();
+      let months = end.getMonth() - birth.getMonth();
+      let days = end.getDate() - birth.getDate();
+      if (days < 0) {
+        months -= 1;
+        days += new Date(end.getFullYear(), end.getMonth(), 0).getDate();
+      }
+      if (months < 0) {
+        years -= 1;
+        months += 12;
+      }
+      document.getElementById('age-result').textContent = `${years} years, ${months} months, ${days} days`;
+    };
+    ['age-birth', 'age-asof'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+  }
+  if (type === 'time_calculator') {
+    const calc = () => {
+      const start = document.getElementById('time-start').value || '00:00';
+      const [h, m] = start.split(':').map(Number);
+      const add = (Number(document.getElementById('time-hours').value) || 0) * 60 + (Number(document.getElementById('time-minutes').value) || 0);
+      const total = (h * 60 + m + add + 1440) % 1440;
+      const outH = String(Math.floor(total / 60)).padStart(2, '0');
+      const outM = String(total % 60).padStart(2, '0');
+      document.getElementById('time-result').textContent = `End time: ${outH}:${outM}`;
+    };
+    ['time-start', 'time-hours', 'time-minutes'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+  }
+  if (type === 'tip_calculator') {
+    const calc = () => {
+      const bill = Number(document.getElementById('tip-bill').value) || 0;
+      const pct = Number(document.getElementById('tip-percent').value) || 0;
+      const people = Math.max(1, Number(document.getElementById('tip-people').value) || 1);
+      const tip = bill * pct / 100;
+      const total = bill + tip;
+      document.getElementById('tip-result').textContent = `Tip: ${tip.toFixed(2)} | Total: ${total.toFixed(2)} | Each: ${(total / people).toFixed(2)}`;
+    };
+    ['tip-bill', 'tip-percent', 'tip-people'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+  }
+  if (type === 'unit_converter') {
+    const calc = () => {
+      const value = Number(document.getElementById('unit-value').value);
+      const mode = document.getElementById('unit-mode').value;
+      const factors = { 'mi-km': 1.609344, 'km-mi': 0.621371, 'lb-kg': 0.453592, 'kg-lb': 2.20462, 'in-cm': 2.54, 'cm-in': 0.393701 };
+      document.getElementById('unit-result').textContent = Number.isNaN(value) || !document.getElementById('unit-value').value ? 'Enter a value.' : (value * factors[mode]).toFixed(4);
+    };
+    ['unit-value', 'unit-mode'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
+  }
+  if (type === 'text_repeater') {
+    const calc = () => {
+      const text = document.getElementById('repeat-input').value;
+      const count = Math.max(1, Math.min(500, Number(document.getElementById('repeat-count').value) || 1));
+      const sepMode = document.getElementById('repeat-separator').value;
+      const sep = sepMode === 'newline' ? '\n' : sepMode === 'comma' ? ', ' : ' ';
+      document.getElementById('repeat-output').value = Array(count).fill(text).join(sep);
+    };
+    ['repeat-input', 'repeat-count', 'repeat-separator'].forEach(id => document.getElementById(id).addEventListener('input', calc));
+    calc();
   }
 })();
 </script>
