@@ -50,6 +50,7 @@ app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-
 DEFAULT_LANG = "en"
 APP_URL = os.environ.get("APP_URL", "https://jinro-assessment.onrender.com").rstrip("/")
 DEFAULT_ADSENSE_CLIENT = "ca-pub-6018524927950587"
+INDEXNOW_KEY = os.environ.get("INDEXNOW_KEY", "9e7a7feff4e24bb7aaefbc5fb60d6d3d")
 ANALYTICS_DB = os.environ.get(
     "ANALYTICS_DB",
     os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "analytics.sqlite3"),
@@ -2020,6 +2021,13 @@ def robots_txt():
 def ads_txt():
     body = "google.com, pub-6018524927950587, DIRECT, f08c47fec0942fa0\n"
     response = make_response(body)
+    response.headers["Content-Type"] = "text/plain; charset=utf-8"
+    return response
+
+
+@app.route(f"/{INDEXNOW_KEY}.txt")
+def indexnow_key_txt():
+    response = make_response(f"{INDEXNOW_KEY}\n")
     response.headers["Content-Type"] = "text/plain; charset=utf-8"
     return response
 
