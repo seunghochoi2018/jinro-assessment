@@ -839,6 +839,112 @@ for _slug, _enhancement in BLOG_ENHANCEMENTS.items():
     if _slug in BLOG_POSTS:
         BLOG_POSTS[_slug].update(_enhancement)
 
+SCHEDULED_BLOG_POSTS = {
+    "how-to-resize-an-image-for-a-profile-picture": {
+        "publish_date": "2026-06-17",
+        "title": "How to Resize an Image for a Profile Picture",
+        "description": "Resize an image for profiles, resumes, forms, and account pages without making it blurry or awkwardly cropped.",
+        "keyword": "resize image for profile picture",
+        "tool_slug": "image-resizer",
+        "category": "Image",
+        "intro": "Profile pictures often fail because the image is too large, too small, or the wrong shape. Resizing helps match the required pixel dimensions before upload.",
+        "takeaway": "Resize for dimensions first, then compress for file size. If the site asks for a square image, start with a square crop or centered subject.",
+        "scenario": "Example: a job portal asks for a 400 by 400 pixel profile image under 1 MB. Resize the photo to a square, export it, and check that your face or subject remains centered.",
+        "steps": ["Open the image resizer.", "Choose the source image.", "Enter the target width and height.", "Export as JPG, PNG, or WebP.", "Open the result and confirm it still looks sharp."],
+        "sections": [
+            ("Start with the target size", "Look for the exact upload requirement before resizing. Common profile images are square, but forms and resumes may ask for different dimensions."),
+            ("Avoid stretching", "If the original image is wide and the target is square, resizing alone may distort the image. Use a centered crop first when the subject matters."),
+            ("Choose the right format", "JPG is usually fine for photos. PNG is better for graphics with sharp edges or transparency. WebP is useful for web pages when accepted."),
+            ("Check file size after resizing", "A smaller image dimension often lowers file size, but you may still need compression if the upload limit is strict."),
+        ],
+        "checklist": ["Target width and height are known.", "The subject is centered.", "The image is not stretched.", "The output format is accepted.", "The final file size fits the upload limit."],
+        "mistakes": ["Changing only file size when the site requires exact dimensions.", "Stretching a wide image into a square.", "Using WebP on a form that only accepts JPG or PNG.", "Uploading without checking how the image appears at small size."],
+        "comparison": [("Resize", "Change pixel dimensions.", "Profile image requirements."), ("Compress", "Lower file size.", "Upload limits."), ("Convert", "Change file format.", "Compatibility.")],
+        "related_tools": ["image-resizer", "image-compressor", "image-to-webp", "color-converter"],
+    },
+    "xml-vs-json-when-to-use-each-format": {
+        "publish_date": "2026-06-24",
+        "title": "XML vs JSON: When to Use Each Format",
+        "description": "A practical comparison of XML and JSON for APIs, config files, exports, and debugging.",
+        "keyword": "XML vs JSON",
+        "tool_slug": "xml-formatter",
+        "category": "Developer",
+        "intro": "XML and JSON both store structured data, but they feel different in everyday work. JSON is common in modern APIs, while XML still appears in documents, feeds, enterprise systems, and configuration files.",
+        "takeaway": "Use JSON when you want compact API-friendly data. Use XML when the system expects tags, attributes, document structure, or older integration formats.",
+        "scenario": "Example: a webhook response may arrive as JSON, while a sitemap, RSS feed, or legacy vendor export may arrive as XML. Formatting each one makes the structure easier to inspect.",
+        "steps": ["Identify the format you received.", "Use a JSON formatter for JSON payloads.", "Use an XML formatter for tagged documents.", "Validate before editing.", "Keep an unchanged copy of the original data."],
+        "sections": [
+            ("JSON strengths", "JSON is compact, easy to read after formatting, and maps naturally to arrays, objects, strings, numbers, booleans, and null values."),
+            ("XML strengths", "XML supports tags, attributes, namespaces, and document-style structures. It remains common in feeds, sitemaps, office files, and enterprise integrations."),
+            ("Debugging habit", "Do not guess the format. A JSON parser will not validate XML, and an XML parser will not validate JSON."),
+            ("Editing safely", "Small syntax changes can break either format. Format first, edit carefully, then validate again."),
+        ],
+        "checklist": ["The format is identified correctly.", "The data validates after formatting.", "Important nested fields are visible.", "No credentials or private payloads are shared.", "The original raw data is kept."],
+        "mistakes": ["Pasting XML into a JSON formatter.", "Removing required XML attributes.", "Leaving invalid trailing commas in JSON.", "Assuming both formats behave the same in an API."],
+        "comparison": [("JSON", "Compact object and array data.", "Modern APIs and app config."), ("XML", "Tagged document-style data.", "Feeds, sitemaps, legacy systems."), ("CSV", "Rows and columns.", "Simple spreadsheet exports.")],
+        "related_tools": ["xml-formatter", "json-formatter", "html-formatter", "csv-to-json"],
+    },
+    "robots-txt-basics-for-small-websites": {
+        "publish_date": "2026-07-01",
+        "title": "Robots.txt Basics for Small Websites",
+        "description": "Learn what robots.txt can and cannot do, and how to create a simple file for a small website.",
+        "keyword": "robots.txt basics",
+        "tool_slug": "robots-txt-generator",
+        "category": "Developer",
+        "intro": "A robots.txt file gives crawler instructions for a website. It can point to a sitemap and request that crawlers avoid certain paths, but it is not a security tool.",
+        "takeaway": "Use robots.txt for crawl guidance, not privacy. Anything truly private should require authentication and should not be publicly accessible.",
+        "scenario": "Example: a small site may allow all crawlers, disallow an admin path, and include a sitemap URL so search engines can discover public pages more easily.",
+        "steps": ["Choose whether crawlers should access the site.", "Add disallow paths only when needed.", "Include the sitemap URL.", "Upload the file at /robots.txt.", "Test the file after publishing."],
+        "sections": [
+            ("What robots.txt does", "It tells compliant crawlers which paths they should avoid and where the sitemap can be found."),
+            ("What robots.txt does not do", "It does not hide private information, block users, require login, or remove pages that are already indexed."),
+            ("Simple default", "For most public sites, allowing all crawlers and listing the sitemap is a reasonable starting point."),
+            ("Be careful with disallow", "Blocking important CSS, JavaScript, images, or content paths can make search engines understand pages less accurately."),
+        ],
+        "checklist": ["The file is available at /robots.txt.", "The sitemap URL is correct.", "Important public pages are not blocked.", "Private content is protected by access control.", "The syntax uses one instruction per line."],
+        "mistakes": ["Using robots.txt as a password.", "Blocking the entire site by accident.", "Adding paths that do not exist.", "Forgetting to update the sitemap URL after changing domains."],
+        "comparison": [("robots.txt", "Crawler guidance.", "Crawl rules and sitemap location."), ("noindex", "Indexing instruction.", "Keeping a page out of search results."), ("login", "Access control.", "Protecting private content.")],
+        "related_tools": ["robots-txt-generator", "meta-tag-previewer", "keyword-density-checker", "url-encoder"],
+    },
+    "qr-code-ideas-for-small-businesses": {
+        "publish_date": "2026-07-08",
+        "title": "QR Code Ideas for Small Businesses",
+        "description": "Practical QR code uses for menus, invoices, events, feedback forms, contact pages, and local promotions.",
+        "keyword": "QR code ideas for small businesses",
+        "tool_slug": "qr-code-generator",
+        "category": "Business",
+        "intro": "QR codes are useful when someone needs to move from a physical place to a digital page quickly. The best QR codes point to simple, mobile-friendly destinations.",
+        "takeaway": "A QR code is only as useful as the page behind it. Use short, clear destinations and test the code on multiple phones before printing.",
+        "scenario": "Example: a cafe can place a QR code on a counter sign that links to a menu, review form, loyalty signup, or event page.",
+        "steps": ["Choose one clear destination.", "Generate the QR code.", "Test it on multiple phones.", "Print with enough white space around it.", "Add a short label that explains where it goes."],
+        "sections": [
+            ("Good QR destinations", "Menus, appointment pages, feedback forms, invoices, payment pages, contact cards, event registration, and product instructions work well."),
+            ("Keep the page mobile-friendly", "Most QR scans happen on phones. Avoid pages that require pinching, long typing, or desktop-only layouts."),
+            ("Add context", "A QR code without a label is easy to ignore. Add a short phrase such as Scan for menu or Scan to leave feedback."),
+            ("Test before printing", "Printed QR codes should be large enough, high contrast, and surrounded by white space so cameras can read them quickly."),
+        ],
+        "checklist": ["The destination URL is correct.", "The page works on mobile.", "The QR code scans from printed size.", "The label explains the benefit.", "The code is not placed where glare or folds make scanning hard."],
+        "mistakes": ["Linking to a slow or confusing page.", "Printing the QR code too small.", "Using low contrast colors.", "Forgetting to test after changing the destination page."],
+        "comparison": [("Menu QR", "Links to food or service lists.", "Restaurants and cafes."), ("Feedback QR", "Links to a form.", "Customer reviews."), ("Payment QR", "Links to checkout.", "Invoices and counters.")],
+        "related_tools": ["qr-code-generator", "invoice-generator", "url-encoder", "meta-tag-previewer"],
+    },
+}
+
+BLOG_POSTS.update(SCHEDULED_BLOG_POSTS)
+
+
+def _today_iso() -> str:
+    return datetime.utcnow().strftime("%Y-%m-%d")
+
+
+def _is_blog_published(post: dict) -> bool:
+    return post.get("publish_date", "2026-06-10") <= _today_iso()
+
+
+def _published_blog_posts() -> dict[str, dict]:
+    published = {slug: post for slug, post in BLOG_POSTS.items() if _is_blog_published(post)}
+    return dict(sorted(published.items(), key=lambda item: item[1].get("publish_date", "2026-06-10"), reverse=True))
+
 
 @app.context_processor
 def inject_globals():
@@ -1809,7 +1915,7 @@ def index():
         tools=DAILY_TOOLS,
         categories=TOOL_CATEGORIES,
         grouped_tools=_tools_by_category(),
-        blog_posts=BLOG_POSTS,
+        blog_posts=_published_blog_posts(),
         meta_title="Free Online Tools | PDF, Image, Text, Developer, and Calculator Utilities",
         meta_description="Free browser tools for PDFs, images, text, code, calculators, productivity, business tasks, and career exploration.",
         canonical_url=_canonical_url("/"),
@@ -1915,7 +2021,7 @@ def blog_index():
     return render_template(
         "blog_index.html",
         lang=lang,
-        posts=BLOG_POSTS,
+        posts=_published_blog_posts(),
         meta_title="Utility Guides | PDF, Image, Text, and Developer Tool Tutorials",
         meta_description="Practical guides for using free browser tools for PDFs, images, text, developer workflows, and everyday work tasks.",
         canonical_url=_canonical_url("/blog"),
@@ -1925,7 +2031,7 @@ def blog_index():
 @app.route("/blog/<slug>")
 def blog_post(slug):
     post = BLOG_POSTS.get(slug)
-    if not post:
+    if not post or not _is_blog_published(post):
         return redirect(url_for("blog_index"))
     lang = session.get("lang", DEFAULT_LANG)
     tool = DAILY_TOOLS.get(post.get("tool_slug", ""))
@@ -2410,7 +2516,7 @@ def sitemap_xml():
     paths = ["/", "/blog", "/info", "/careers", "/privacy", "/terms"]
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
-    paths.extend(f"/blog/{slug}" for slug in BLOG_POSTS)
+    paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
     paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))

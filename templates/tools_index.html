@@ -54,7 +54,7 @@
       {% for slug, post in blog_posts.items() %}
       {% if loop.index <= 6 %}
       <a class="info-card" href="/blog/{{ slug }}" data-track="click_home_blog">
-        <span class="card-kicker">{{ post.category }}</span>
+        <span class="card-kicker">{{ post.category }}{% if post.publish_date %} · {{ post.publish_date }}{% endif %}</span>
         <strong>{{ post.title }}</strong>
         <span>{{ post.description }}</span>
       </a>

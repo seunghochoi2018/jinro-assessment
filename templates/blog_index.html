@@ -24,7 +24,7 @@
     <div class="link-grid">
       {% for slug, post in posts.items() %}
       <a class="info-card" href="/blog/{{ slug }}" data-track="click_blog_post">
-        <span class="card-kicker">{{ post.category }}</span>
+        <span class="card-kicker">{{ post.category }}{% if post.publish_date %} · {{ post.publish_date }}{% endif %}</span>
         <strong>{{ post.title }}</strong>
         <span>{{ post.description }}</span>
       </a>
