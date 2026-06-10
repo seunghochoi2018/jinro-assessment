@@ -11,6 +11,24 @@
   "url": {{ canonical_url|tojson }}
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in tool_content.faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.q|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.a|tojson }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
 {% if tool.type in ["pdf_merge", "pdf_split", "pdf_extract", "pdf_rotate"] %}
 <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
 {% endif %}
@@ -345,6 +363,42 @@
       <li>Use it in the browser without creating an account.</li>
       <li>Bookmark the page if it is something you repeat daily or weekly.</li>
     </ol>
+  </section>
+
+  <section class="tool-content-section">
+    <h2>About this {{ tool.keyword }}</h2>
+    <p>{{ tool_content.summary }}</p>
+    <p>{{ tool_content.local_note }}</p>
+  </section>
+
+  <section class="tool-content-section">
+    <h2>Common uses</h2>
+    <ul class="article-list">
+      {% for item in tool_content.use_cases %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="tool-content-section">
+    <h2>Practical tips</h2>
+    <ul class="article-list">
+      {% for item in tool_content.tips %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section class="tool-content-section">
+    <h2>FAQ</h2>
+    <div class="faq-list">
+      {% for item in tool_content.faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {% endfor %}
+    </div>
   </section>
 
   <section>

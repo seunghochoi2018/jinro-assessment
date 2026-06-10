@@ -1507,6 +1507,103 @@ def _tools_by_category() -> dict[str, dict[str, dict]]:
     return grouped
 
 
+def _tool_related(slug: str, limit: int = 12) -> dict[str, dict]:
+    tool = DAILY_TOOLS.get(slug, {})
+    category = _tool_category(slug, tool)
+    grouped = _tools_by_category()
+    related: dict[str, dict] = {}
+    for item_slug, item in grouped.get(category, {}).items():
+        if item_slug != slug:
+            related[item_slug] = item
+        if len(related) >= limit:
+            return related
+    for item_slug, item in DAILY_TOOLS.items():
+        if item_slug != slug and item_slug not in related:
+            related[item_slug] = item
+        if len(related) >= limit:
+            break
+    return related
+
+
+def _tool_seo_content(slug: str, tool: dict) -> dict:
+    keyword = tool.get("keyword", tool.get("title", "online tool"))
+    title = tool.get("title", keyword)
+    tool_type = tool.get("type", "")
+    category = _tool_category(slug, tool)
+    category_title = TOOL_CATEGORIES.get(category, {}).get("title", "Online Tools")
+    local_note = (
+        "This tool runs in your browser. For file-based tools, the selected file is processed locally in the tab instead of being uploaded to this server."
+        if slug.startswith("pdf-") or category == "image"
+        else "This tool is designed for quick browser use without creating an account or sending a form to a separate service."
+    )
+    use_cases = {
+        "developer": [
+            f"Clean up copied data before pasting it into a code editor or API client.",
+            f"Check small snippets while debugging without opening a full development environment.",
+            f"Prepare readable examples for documentation, tickets, pull requests, and notes.",
+        ],
+        "text": [
+            f"Review drafts before publishing a blog post, landing page, email, or documentation.",
+            f"Prepare text for social posts, product pages, classroom materials, and quick copy edits.",
+            f"Check repeated wording, formatting, or simple content patterns before sharing.",
+        ],
+        "pdf": [
+            f"Make small PDF changes when you need a quick document cleanup.",
+            f"Prepare pages for forms, school work, business documents, and personal archives.",
+            f"Handle simple page-level PDF tasks without installing a desktop editor.",
+        ],
+        "image": [
+            f"Prepare images for websites, profiles, documents, marketplaces, and email attachments.",
+            f"Reduce file size before upload limits or improve image dimensions for a layout.",
+            f"Create web-friendly image versions for faster pages and smaller downloads.",
+        ],
+        "business": [
+            f"Create simple assets for clients, invoices, events, menus, and small business workflows.",
+            f"Prepare quick business documents without setting up a full design or accounting tool.",
+            f"Use repeatable templates for everyday operational tasks.",
+        ],
+        "calculator": [
+            f"Solve common number questions while shopping, planning, scheduling, or budgeting.",
+            f"Check small calculations without opening a spreadsheet.",
+            f"Compare values quickly before making a decision.",
+        ],
+        "productivity": [
+            f"Use a small focused tool for a task that does not need a full app.",
+            f"Support studying, planning, prioritizing, and repeatable daily routines.",
+            f"Keep a lightweight workflow open in a browser tab.",
+        ],
+    }.get(category, [])
+    tips = [
+        f"Paste or enter only the content needed for the {keyword}.",
+        "Check the result before using it in production, publishing, or sending it to someone else.",
+        f"Bookmark this page if you use this {category_title.lower()} task regularly.",
+    ]
+    if tool_type in {"jwt_decoder", "hash_generator", "password_generator"}:
+        tips[0] = "Avoid pasting live secrets, production credentials, private keys, or sensitive tokens."
+    if tool_type in {"robots_txt_generator", "meta_tag_previewer", "keyword_density_checker"}:
+        tips.append("Use the output as a review aid, not as a guarantee of search ranking or indexing.")
+    return {
+        "summary": f"{title} is a free browser-based {keyword} for quick everyday use. It focuses on a narrow task so you can open the page, finish the job, and move on without account setup.",
+        "local_note": local_note,
+        "use_cases": use_cases,
+        "tips": tips,
+        "faq": [
+            {
+                "q": f"Is this {keyword} free?",
+                "a": f"Yes. You can use this {keyword} page without creating an account.",
+            },
+            {
+                "q": "Do I need to install anything?",
+                "a": "No. The tool runs in a modern web browser.",
+            },
+            {
+                "q": "Can I use it on mobile?",
+                "a": "Yes. The page is responsive, although larger files or long text are usually easier to handle on a desktop screen.",
+            },
+        ],
+    }
+
+
 @app.route("/")
 def index():
     lang = session.get("lang", DEFAULT_LANG)
@@ -1618,13 +1715,13 @@ def tool_page(slug):
     if not tool:
         return redirect(url_for("tools_index"))
     lang = session.get("lang", DEFAULT_LANG)
-    related_tools = {k: v for k, v in DAILY_TOOLS.items() if k != slug}
     return render_template(
         "tool_page.html",
         lang=lang,
         slug=slug,
         tool=tool,
-        related_tools=related_tools,
+        tool_content=_tool_seo_content(slug, tool),
+        related_tools=_tool_related(slug),
         meta_title=f"{tool['title']} | Free Daily Tool",
         meta_description=tool["description"],
         canonical_url=_canonical_url(f"/tools/{slug}"),

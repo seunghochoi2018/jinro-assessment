@@ -225,6 +225,11 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .serp-preview h3 { color: #1a0dab; font-size: 1.15rem; line-height: 1.3; margin: 0.25rem 0; font-weight: 500; }
 .serp-preview p { color: #4d5156; font-size: 0.92rem; line-height: 1.45; margin: 0; }
 .tool-table-wrap { margin-top: 1rem; }
+.tool-content-section p { color: #444; line-height: 1.7; margin-bottom: 0.65rem; }
+.faq-list { display: grid; gap: 0.65rem; }
+.faq-list details { border: 1px solid #e8eaf6; border-radius: 8px; padding: 0.85rem 1rem; background: white; }
+.faq-list summary { cursor: pointer; font-weight: 800; color: #1a1a2e; }
+.faq-list p { color: #555; line-height: 1.6; margin: 0.55rem 0 0; }
 .timer-display { font-size: 4rem; font-weight: 900; text-align: center; color: #667eea; padding: 1rem; font-variant-numeric: tabular-nums; }
 .habit-list { display: grid; gap: 0.55rem; }
 .habit-row { display: flex; gap: 0.7rem; align-items: center; background: #f8f9ff; border: 1px solid #e8eaf6; border-radius: 8px; padding: 0.75rem; cursor: pointer; }
