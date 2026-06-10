@@ -47,6 +47,23 @@
   {% endif %}
   {% endfor %}
 
+  {% if blog_posts %}
+  <section>
+    <h2>Practical guides</h2>
+    <div class="link-grid">
+      {% for slug, post in blog_posts.items() %}
+      {% if loop.index <= 6 %}
+      <a class="info-card" href="/blog/{{ slug }}" data-track="click_home_blog">
+        <span class="card-kicker">{{ post.category }}</span>
+        <strong>{{ post.title }}</strong>
+        <span>{{ post.description }}</span>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
   <section class="muted-section">
     <h2>Why these tools are useful</h2>
     <p>Small tasks should not require a heavy app or a signup flow. These utilities are designed for repeat use: open the page, complete the task, and return when you need the same job done again.</p>

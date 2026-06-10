@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ post.title|tojson }},
+  "description": {{ post.description|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }},
+  "author": {
+    "@type": "Organization",
+    "name": "Work Utilities"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "Work Utilities"
+  }
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page blog-post">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'blog_post', slug: {{ slug|tojson }} };
+  </script>
+  <p class="eyebrow">{{ post.category }} guide</p>
+  <h1>{{ post.title }}</h1>
+  <p class="lead">{{ post.description }}</p>
+
+  {% if tool %}
+  <div class="cta-band">
+    <div>
+      <strong>Use the related tool</strong>
+      <span>{{ tool.description }}</span>
+    </div>
+    <a href="/tools/{{ post.tool_slug }}" class="btn-primary" data-track="click_blog_primary_tool">{{ tool.title }}</a>
+  </div>
+  {% endif %}
+
+  <section>
+    <h2>Quick answer</h2>
+    <p>{{ post.intro }}</p>
+  </section>
+
+  <section>
+    <h2>Step-by-step</h2>
+    <ol class="roadmap-list">
+      {% for step in post.steps %}
+      <li>{{ step }}</li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {% for heading, body in post.sections %}
+  <section>
+    <h2>{{ heading }}</h2>
+    <p>{{ body }}</p>
+  </section>
+  {% endfor %}
+
+  {% if related_tools %}
+  <section>
+    <h2>Related tools</h2>
+    <div class="link-grid">
+      {% for tool_slug, item in related_tools.items() %}
+      <a class="info-card" href="/tools/{{ tool_slug }}" data-track="click_blog_related_tool">
+        <strong>{{ item.title }}</strong>
+        <span>{{ item.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+
+  <section class="muted-section">
+    <h2>Important note</h2>
+    <p>Use these guides for ordinary productivity and work tasks. For sensitive legal, medical, financial, confidential, or regulated documents, follow your organization's security rules and verify results before sharing.</p>
+  </section>
+</article>
+{% endblock %}

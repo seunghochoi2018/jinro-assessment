@@ -667,6 +667,105 @@ TOOL_CATEGORIES = {
     },
 }
 
+BLOG_POSTS = {
+    "how-to-merge-pdf-files-online": {
+        "title": "How to Merge PDF Files Online",
+        "description": "A simple guide to combining PDF files in the browser without installing a desktop PDF editor.",
+        "keyword": "merge PDF files online",
+        "tool_slug": "pdf-merge",
+        "category": "PDF",
+        "intro": "Merging PDFs is useful when separate forms, scans, reports, or receipts need to become one file. A browser-based PDF merge tool is enough for simple page-level combining, especially when you do not need advanced editing.",
+        "sections": [
+            ("When merging PDFs helps", "Use PDF merging when you have several documents that belong together: a cover page and report, multiple receipts, scanned pages, or forms that should be sent as one attachment."),
+            ("Before you start", "Put the files in the order you want, rename them clearly if needed, and check that each PDF opens correctly. If the order matters, add the files one by one in sequence."),
+            ("Privacy and file handling", "For simple browser tools, files can be processed locally in the tab. That is useful for ordinary documents, but sensitive legal, medical, financial, or private records should still be handled carefully."),
+            ("After downloading", "Open the merged PDF and scan the first and last pages. Check page order, orientation, file size, and whether every source document appears."),
+        ],
+        "steps": ["Open the PDF merge tool.", "Select two or more PDF files.", "Confirm the file order.", "Run the merge and download the combined PDF.", "Open the result before sending or archiving it."],
+        "related_tools": ["pdf-merge", "pdf-split", "pdf-extract-pages", "pdf-rotate"],
+    },
+    "how-to-format-json-for-api-debugging": {
+        "title": "How to Format JSON for API Debugging",
+        "description": "Learn how formatted JSON helps you read API responses, config files, mock data, and logs.",
+        "keyword": "format JSON",
+        "tool_slug": "json-formatter",
+        "category": "Developer",
+        "intro": "Raw JSON is often difficult to inspect because it arrives as a long single line. Formatting JSON adds indentation and line breaks, making objects, arrays, strings, numbers, and nested fields easier to read.",
+        "sections": [
+            ("Why JSON formatting matters", "Readable JSON makes debugging faster. You can spot missing commas, unexpected field names, null values, nested arrays, and response shape changes before they become bigger problems."),
+            ("Common places JSON appears", "Developers, analysts, and operators see JSON in API responses, webhooks, config files, logs, exported data, browser storage, and mock payloads."),
+            ("Validation before sharing", "If JSON does not parse, fix the structural issue before pasting it into documentation, tickets, or tests. Common problems include trailing commas, unquoted keys, and mismatched brackets."),
+            ("Minify when needed", "Formatted JSON is best for reading. Minified JSON is better when you need compact text for a URL field, config value, or small payload example."),
+        ],
+        "steps": ["Paste the JSON into the formatter.", "Click format to add indentation.", "Read any validation message.", "Copy the formatted result into your editor or notes.", "Use minify only when compact output is needed."],
+        "related_tools": ["json-formatter", "csv-to-json", "xml-formatter", "base64-converter"],
+    },
+    "compress-images-before-uploading": {
+        "title": "How to Compress Images Before Uploading",
+        "description": "Reduce image file size for websites, email, forms, and marketplaces while keeping the image usable.",
+        "keyword": "compress images",
+        "tool_slug": "image-compressor",
+        "category": "Image",
+        "intro": "Large images slow down pages and can fail upload limits. Compressing an image lowers file size by changing quality, format, or both while keeping the dimensions useful for the task.",
+        "sections": [
+            ("When to compress images", "Compress images before uploading to websites, sending email attachments, submitting forms, listing products, or adding screenshots to documents."),
+            ("Quality tradeoffs", "Lower quality usually means smaller files, but too much compression can create visible artifacts. For photos, start around 70 to 85 percent and check the result."),
+            ("JPG vs WebP", "JPG is widely compatible and good for photos. WebP can be smaller for web use, but check whether the site or app you are uploading to accepts it."),
+            ("Check the final file", "After compression, open the output image at normal viewing size. Confirm text, faces, product details, or important edges still look clear."),
+        ],
+        "steps": ["Open the image compressor.", "Choose the image file.", "Select JPG or WebP output.", "Set a quality level.", "Download and inspect the compressed image."],
+        "related_tools": ["image-compressor", "image-resizer", "image-to-webp", "color-converter"],
+    },
+    "split-vs-extract-pdf-pages": {
+        "title": "PDF Split vs Extract Pages: What Is the Difference?",
+        "description": "Understand when to split every PDF page and when to extract only selected pages into a new file.",
+        "keyword": "split PDF vs extract pages",
+        "tool_slug": "pdf-extract-pages",
+        "category": "PDF",
+        "intro": "PDF split and PDF extract sound similar, but they solve different problems. Splitting usually turns every page into separate files. Extracting creates a new PDF from only the pages you choose.",
+        "sections": [
+            ("Use split when every page matters", "Splitting is helpful for scanned packets, batches of single-page forms, receipts, worksheets, or documents where each page needs to become its own file."),
+            ("Use extract for selected pages", "Extraction is better when you only need pages 2-4 from a report, a single signed page, one chapter, or a small section from a larger PDF."),
+            ("Watch page numbers", "PDF viewers count pages from 1, while some technical tools count from 0. A user-facing extractor should use normal page numbers such as 1, 3, or 5-7."),
+            ("Keep the original", "Always keep the original PDF until you confirm the split or extracted result contains the correct pages."),
+        ],
+        "steps": ["Decide whether you need every page or selected pages.", "Use split for every page.", "Use extract for a page range.", "Download the new file or files.", "Open the output and verify page order."],
+        "related_tools": ["pdf-split", "pdf-extract-pages", "pdf-merge", "pdf-rotate"],
+    },
+    "best-free-browser-tools-for-developers": {
+        "title": "Best Free Browser Tools for Developers",
+        "description": "A practical set of lightweight developer utilities for formatting, encoding, timestamps, UUIDs, hashes, regex, and tokens.",
+        "keyword": "free browser tools for developers",
+        "tool_slug": "json-formatter",
+        "category": "Developer",
+        "intro": "Small developer tasks do not always need a full IDE plugin or command-line workflow. Browser utilities are useful for quick checks while reading docs, testing APIs, writing tickets, or preparing examples.",
+        "sections": [
+            ("Data formatting tools", "JSON, XML, HTML, SQL, and CSV tools help make copied data readable before it goes into a code review, support ticket, or local test."),
+            ("Encoding and decoding tools", "Base64, URL encoding, JWT decoding, and timestamp conversion are common tasks when inspecting APIs and web apps."),
+            ("Generators and testers", "UUID generators, hash generators, and regex testers help create mock data, compare values, and validate text patterns."),
+            ("Security habit", "Do not paste live secrets, production tokens, private keys, passwords, or confidential payloads into any tool unless you fully understand where the data goes."),
+        ],
+        "steps": ["Pick the smallest tool for the task.", "Use sample or non-sensitive data when possible.", "Check the result before copying it into code.", "Bookmark tools you use repeatedly.", "Move sensitive workflows into trusted local tooling."],
+        "related_tools": ["json-formatter", "regex-tester", "uuid-generator", "jwt-decoder", "timestamp-converter", "hash-generator"],
+    },
+    "how-to-check-keyword-density-without-over-optimizing": {
+        "title": "How to Check Keyword Density Without Over-Optimizing",
+        "description": "Use keyword density as a simple review signal while keeping content readable and useful.",
+        "keyword": "keyword density checker",
+        "tool_slug": "keyword-density-checker",
+        "category": "Text",
+        "intro": "Keyword density can show whether a draft repeats the same words too often, but it should not be treated as a ranking formula. The goal is clear, useful writing that naturally covers the topic.",
+        "sections": [
+            ("What keyword density tells you", "A density check counts repeated words and estimates how often they appear compared with total word count. It can reveal accidental repetition or missing topic terms."),
+            ("What it cannot tell you", "Keyword density does not prove that a page will rank. Search engines evaluate usefulness, intent match, links, structure, freshness, and many other signals."),
+            ("Use it as an editing aid", "If one word appears too often, rewrite a few sentences. If important topic terms never appear, add clearer explanations rather than stuffing phrases."),
+            ("Read the page aloud", "After checking density, read the content like a person. If it sounds forced, simplify it."),
+        ],
+        "steps": ["Paste your draft into the checker.", "Review the most repeated words.", "Look for unnatural repetition.", "Add missing terms only where they help the reader.", "Recheck after editing."],
+        "related_tools": ["keyword-density-checker", "word-counter", "case-converter", "markdown-previewer"],
+    },
+}
+
 
 @app.context_processor
 def inject_globals():
@@ -1604,6 +1703,14 @@ def _tool_seo_content(slug: str, tool: dict) -> dict:
     }
 
 
+def _blog_related_tools(post: dict) -> dict[str, dict]:
+    related: dict[str, dict] = {}
+    for slug in post.get("related_tools", []):
+        if slug in DAILY_TOOLS:
+            related[slug] = DAILY_TOOLS[slug]
+    return related
+
+
 @app.route("/")
 def index():
     lang = session.get("lang", DEFAULT_LANG)
@@ -1629,6 +1736,7 @@ def index():
         tools=DAILY_TOOLS,
         categories=TOOL_CATEGORIES,
         grouped_tools=_tools_by_category(),
+        blog_posts=BLOG_POSTS,
         meta_title="Free Online Tools | PDF, Image, Text, Developer, and Calculator Utilities",
         meta_description="Free browser tools for PDFs, images, text, code, calculators, productivity, business tasks, and career exploration.",
         canonical_url=_canonical_url("/"),
@@ -1725,6 +1833,39 @@ def tool_page(slug):
         meta_title=f"{tool['title']} | Free Browser Utility",
         meta_description=tool["description"],
         canonical_url=_canonical_url(f"/tools/{slug}"),
+    )
+
+
+@app.route("/blog")
+def blog_index():
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "blog_index.html",
+        lang=lang,
+        posts=BLOG_POSTS,
+        meta_title="Utility Guides | PDF, Image, Text, and Developer Tool Tutorials",
+        meta_description="Practical guides for using free browser tools for PDFs, images, text, developer workflows, and everyday work tasks.",
+        canonical_url=_canonical_url("/blog"),
+    )
+
+
+@app.route("/blog/<slug>")
+def blog_post(slug):
+    post = BLOG_POSTS.get(slug)
+    if not post:
+        return redirect(url_for("blog_index"))
+    lang = session.get("lang", DEFAULT_LANG)
+    tool = DAILY_TOOLS.get(post.get("tool_slug", ""))
+    return render_template(
+        "blog_post.html",
+        lang=lang,
+        slug=slug,
+        post=post,
+        tool=tool,
+        related_tools=_blog_related_tools(post),
+        meta_title=f"{post['title']} | Utility Guide",
+        meta_description=post["description"],
+        canonical_url=_canonical_url(f"/blog/{slug}"),
     )
 
 
@@ -2193,9 +2334,10 @@ def indexnow_key_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/info", "/careers", "/privacy", "/terms"]
+    paths = ["/", "/blog", "/info", "/careers", "/privacy", "/terms"]
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
+    paths.extend(f"/blog/{slug}" for slug in BLOG_POSTS)
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
     paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))
@@ -2207,6 +2349,10 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path.startswith("/guides/"):
             return "weekly", "0.9"
+        if path == "/blog":
+            return "daily", "0.9"
+        if path.startswith("/blog/"):
+            return "weekly", "0.8"
         if path.startswith("/tools/category/"):
             return "weekly", "0.9"
         if path.startswith("/tools/"):
