@@ -766,6 +766,79 @@ BLOG_POSTS = {
     },
 }
 
+BLOG_ENHANCEMENTS = {
+    "how-to-merge-pdf-files-online": {
+        "takeaway": "Use merge when several finished PDFs should travel as one document. The most common mistake is not the merge itself, but sending pages in the wrong order.",
+        "scenario": "Example: you have a signed form, three receipts, and a cover note for a reimbursement request. Merge them into one PDF so the recipient does not have to open five attachments.",
+        "checklist": ["File names are clear before selecting them.", "Pages are in the order the recipient expects.", "Every source PDF opens correctly.", "The merged file opens after download.", "The final file size is acceptable for email or upload limits."],
+        "mistakes": ["Uploading the same PDF twice.", "Forgetting a cover page or signature page.", "Assuming the output order is correct without opening the result.", "Merging confidential files on a shared or untrusted device."],
+        "comparison": [
+            ("Merge", "Combine several PDFs into one file.", "Sending one complete packet."),
+            ("Split", "Turn one PDF into separate page files.", "Separating scanned batches."),
+            ("Extract", "Create a new PDF from selected pages.", "Sharing only pages 2-4 of a larger file."),
+        ],
+    },
+    "how-to-format-json-for-api-debugging": {
+        "takeaway": "Format JSON when you need to understand structure; minify JSON when you need compact output. Do not paste live secrets or production tokens.",
+        "scenario": "Example: an API returns a one-line response and a field is missing in your app. Formatting the response lets you inspect nested objects, arrays, null values, and naming differences quickly.",
+        "checklist": ["The JSON parses without errors.", "Nested arrays and objects are easy to scan.", "Unexpected null or empty values are visible.", "Sensitive tokens are removed before sharing.", "The formatted result matches the original data structure."],
+        "mistakes": ["Treating JavaScript object syntax as valid JSON.", "Leaving trailing commas from copied code.", "Sharing real API keys in examples.", "Changing the payload while trying to format it."],
+        "comparison": [
+            ("Format", "Adds indentation and line breaks.", "Reading and debugging."),
+            ("Validate", "Checks whether the JSON can be parsed.", "Finding syntax errors."),
+            ("Minify", "Removes unnecessary whitespace.", "Compact payload examples."),
+        ],
+    },
+    "compress-images-before-uploading": {
+        "takeaway": "Compress images enough to meet upload or page-speed needs, but not so much that text, product details, or faces become unclear.",
+        "scenario": "Example: a form rejects a 7 MB photo because the limit is 2 MB. Compress the image as JPG or WebP, download it, and inspect the important details before uploading again.",
+        "checklist": ["The output file is below the upload limit.", "Important text or product details remain readable.", "The format is accepted by the target site.", "The image dimensions still fit the layout.", "The original file is kept until the compressed version is approved."],
+        "mistakes": ["Using very low quality for images with small text.", "Choosing WebP when the upload form only accepts JPG or PNG.", "Compressing repeatedly from an already compressed file.", "Ignoring dimensions when file size is not the only issue."],
+        "comparison": [
+            ("Compress", "Reduce file size by changing quality or format.", "Meeting upload limits."),
+            ("Resize", "Change pixel width and height.", "Fitting a layout or profile image."),
+            ("Convert", "Change file format.", "Creating WebP or JPG versions."),
+        ],
+    },
+    "split-vs-extract-pdf-pages": {
+        "takeaway": "Split is for every page. Extract is for chosen pages. If you only need a few pages from a long file, extraction is usually cleaner.",
+        "scenario": "Example: a 40-page packet includes a 3-page agreement you need to email. Extract pages 12-14 instead of splitting the entire file into 40 separate PDFs.",
+        "checklist": ["You know the exact page numbers.", "The original PDF is saved safely.", "The output contains only the needed pages.", "The page order is correct.", "The output file name explains what was extracted."],
+        "mistakes": ["Splitting a large PDF when only three pages are needed.", "Entering the wrong page range.", "Deleting the original before checking the output.", "Confusing printed page labels with PDF viewer page numbers."],
+        "comparison": [
+            ("Split", "Creates separate output for every page.", "Scanned packets and batches."),
+            ("Extract", "Creates one PDF from selected pages.", "Sharing a section."),
+            ("Rotate", "Changes page orientation.", "Fixing sideways scans."),
+        ],
+    },
+    "best-free-browser-tools-for-developers": {
+        "takeaway": "Browser developer tools are best for quick inspection and examples. For secrets, production payloads, and regulated data, use trusted local tooling.",
+        "scenario": "Example: while writing an API ticket, you need to format a JSON response, decode a timestamp, generate a UUID for sample data, and test a small regex. Browser utilities can handle those small tasks without switching context.",
+        "checklist": ["Use sample data when possible.", "Remove secrets before decoding or formatting.", "Copy results into tests only after checking them.", "Bookmark tools that save repeated lookup time.", "Use local scripts for sensitive or automated workflows."],
+        "mistakes": ["Pasting production JWTs or API keys.", "Trusting a regex after one tiny example.", "Using generated UUIDs as proof of uniqueness beyond their intended purpose.", "Forgetting timezone differences when reading timestamps."],
+        "comparison": [
+            ("Formatter", "Makes data easier to read.", "JSON, XML, SQL, HTML."),
+            ("Converter", "Changes representation.", "Base64, URL encoding, timestamps."),
+            ("Generator", "Creates sample values.", "UUIDs, hashes, passwords."),
+        ],
+    },
+    "how-to-check-keyword-density-without-over-optimizing": {
+        "takeaway": "Keyword density is a review signal, not a ranking recipe. Use it to catch awkward repetition and missing topic coverage.",
+        "scenario": "Example: a product page repeats the same phrase in every paragraph. A density check makes the repetition visible so you can replace some mentions with clearer explanations or related terms.",
+        "checklist": ["The main topic appears naturally.", "Repeated words do not make the page sound robotic.", "Important related terms are covered where useful.", "Headings match what readers are trying to solve.", "The final draft still reads well aloud."],
+        "mistakes": ["Chasing a fixed percentage.", "Adding keywords where they do not help the reader.", "Ignoring search intent and usefulness.", "Removing necessary repeated terms just to lower a number."],
+        "comparison": [
+            ("Density", "How often a word appears.", "Finding repetition."),
+            ("Coverage", "Whether related ideas are explained.", "Making content useful."),
+            ("Readability", "How naturally the page reads.", "Keeping users engaged."),
+        ],
+    },
+}
+
+for _slug, _enhancement in BLOG_ENHANCEMENTS.items():
+    if _slug in BLOG_POSTS:
+        BLOG_POSTS[_slug].update(_enhancement)
+
 
 @app.context_processor
 def inject_globals():

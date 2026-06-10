@@ -182,6 +182,12 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .clean-list { margin: 0.8rem 0 1rem 1.2rem; text-align: left; line-height: 1.7; }
 .article-list { margin-left: 1.2rem; line-height: 1.7; color: #444; }
 .article-list li { margin-bottom: 0.35rem; }
+.takeaway-box { display: flex; flex-direction: column; gap: 0.35rem; background: #f8f9ff; border: 1px solid #dfe6ff; border-left: 4px solid #667eea; border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+.takeaway-box strong { color: #1a1a2e; }
+.takeaway-box span { color: #444; line-height: 1.55; }
+.check-list { display: grid; gap: 0.55rem; margin: 0; padding: 0; list-style: none; }
+.check-list li { background: white; border: 1px solid #e8eaf6; border-radius: 8px; padding: 0.75rem 0.85rem; color: #444; line-height: 1.5; }
+.check-list li::before { content: "Check"; display: inline-block; color: #667eea; font-weight: 800; font-size: 0.72rem; margin-right: 0.55rem; text-transform: uppercase; }
 .result-summary-card { background: #f8f9ff; border: 1px solid #e8eaf6; border-radius: 10px; padding: 1rem; margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.35rem; }
 .result-summary-card strong { color: #1a1a2e; font-size: 1.05rem; }
 .result-summary-card span { color: #666; font-size: 0.92rem; line-height: 1.5; }

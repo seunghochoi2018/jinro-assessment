@@ -40,7 +40,20 @@
   <section>
     <h2>Quick answer</h2>
     <p>{{ post.intro }}</p>
+    {% if post.takeaway %}
+    <div class="takeaway-box">
+      <strong>Bottom line</strong>
+      <span>{{ post.takeaway }}</span>
+    </div>
+    {% endif %}
   </section>
+
+  {% if post.scenario %}
+  <section>
+    <h2>Real-world example</h2>
+    <p>{{ post.scenario }}</p>
+  </section>
+  {% endif %}
 
   <section>
     <h2>Step-by-step</h2>
@@ -57,6 +70,44 @@
     <p>{{ body }}</p>
   </section>
   {% endfor %}
+
+  {% if post.checklist %}
+  <section>
+    <h2>Checklist before you finish</h2>
+    <ul class="check-list">
+      {% for item in post.checklist %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if post.mistakes %}
+  <section>
+    <h2>Common mistakes to avoid</h2>
+    <ul class="article-list">
+      {% for item in post.mistakes %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+  {% endif %}
+
+  {% if post.comparison %}
+  <section>
+    <h2>Which option should you use?</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Option</th><th>What it does</th><th>Best for</th></tr></thead>
+        <tbody>
+          {% for label, meaning, best_for in post.comparison %}
+          <tr><td>{{ label }}</td><td>{{ meaning }}</td><td>{{ best_for }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
 
   {% if related_tools %}
   <section>
