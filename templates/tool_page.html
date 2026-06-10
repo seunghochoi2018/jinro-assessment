@@ -266,6 +266,75 @@
     <textarea id="csv-input" class="tool-textarea" rows="10" placeholder="name,age&#10;Alex,28&#10;Sam,35"></textarea>
     <button type="button" class="btn-primary" id="csv-run">Convert CSV to JSON</button>
     <textarea id="csv-output" class="tool-textarea" rows="10" readonly placeholder="JSON appears here..."></textarea>
+    {% elif tool.type == "xml_formatter" %}
+    <textarea id="xml-input" class="tool-textarea" rows="10" placeholder="Paste XML here..."></textarea>
+    <div class="tool-actions">
+      <button type="button" class="btn-primary" id="xml-format">Format XML</button>
+      <button type="button" class="btn-secondary" id="xml-minify">Minify</button>
+    </div>
+    <textarea id="xml-output" class="tool-textarea" rows="10" readonly placeholder="Formatted XML appears here..."></textarea>
+    <div class="tool-result" id="xml-status">Waiting for XML.</div>
+    {% elif tool.type == "html_formatter" %}
+    <textarea id="html-input" class="tool-textarea" rows="10" placeholder="Paste HTML here..."></textarea>
+    <button type="button" class="btn-primary" id="html-format">Format HTML</button>
+    <textarea id="html-output" class="tool-textarea" rows="10" readonly placeholder="Formatted HTML appears here..."></textarea>
+    {% elif tool.type == "sql_formatter" %}
+    <textarea id="sql-input" class="tool-textarea" rows="10" placeholder="select * from users where active = 1 order by created_at desc"></textarea>
+    <div class="tool-actions">
+      <button type="button" class="btn-primary" id="sql-format">Format SQL</button>
+      <button type="button" class="btn-secondary" id="sql-upper">Uppercase keywords</button>
+    </div>
+    <textarea id="sql-output" class="tool-textarea" rows="10" readonly placeholder="Formatted SQL appears here..."></textarea>
+    {% elif tool.type == "color_converter" %}
+    <div class="tool-grid">
+      <label>Color <input id="color-input" class="form-input" type="color" value="#667eea"></label>
+      <input id="color-text" class="form-input" value="#667eea" placeholder="#667eea or rgb(102,126,234)">
+      <button type="button" class="btn-primary" id="color-run">Convert</button>
+    </div>
+    <div class="color-swatch" id="color-swatch"></div>
+    <div class="tool-result mono-result" id="color-output">Choose or enter a color.</div>
+    {% elif tool.type == "meta_tag_previewer" %}
+    <input id="meta-title" class="form-input" maxlength="90" placeholder="Page title">
+    <textarea id="meta-description" class="tool-textarea" rows="4" maxlength="220" placeholder="Meta description"></textarea>
+    <input id="meta-url" class="form-input" placeholder="https://example.com/page">
+    <div class="serp-preview">
+      <div id="serp-url">example.com/page</div>
+      <h3 id="serp-title">Page title preview</h3>
+      <p id="serp-description">Meta description preview appears here.</p>
+    </div>
+    <div class="tool-result" id="meta-counts">Title 0 characters. Description 0 characters.</div>
+    {% elif tool.type == "robots_txt_generator" %}
+    <div class="tool-grid">
+      <input id="robots-sitemap" class="form-input" placeholder="https://example.com/sitemap.xml">
+      <input id="robots-disallow" class="form-input" placeholder="/admin, /private">
+      <select id="robots-policy" class="form-input">
+        <option value="allow">Allow all crawlers</option>
+        <option value="block_paths">Block selected paths</option>
+        <option value="block_all">Block all crawlers</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" id="robots-run">Generate robots.txt</button>
+    <textarea id="robots-output" class="tool-textarea" rows="8" readonly placeholder="robots.txt appears here..."></textarea>
+    {% elif tool.type == "lorem_ipsum_generator" %}
+    <div class="tool-grid">
+      <input id="lorem-count" class="form-input" type="number" min="1" max="30" value="3">
+      <select id="lorem-unit" class="form-input">
+        <option value="paragraphs">Paragraphs</option>
+        <option value="sentences">Sentences</option>
+        <option value="words">Words</option>
+      </select>
+      <button type="button" class="btn-primary" id="lorem-run">Generate</button>
+    </div>
+    <textarea id="lorem-output" class="tool-textarea" rows="10" readonly placeholder="Placeholder text appears here..."></textarea>
+    {% elif tool.type == "keyword_density_checker" %}
+    <textarea id="density-input" class="tool-textarea" rows="10" placeholder="Paste content to analyze..."></textarea>
+    <button type="button" class="btn-primary" id="density-run">Check density</button>
+    <div class="analytics-table-wrap tool-table-wrap">
+      <table class="analytics-table" id="density-table">
+        <thead><tr><th>Word</th><th>Count</th><th>Density</th></tr></thead>
+        <tbody><tr><td colspan="3">Enter text and run the checker.</td></tr></tbody>
+      </table>
+    </div>
     {% endif %}
   </section>
 
@@ -884,6 +953,167 @@
       const headers = rows.shift() || [];
       const data = rows.filter(row => row.length).map(row => Object.fromEntries(headers.map((header, idx) => [header, row[idx] || ''])));
       document.getElementById('csv-output').value = JSON.stringify(data, null, 2);
+    });
+  }
+  if (type === 'xml_formatter') {
+    const input = document.getElementById('xml-input');
+    const output = document.getElementById('xml-output');
+    const status = document.getElementById('xml-status');
+    const formatXml = text => {
+      const compact = text.replace(/>\s+</g, '><').trim();
+      const tokens = compact.replace(/(>)(<)(\/*)/g, '$1\n$2$3').split('\n');
+      let indent = 0;
+      return tokens.map(token => {
+        if (/^<\//.test(token)) indent = Math.max(0, indent - 1);
+        const line = '  '.repeat(indent) + token;
+        if (/^<[^!?/][^>]*[^/]?>$/.test(token) && !/^<[^>]+>.*<\/[^>]+>$/.test(token)) indent += 1;
+        return line;
+      }).join('\n');
+    };
+    document.getElementById('xml-format').addEventListener('click', () => {
+      const text = input.value.trim();
+      const parsed = new DOMParser().parseFromString(text, 'application/xml');
+      const error = parsed.querySelector('parsererror');
+      status.textContent = error ? 'XML parse warning: check tag names, nesting, and closing tags.' : 'XML parsed successfully.';
+      output.value = text ? formatXml(text) : '';
+    });
+    document.getElementById('xml-minify').addEventListener('click', () => {
+      output.value = input.value.replace(/>\s+</g, '><').trim();
+      status.textContent = 'XML minified.';
+    });
+  }
+  if (type === 'html_formatter') {
+    document.getElementById('html-format').addEventListener('click', () => {
+      const raw = document.getElementById('html-input').value.trim();
+      const tokens = raw.replace(/>\s+</g, '><').replace(/(>)(<)/g, '$1\n$2').split('\n').filter(Boolean);
+      const voidTags = new Set(['area','base','br','col','embed','hr','img','input','link','meta','param','source','track','wbr']);
+      let indent = 0;
+      const formatted = tokens.map(token => {
+        const close = /^<\//.test(token);
+        const tag = (token.match(/^<\/?([a-z0-9-]+)/i) || [,''])[1].toLowerCase();
+        if (close) indent = Math.max(0, indent - 1);
+        const line = '  '.repeat(indent) + token;
+        if (!close && /^<[^!?/][^>]*>$/.test(token) && !token.endsWith('/>') && !voidTags.has(tag) && !/^<[^>]+>.*<\/[^>]+>$/.test(token)) indent += 1;
+        return line;
+      }).join('\n');
+      document.getElementById('html-output').value = formatted;
+    });
+  }
+  if (type === 'sql_formatter') {
+    const keywords = ['select','from','where','inner join','left join','right join','full join','join','group by','order by','having','limit','offset','values','set','and','or'];
+    const formatSql = (text, upper) => {
+      let out = text.replace(/\s+/g, ' ').trim();
+      keywords.forEach(keyword => {
+        const label = upper ? keyword.toUpperCase() : keyword;
+        out = out.replace(new RegExp('\\b' + keyword.replace(' ', '\\s+') + '\\b', 'gi'), '\n' + label);
+      });
+      return out.replace(/^\n/, '').replace(/,\s*/g, ',\n  ');
+    };
+    document.getElementById('sql-format').addEventListener('click', () => {
+      document.getElementById('sql-output').value = formatSql(document.getElementById('sql-input').value, false);
+    });
+    document.getElementById('sql-upper').addEventListener('click', () => {
+      document.getElementById('sql-output').value = formatSql(document.getElementById('sql-input').value, true);
+    });
+  }
+  if (type === 'color_converter') {
+    const colorInput = document.getElementById('color-input');
+    const textInput = document.getElementById('color-text');
+    const swatch = document.getElementById('color-swatch');
+    const output = document.getElementById('color-output');
+    const hexToRgb = hex => {
+      const clean = hex.replace('#', '').trim();
+      if (!/^[0-9a-f]{6}$/i.test(clean)) return null;
+      return [0, 2, 4].map(i => parseInt(clean.slice(i, i + 2), 16));
+    };
+    const rgbToHsl = ([r, g, b]) => {
+      r /= 255; g /= 255; b /= 255;
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        h = max === r ? (g - b) / d + (g < b ? 6 : 0) : max === g ? (b - r) / d + 2 : (r - g) / d + 4;
+        h *= 60;
+      }
+      return [Math.round(h), Math.round(s * 100), Math.round(l * 100)];
+    };
+    const renderColor = value => {
+      const rgb = hexToRgb(value);
+      if (!rgb) {
+        output.textContent = 'Enter a 6-digit HEX color such as #667eea.';
+        return;
+      }
+      const hex = '#' + rgb.map(n => n.toString(16).padStart(2, '0')).join('');
+      const hsl = rgbToHsl(rgb);
+      swatch.style.background = hex;
+      colorInput.value = hex;
+      textInput.value = hex;
+      output.textContent = `HEX ${hex}\nRGB rgb(${rgb.join(', ')})\nHSL hsl(${hsl[0]}, ${hsl[1]}%, ${hsl[2]}%)`;
+    };
+    colorInput.addEventListener('input', () => renderColor(colorInput.value));
+    document.getElementById('color-run').addEventListener('click', () => renderColor(textInput.value));
+    renderColor(colorInput.value);
+  }
+  if (type === 'meta_tag_previewer') {
+    const title = document.getElementById('meta-title');
+    const desc = document.getElementById('meta-description');
+    const url = document.getElementById('meta-url');
+    const update = () => {
+      document.getElementById('serp-title').textContent = title.value || 'Page title preview';
+      document.getElementById('serp-description').textContent = desc.value || 'Meta description preview appears here.';
+      document.getElementById('serp-url').textContent = url.value || 'example.com/page';
+      document.getElementById('meta-counts').textContent = `Title ${title.value.length} characters. Description ${desc.value.length} characters.`;
+    };
+    [title, desc, url].forEach(el => el.addEventListener('input', update));
+    update();
+  }
+  if (type === 'robots_txt_generator') {
+    document.getElementById('robots-run').addEventListener('click', () => {
+      const policy = document.getElementById('robots-policy').value;
+      const paths = document.getElementById('robots-disallow').value.split(',').map(s => s.trim()).filter(Boolean);
+      const sitemap = document.getElementById('robots-sitemap').value.trim();
+      const lines = ['User-agent: *'];
+      if (policy === 'block_all') {
+        lines.push('Disallow: /');
+      } else if (policy === 'block_paths') {
+        paths.forEach(path => lines.push('Disallow: ' + path));
+        if (!paths.length) lines.push('Allow: /');
+      } else {
+        lines.push('Allow: /');
+      }
+      if (sitemap) lines.push('', 'Sitemap: ' + sitemap);
+      document.getElementById('robots-output').value = lines.join('\n');
+    });
+  }
+  if (type === 'lorem_ipsum_generator') {
+    const words = 'lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua'.split(' ');
+    const sentence = () => {
+      const len = 8 + Math.floor(Math.random() * 10);
+      const text = Array.from({ length: len }, (_, i) => words[(i + Math.floor(Math.random() * words.length)) % words.length]).join(' ');
+      return text.charAt(0).toUpperCase() + text.slice(1) + '.';
+    };
+    document.getElementById('lorem-run').addEventListener('click', () => {
+      const count = Math.max(1, Math.min(30, Number(document.getElementById('lorem-count').value) || 1));
+      const unit = document.getElementById('lorem-unit').value;
+      let result = '';
+      if (unit === 'words') result = Array.from({ length: count }, (_, i) => words[i % words.length]).join(' ');
+      if (unit === 'sentences') result = Array.from({ length: count }, sentence).join(' ');
+      if (unit === 'paragraphs') result = Array.from({ length: count }, () => Array.from({ length: 4 }, sentence).join(' ')).join('\n\n');
+      document.getElementById('lorem-output').value = result;
+    });
+  }
+  if (type === 'keyword_density_checker') {
+    document.getElementById('density-run').addEventListener('click', () => {
+      const words = document.getElementById('density-input').value.toLowerCase().match(/[a-z0-9]+(?:'[a-z]+)?/g) || [];
+      const stop = new Set(['the','and','for','you','that','with','this','from','are','was','were','have','has','but','not','your','they','their','about']);
+      const counts = new Map();
+      words.filter(word => word.length > 2 && !stop.has(word)).forEach(word => counts.set(word, (counts.get(word) || 0) + 1));
+      const rows = [...counts.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25);
+      const total = Math.max(1, words.length);
+      document.querySelector('#density-table tbody').innerHTML = rows.length
+        ? rows.map(([word, count]) => `<tr><td>${word}</td><td>${count}</td><td>${((count / total) * 100).toFixed(2)}%</td></tr>`).join('')
+        : '<tr><td colspan="3">No repeated keywords found.</td></tr>';
     });
   }
 })();

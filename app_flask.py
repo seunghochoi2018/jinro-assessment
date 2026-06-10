@@ -571,6 +571,62 @@ DAILY_TOOLS = {
         "keyword": "CSV to JSON",
         "type": "csv_to_json",
     },
+    "xml-formatter": {
+        "title": "XML Formatter",
+        "headline": "XML formatter and validator",
+        "description": "Format XML with readable indentation and check for basic XML parsing errors in your browser.",
+        "keyword": "XML formatter",
+        "type": "xml_formatter",
+    },
+    "html-formatter": {
+        "title": "HTML Formatter",
+        "headline": "HTML formatter",
+        "description": "Format HTML markup into a more readable structure for editing, debugging, and quick cleanup.",
+        "keyword": "HTML formatter",
+        "type": "html_formatter",
+    },
+    "sql-formatter": {
+        "title": "SQL Formatter",
+        "headline": "SQL formatter",
+        "description": "Make simple SQL queries easier to read by adding line breaks around common clauses and keywords.",
+        "keyword": "SQL formatter",
+        "type": "sql_formatter",
+    },
+    "color-converter": {
+        "title": "Color Converter",
+        "headline": "HEX, RGB, and HSL color converter",
+        "description": "Convert colors between HEX, RGB, and HSL values for design, CSS, and front-end work.",
+        "keyword": "color converter",
+        "type": "color_converter",
+    },
+    "meta-tag-previewer": {
+        "title": "Meta Tag Previewer",
+        "headline": "Meta title and description previewer",
+        "description": "Preview a search result snippet from a page title, meta description, and URL before publishing.",
+        "keyword": "meta tag previewer",
+        "type": "meta_tag_previewer",
+    },
+    "robots-txt-generator": {
+        "title": "Robots.txt Generator",
+        "headline": "Robots.txt generator",
+        "description": "Generate a simple robots.txt file with allow, disallow, and sitemap lines for a website.",
+        "keyword": "robots.txt generator",
+        "type": "robots_txt_generator",
+    },
+    "lorem-ipsum-generator": {
+        "title": "Lorem Ipsum Generator",
+        "headline": "Lorem ipsum generator",
+        "description": "Generate placeholder paragraphs, sentences, or words for layouts, mockups, and drafts.",
+        "keyword": "lorem ipsum generator",
+        "type": "lorem_ipsum_generator",
+    },
+    "keyword-density-checker": {
+        "title": "Keyword Density Checker",
+        "headline": "Keyword density checker",
+        "description": "Check how often words appear in a text and estimate simple keyword density for content review.",
+        "keyword": "keyword density checker",
+        "type": "keyword_density_checker",
+    },
 }
 
 TOOL_CATEGORIES = {
@@ -1423,14 +1479,18 @@ def _tool_category(slug: str, tool: dict) -> str:
     if tool_type in {
         "json_formatter", "base64_converter", "url_encoder", "hash_generator",
         "timestamp_converter", "regex_tester", "uuid_generator", "jwt_decoder",
-        "csv_to_json",
+        "csv_to_json", "xml_formatter", "html_formatter", "sql_formatter",
+        "color_converter", "meta_tag_previewer", "robots_txt_generator",
     }:
         return "developer"
     if tool_type in {"image_resizer", "image_compressor", "image_to_webp"}:
         return "image"
     if tool_type in {"qr_code_generator", "invoice_generator"}:
         return "business"
-    if tool_type in {"word_counter", "case_converter", "text_repeater", "text_diff", "markdown_previewer"}:
+    if tool_type in {
+        "word_counter", "case_converter", "text_repeater", "text_diff",
+        "markdown_previewer", "lorem_ipsum_generator", "keyword_density_checker",
+    }:
         return "text"
     if tool_type in {
         "percentage_calculator", "age_calculator", "time_calculator",
