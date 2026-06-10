@@ -2193,7 +2193,7 @@ def indexnow_key_txt():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/careers", "/privacy", "/terms"]
+    paths = ["/", "/info", "/careers", "/privacy", "/terms"]
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
