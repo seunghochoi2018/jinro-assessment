@@ -4,6 +4,7 @@ import json
 import base64
 import hashlib
 import sqlite3
+import tempfile
 from datetime import datetime
 
 from flask import Flask, render_template, request, session, redirect, url_for, make_response, jsonify
@@ -53,7 +54,7 @@ DEFAULT_ADSENSE_CLIENT = "ca-pub-6018524927950587"
 INDEXNOW_KEY = os.environ.get("INDEXNOW_KEY", "9e7a7feff4e24bb7aaefbc5fb60d6d3d")
 ANALYTICS_DB = os.environ.get(
     "ANALYTICS_DB",
-    os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "analytics.sqlite3"),
+    os.path.join(tempfile.gettempdir(), "careersdna", "analytics.sqlite3"),
 )
 
 SEO_TEST_PAGES = {
@@ -1972,8 +1973,9 @@ def analytics_event():
     payload = request.get_json(silent=True) or {}
     try:
         _store_analytics_event(payload)
-    except Exception:
+    except Exception as exc:
         # Analytics must never break the user-facing app.
+        app.logger.warning("analytics_event_store_failed: %s", exc)
         pass
     return ("", 204)
 
