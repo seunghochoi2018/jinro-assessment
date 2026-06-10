@@ -1607,20 +1607,30 @@ def _tool_seo_content(slug: str, tool: dict) -> dict:
 @app.route("/")
 def index():
     lang = session.get("lang", DEFAULT_LANG)
-    shared_data = None
     r_param = request.args.get("r")
     if r_param:
         shared_data = _decode_share_param(r_param)
+        if shared_data:
+            return render_template(
+                "welcome.html",
+                lang=lang,
+                LANG_CONFIG=LANG_CONFIG,
+                shared_data=shared_data,
+                test_pages=SEO_TEST_PAGES,
+                guide_pages=SEO_GUIDE_PAGES,
+                featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
+                meta_title="Shared Career Result | Career Assessment",
+                meta_description="View a shared career exploration result and take the free career assessment.",
+                canonical_url=_canonical_url("/"),
+            )
     return render_template(
-        "welcome.html",
+        "tools_index.html",
         lang=lang,
-        LANG_CONFIG=LANG_CONFIG,
-        shared_data=shared_data,
-        test_pages=SEO_TEST_PAGES,
-        guide_pages=SEO_GUIDE_PAGES,
-        featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
-        meta_title="Free Career Test | Career Aptitude Test and Job Match",
-        meta_description="Take a free career test to compare interests, strengths, personality, and work values against 174 career profiles with practical next steps.",
+        tools=DAILY_TOOLS,
+        categories=TOOL_CATEGORIES,
+        grouped_tools=_tools_by_category(),
+        meta_title="Free Online Tools | PDF, Image, Text, Developer, and Calculator Utilities",
+        meta_description="Free browser tools for PDFs, images, text, code, calculators, productivity, business tasks, and career exploration.",
         canonical_url=_canonical_url("/"),
     )
 
@@ -1671,17 +1681,7 @@ def seo_guide_page(slug):
 
 @app.route("/tools")
 def tools_index():
-    lang = session.get("lang", DEFAULT_LANG)
-    return render_template(
-        "tools_index.html",
-        lang=lang,
-        tools=DAILY_TOOLS,
-        categories=TOOL_CATEGORIES,
-        grouped_tools=_tools_by_category(),
-        meta_title="Work Utilities | Free Browser Tools for Documents, Text, Code, and Images",
-        meta_description="Free browser utilities for quick work tasks: PDF tools, text tools, developer formatters, image converters, and small business helpers.",
-        canonical_url=_canonical_url("/tools"),
-    )
+    return redirect(url_for("index"))
 
 
 @app.route("/pdf-tools")
@@ -2194,8 +2194,6 @@ def indexnow_key_txt():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     paths = ["/", "/careers", "/privacy", "/terms"]
-    paths.append("/tools")
-    paths.append("/pdf-tools")
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
@@ -2209,8 +2207,6 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path.startswith("/guides/"):
             return "weekly", "0.9"
-        if path == "/tools":
-            return "daily", "0.9"
         if path.startswith("/tools/category/"):
             return "weekly", "0.9"
         if path.startswith("/tools/"):
