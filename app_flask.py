@@ -1678,8 +1678,8 @@ def tools_index():
         tools=DAILY_TOOLS,
         categories=TOOL_CATEGORIES,
         grouped_tools=_tools_by_category(),
-        meta_title="Daily Tools | Free Word Counter, Timer, Picker, and Habit Tracker",
-        meta_description="Free daily tools for repeat use: word counter, random picker, Pomodoro timer, habit tracker, and decision wheel.",
+        meta_title="Work Utilities | Free Browser Tools for Documents, Text, Code, and Images",
+        meta_description="Free browser utilities for quick work tasks: PDF tools, text tools, developer formatters, image converters, and small business helpers.",
         canonical_url=_canonical_url("/tools"),
     )
 
@@ -1722,7 +1722,7 @@ def tool_page(slug):
         tool=tool,
         tool_content=_tool_seo_content(slug, tool),
         related_tools=_tool_related(slug),
-        meta_title=f"{tool['title']} | Free Daily Tool",
+        meta_title=f"{tool['title']} | Free Browser Utility",
         meta_description=tool["description"],
         canonical_url=_canonical_url(f"/tools/{slug}"),
     )
