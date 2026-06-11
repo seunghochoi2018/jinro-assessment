@@ -353,6 +353,79 @@
         <tbody><tr><td colspan="3">Enter text and run the checker.</td></tr></tbody>
       </table>
     </div>
+    {% elif tool.type == "interview_outfit_picker" %}
+    <div class="tool-grid">
+      <select id="outfit-industry" class="form-input">
+        <option value="corporate">Corporate / finance / law</option>
+        <option value="tech">Tech / product / startup</option>
+        <option value="creative">Creative / design / media</option>
+        <option value="service">Service / education / healthcare</option>
+      </select>
+      <select id="outfit-formality" class="form-input">
+        <option value="formal">Formal</option>
+        <option value="business">Business casual</option>
+        <option value="smart">Smart casual</option>
+      </select>
+      <select id="outfit-season" class="form-input">
+        <option value="neutral">Any season</option>
+        <option value="warm">Warm weather</option>
+        <option value="cold">Cold weather</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" id="outfit-run">Build outfit guide</button>
+    <div class="tool-result mono-result" id="outfit-result">Choose the setting, then build a guide.</div>
+    {% elif tool.type == "business_casual_decoder" %}
+    <div class="tool-grid">
+      <select id="dress-code" class="form-input">
+        <option value="business-formal">Business formal</option>
+        <option value="business-casual">Business casual</option>
+        <option value="smart-casual">Smart casual</option>
+        <option value="startup-casual">Startup casual</option>
+      </select>
+      <select id="dress-event" class="form-input">
+        <option value="interview">Interview</option>
+        <option value="first-day">First day</option>
+        <option value="meeting">Client meeting</option>
+        <option value="daily">Regular workday</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" id="dress-run">Decode dress code</button>
+    <div class="tool-result mono-result" id="dress-result">Choose a dress code and event.</div>
+    {% elif tool.type == "outfit_color_matcher" %}
+    <div class="tool-grid">
+      <label>Base color <input id="outfit-color" class="form-input" type="color" value="#1f2937"></label>
+      <select id="outfit-color-context" class="form-input">
+        <option value="interview">Interview</option>
+        <option value="office">Office</option>
+        <option value="creative">Creative workplace</option>
+        <option value="photo">Profile photo</option>
+      </select>
+      <button type="button" class="btn-primary" id="outfit-color-run">Match colors</button>
+    </div>
+    <div class="color-swatch" id="outfit-color-swatch"></div>
+    <div class="tool-result mono-result" id="outfit-color-result">Pick a base color.</div>
+    {% elif tool.type == "profile_photo_outfit_checker" %}
+    <div class="tool-grid">
+      <select id="photo-top" class="form-input">
+        <option value="solid">Solid top</option>
+        <option value="pattern">Patterned top</option>
+        <option value="logo">Visible logo</option>
+        <option value="very-light">Very light top</option>
+      </select>
+      <select id="photo-background" class="form-input">
+        <option value="neutral">Neutral background</option>
+        <option value="busy">Busy background</option>
+        <option value="dark">Dark background</option>
+        <option value="light">Light background</option>
+      </select>
+      <select id="photo-purpose" class="form-input">
+        <option value="linkedin">LinkedIn / resume</option>
+        <option value="portfolio">Portfolio</option>
+        <option value="company">Company profile</option>
+      </select>
+    </div>
+    <button type="button" class="btn-primary" id="photo-outfit-run">Check photo outfit</button>
+    <div class="tool-result mono-result" id="photo-outfit-result">Choose options to check the photo outfit.</div>
     {% endif %}
   </section>
 
@@ -1168,6 +1241,87 @@
       document.querySelector('#density-table tbody').innerHTML = rows.length
         ? rows.map(([word, count]) => `<tr><td>${word}</td><td>${count}</td><td>${((count / total) * 100).toFixed(2)}%</td></tr>`).join('')
         : '<tr><td colspan="3">No repeated keywords found.</td></tr>';
+    });
+  }
+  if (type === 'interview_outfit_picker') {
+    document.getElementById('outfit-run').addEventListener('click', () => {
+      const industry = document.getElementById('outfit-industry').value;
+      const formality = document.getElementById('outfit-formality').value;
+      const season = document.getElementById('outfit-season').value;
+      const industryMap = {
+        corporate: 'Choose structured pieces: blazer, pressed shirt or blouse, tailored trousers or a knee-length skirt, and polished closed-toe shoes.',
+        tech: 'Aim for clean and practical: neat shirt or knit, dark denim or chinos if appropriate, simple shoes, and one structured layer.',
+        creative: 'Show taste without distracting: clean silhouette, one interesting color or texture, and simple accessories.',
+        service: 'Choose approachable and tidy: comfortable polished shoes, neat layers, and colors that look calm and reliable.'
+      };
+      const formalityMap = {
+        formal: 'Keep contrast low, fit sharp, and accessories minimal.',
+        business: 'Use a blazer or cardigan as the anchor and avoid anything too casual.',
+        smart: 'Keep the outfit neat, intentional, and wrinkle-free even if the pieces are relaxed.'
+      };
+      const seasonMap = {
+        neutral: 'Use breathable layers so you can adjust after arriving.',
+        warm: 'Pick lighter fabrics but keep coverage and structure professional.',
+        cold: 'Use a clean outer layer and remove bulky coats before the interview if possible.'
+      };
+      document.getElementById('outfit-result').textContent = `${industryMap[industry]}\n${formalityMap[formality]}\n${seasonMap[season]}\nSafe colors: navy, charcoal, white, light blue, beige, olive, or black depending on contrast.`;
+    });
+  }
+  if (type === 'business_casual_decoder') {
+    document.getElementById('dress-run').addEventListener('click', () => {
+      const code = document.getElementById('dress-code').value;
+      const event = document.getElementById('dress-event').value;
+      const codeMap = {
+        'business-formal': 'Suit or blazer-led outfit, pressed shirt or blouse, conservative shoes, minimal accessories.',
+        'business-casual': 'Collared shirt, blouse, knit, blazer, cardigan, chinos, trousers, or neat skirt. Avoid gym wear and distressed denim.',
+        'smart-casual': 'Clean relaxed pieces with one polished element, such as a blazer, structured jacket, or refined shoes.',
+        'startup-casual': 'Neat casual is acceptable, but keep fit, cleanliness, and shoes intentional.'
+      };
+      const eventMap = {
+        interview: 'For interviews, dress one step more formal than the everyday code.',
+        'first-day': 'For a first day, choose a flexible outfit that can handle being slightly overdressed.',
+        meeting: 'For client meetings, prioritize polish and avoid distracting graphics.',
+        daily: 'For daily work, match the team but stay clean, comfortable, and consistent.'
+      };
+      document.getElementById('dress-result').textContent = `${codeMap[code]}\n${eventMap[event]}\nIf unsure, bring structure: a blazer, clean shoes, and simple colors usually make casual pieces read more professional.`;
+    });
+  }
+  if (type === 'outfit_color_matcher') {
+    const swatch = document.getElementById('outfit-color-swatch');
+    document.getElementById('outfit-color-run').addEventListener('click', () => {
+      const base = document.getElementById('outfit-color').value;
+      const context = document.getElementById('outfit-color-context').value;
+      swatch.style.background = base;
+      const contextAdvice = {
+        interview: 'For interviews, pair the base with one neutral and keep accent colors quiet.',
+        office: 'For office wear, repeat the base color once and use neutral shoes or layers.',
+        creative: 'For creative workplaces, add one deliberate accent while keeping the rest simple.',
+        photo: 'For profile photos, avoid colors too close to the background and keep patterns minimal.'
+      };
+      document.getElementById('outfit-color-result').textContent = `Base: ${base}\nSafe neutrals: white, cream, gray, navy, charcoal, black, camel.\nSoft accents: light blue, muted green, burgundy, dusty rose.\n${contextAdvice[context]}`;
+    });
+  }
+  if (type === 'profile_photo_outfit_checker') {
+    document.getElementById('photo-outfit-run').addEventListener('click', () => {
+      const top = document.getElementById('photo-top').value;
+      const background = document.getElementById('photo-background').value;
+      const purpose = document.getElementById('photo-purpose').value;
+      const notes = [];
+      if (top === 'solid') notes.push('Solid tops usually photograph well and keep attention on the face.');
+      if (top === 'pattern') notes.push('Small patterns can create visual noise. Use only if the background is very simple.');
+      if (top === 'logo') notes.push('Visible logos can distract and may look less professional for resume or company use.');
+      if (top === 'very-light') notes.push('Very light tops can blend into light backgrounds. Add contrast with a jacket or darker layer.');
+      if (background === 'busy') notes.push('A busy background increases distraction. Use a simpler wall or blur if possible.');
+      if (background === 'dark') notes.push('Dark backgrounds work best with medium or lighter clothing contrast.');
+      if (background === 'light') notes.push('Light backgrounds need enough contrast so the outfit does not disappear.');
+      if (background === 'neutral') notes.push('Neutral backgrounds are usually safest for professional photos.');
+      const purposeMap = {
+        linkedin: 'For LinkedIn or resumes, choose clean, current, and role-appropriate over trendy.',
+        portfolio: 'For portfolios, a little personality is fine if it does not compete with your work.',
+        company: 'For company profiles, match the organization tone and keep colors consistent with the team.'
+      };
+      notes.push(purposeMap[purpose]);
+      document.getElementById('photo-outfit-result').textContent = notes.join('\n');
     });
   }
 })();

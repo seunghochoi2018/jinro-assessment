@@ -629,6 +629,34 @@ DAILY_TOOLS = {
         "keyword": "keyword density checker",
         "type": "keyword_density_checker",
     },
+    "interview-outfit-picker": {
+        "title": "Interview Outfit Picker",
+        "headline": "Interview outfit picker",
+        "description": "Choose an interview outfit direction based on industry, formality, season, and comfort level.",
+        "keyword": "interview outfit picker",
+        "type": "interview_outfit_picker",
+    },
+    "business-casual-decoder": {
+        "title": "Business Casual Decoder",
+        "headline": "Business casual dress code decoder",
+        "description": "Decode business casual, smart casual, business formal, and startup casual dress expectations.",
+        "keyword": "business casual decoder",
+        "type": "business_casual_decoder",
+    },
+    "outfit-color-matcher": {
+        "title": "Outfit Color Matcher",
+        "headline": "Outfit color matcher",
+        "description": "Pick a base clothing color and get safe neutral, accent, and workplace-friendly color pairings.",
+        "keyword": "outfit color matcher",
+        "type": "outfit_color_matcher",
+    },
+    "profile-photo-outfit-checker": {
+        "title": "Profile Photo Outfit Checker",
+        "headline": "Profile photo outfit checker",
+        "description": "Check whether an outfit choice is likely to read well in a resume, LinkedIn, or work profile photo.",
+        "keyword": "profile photo outfit checker",
+        "type": "profile_photo_outfit_checker",
+    },
 }
 
 TOOL_CATEGORIES = {
@@ -666,6 +694,11 @@ TOOL_CATEGORIES = {
         "title": "Productivity Tools",
         "headline": "Free productivity tools",
         "description": "Use quick tools for focus sessions, habits, random choices, and daily decisions.",
+    },
+    "style": {
+        "title": "Work Style Tools",
+        "headline": "Free work style and outfit tools",
+        "description": "Plan interview outfits, decode workplace dress codes, match colors, and prepare profile photo looks.",
     },
 }
 
@@ -765,6 +798,69 @@ BLOG_POSTS = {
         ],
         "steps": ["Paste your draft into the checker.", "Review the most repeated words.", "Look for unnatural repetition.", "Add missing terms only where they help the reader.", "Recheck after editing."],
         "related_tools": ["keyword-density-checker", "word-counter", "case-converter", "markdown-previewer"],
+    },
+    "what-to-wear-to-a-job-interview": {
+        "title": "What to Wear to a Job Interview",
+        "description": "A practical interview outfit guide for corporate, tech, creative, service, and education roles.",
+        "keyword": "what to wear to a job interview",
+        "tool_slug": "interview-outfit-picker",
+        "category": "Style",
+        "intro": "A good interview outfit should help the interviewer focus on your answers, not your clothes. The safest approach is to match the industry and dress one step more polished than everyday workwear.",
+        "takeaway": "When unsure, choose clean fit, simple colors, polished shoes, and one structured layer.",
+        "scenario": "Example: for a tech interview, dark chinos, a neat shirt or knit, clean shoes, and a simple jacket can read professional without feeling like a finance suit.",
+        "sections": [
+            ("Start with the company context", "Finance, law, and consulting usually expect more structure. Tech and startup roles may allow cleaner casual pieces. Creative roles can show personality, but polish still matters."),
+            ("Choose comfort you can sit in", "Interviews involve waiting, walking, and sitting. Avoid anything that needs constant adjusting."),
+            ("Keep colors calm", "Navy, gray, white, light blue, black, beige, and muted green are easy to combine and rarely distract."),
+            ("Prepare the night before", "Check wrinkles, shoes, weather, bag, and backup layers before the interview day."),
+        ],
+        "steps": ["Identify the industry.", "Pick the expected formality level.", "Choose one structured piece.", "Keep colors simple.", "Try the outfit while sitting and walking."],
+        "checklist": ["Clothes are clean and wrinkle-free.", "Shoes are polished or clean.", "The outfit fits while sitting.", "Accessories are not distracting.", "You have a weather-appropriate layer."],
+        "mistakes": ["Dressing for nightlife instead of work.", "Trying new shoes for the first time.", "Ignoring the company culture.", "Wearing strong fragrance or loud accessories."],
+        "comparison": [("Formal", "Suit or blazer-led look.", "Finance, law, executive roles."), ("Business casual", "Blazer, knit, shirt, trousers, neat shoes.", "Most office interviews."), ("Smart casual", "Clean relaxed pieces with polish.", "Tech, creative, startups.")],
+        "related_tools": ["interview-outfit-picker", "business-casual-decoder", "outfit-color-matcher", "profile-photo-outfit-checker"],
+    },
+    "business-casual-examples-for-work": {
+        "title": "Business Casual Examples for Work",
+        "description": "Understand business casual outfits for interviews, first days, client meetings, and regular office work.",
+        "keyword": "business casual examples",
+        "tool_slug": "business-casual-decoder",
+        "category": "Style",
+        "intro": "Business casual is not one fixed outfit. It means professional enough for work while less formal than a full suit.",
+        "takeaway": "Business casual works best when one piece is structured, the shoes are intentional, and the outfit is clean.",
+        "scenario": "Example: a blazer with a knit and trousers, or a blouse with a cardigan and clean flats, can both read business casual depending on the workplace.",
+        "sections": [
+            ("What business casual usually includes", "Blazers, cardigans, knits, collared shirts, blouses, chinos, trousers, neat skirts, loafers, flats, and clean simple shoes can fit."),
+            ("What to avoid", "Avoid gym wear, beachwear, distressed denim, wrinkled pieces, loud slogans, and anything that makes movement or sitting difficult."),
+            ("First day strategy", "Dress slightly more polished on the first day, then adjust after seeing the team norm."),
+            ("Client meeting strategy", "For client-facing situations, move one step more formal than internal office wear."),
+        ],
+        "steps": ["Choose the event context.", "Pick a polished anchor piece.", "Use neutral colors.", "Check shoes and fit.", "Adjust based on the workplace norm."],
+        "checklist": ["At least one piece looks structured.", "Shoes are clean.", "Fabric is not wrinkled.", "The outfit is comfortable for a full day.", "The look is not more casual than the team expectation."],
+        "mistakes": ["Assuming casual means anything is fine.", "Ignoring shoes.", "Wearing clothes that photograph or wrinkle poorly.", "Copying another workplace without checking your own context."],
+        "comparison": [("Business formal", "Most structured.", "Suits and formal meetings."), ("Business casual", "Polished but flexible.", "Office work and interviews."), ("Smart casual", "Relaxed with intention.", "Creative and startup contexts.")],
+        "related_tools": ["business-casual-decoder", "interview-outfit-picker", "outfit-color-matcher", "profile-photo-outfit-checker"],
+    },
+    "best-colors-for-a-linkedin-profile-photo": {
+        "title": "Best Colors for a LinkedIn Profile Photo",
+        "description": "Choose outfit colors that work for LinkedIn, resume, company bio, and professional profile photos.",
+        "keyword": "best colors for LinkedIn profile photo",
+        "tool_slug": "profile-photo-outfit-checker",
+        "category": "Style",
+        "intro": "A profile photo is small, so color and contrast matter more than complicated styling. The goal is to make your face easy to see and the outfit professional but not distracting.",
+        "takeaway": "Choose a solid color that contrasts with the background and avoid tiny patterns, visible logos, and colors that blend into the wall.",
+        "scenario": "Example: against a light gray background, navy, charcoal, forest green, burgundy, or medium blue often reads clearer than white or pale beige.",
+        "sections": [
+            ("Use contrast", "If the background is light, choose a medium or dark top. If the background is dark, choose a medium or lighter top."),
+            ("Avoid visual noise", "Tiny stripes, busy prints, and large logos can pull attention away from your face in a small circular crop."),
+            ("Match your field", "Corporate roles often suit navy, gray, white, and black. Creative roles can use a muted accent color while keeping the silhouette simple."),
+            ("Check the crop", "Profile photos are often circular or square. Make sure the neckline, shoulders, and face still look balanced after cropping."),
+        ],
+        "steps": ["Check the background color.", "Pick a contrasting solid top.", "Avoid visible logos.", "Take a test photo.", "View it at small profile size."],
+        "checklist": ["Your face is the focus.", "Outfit and background have contrast.", "No distracting logo is visible.", "The crop looks balanced.", "The outfit fits your target role."],
+        "mistakes": ["Wearing white on a white wall.", "Using tiny patterns that shimmer on camera.", "Choosing a very busy background.", "Using an old photo that no longer looks current."],
+        "comparison": [("Navy", "Safe and professional.", "Most work profiles."), ("Charcoal", "Neutral and calm.", "Corporate photos."), ("Muted accent", "Adds personality.", "Creative or portfolio use.")],
+        "related_tools": ["profile-photo-outfit-checker", "outfit-color-matcher", "image-resizer", "image-compressor"],
     },
 }
 
@@ -1966,6 +2062,11 @@ def _tool_category(slug: str, tool: dict) -> str:
     if tool_type in {"qr_code_generator", "invoice_generator"}:
         return "business"
     if tool_type in {
+        "interview_outfit_picker", "business_casual_decoder",
+        "outfit_color_matcher", "profile_photo_outfit_checker",
+    }:
+        return "style"
+    if tool_type in {
         "word_counter", "case_converter", "text_repeater", "text_diff",
         "markdown_previewer", "lorem_ipsum_generator", "keyword_density_checker",
     }:
@@ -2049,6 +2150,11 @@ def _tool_seo_content(slug: str, tool: dict) -> dict:
             f"Use a small focused tool for a task that does not need a full app.",
             f"Support studying, planning, prioritizing, and repeatable daily routines.",
             f"Keep a lightweight workflow open in a browser tab.",
+        ],
+        "style": [
+            f"Prepare for interviews, profile photos, and workplace dress expectations without guessing.",
+            f"Choose safer outfit colors and formality levels for professional settings.",
+            f"Use simple guidance before a job interview, office event, or profile photo update.",
         ],
     }.get(category, [])
     tips = [
