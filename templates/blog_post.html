@@ -123,22 +123,6 @@
   </section>
   {% endif %}
 
-  {% if recommended_resources %}
-  <section>
-    <h2>Recommended resources</h2>
-    <p class="analytics-note">Some resources may be paid products or affiliate links. Paid or sponsored links are marked and should be checked before purchase.</p>
-    <div class="link-grid">
-      {% for item in recommended_resources %}
-      <a class="info-card" href="{{ item.url }}" data-track="click_blog_resource" {% if item.affiliate %}rel="nofollow sponsored"{% endif %}>
-        <span class="card-kicker">{{ item.category }}{% if item.affiliate %} affiliate{% endif %}</span>
-        <strong>{{ item.title }}</strong>
-        <span>{{ item.description }}</span>
-      </a>
-      {% endfor %}
-    </div>
-  </section>
-  {% endif %}
-
   <section class="muted-section">
     <h2>Important note</h2>
     <p>Use these guides for ordinary productivity and work tasks. For sensitive legal, medical, financial, confidential, or regulated documents, follow your organization's security rules and verify results before sharing.</p>

@@ -1272,9 +1272,6 @@ ADSENSE_ALLOWED_ENDPOINTS = {
     "tool_page",
     "blog_index",
     "blog_post",
-    "resources_page",
-    "products_index",
-    "product_page",
     "careers_index",
     "career_detail",
 }
@@ -1283,6 +1280,9 @@ NOINDEX_ENDPOINTS = {
     "admin_analytics",
     "admin_analytics_json",
     "download_report",
+    "product_page",
+    "products_index",
+    "resources_page",
     "result",
     "survey",
     "survey_post",
@@ -2417,7 +2417,6 @@ def tool_page(slug):
         tool=tool,
         tool_content=_tool_seo_content(slug, tool),
         related_tools=_tool_related(slug),
-        recommended_resources=_resources_for_context(),
         meta_title=f"{tool['title']} | Free Browser Utility",
         meta_description=tool["description"],
         canonical_url=_canonical_url(f"/tools/{slug}"),
@@ -2451,7 +2450,6 @@ def blog_post(slug):
         post=post,
         tool=tool,
         related_tools=_blog_related_tools(post),
-        recommended_resources=_resources_for_context(),
         meta_title=f"{post['title']} | Utility Guide",
         meta_description=post["description"],
         canonical_url=_canonical_url(f"/blog/{slug}"),
@@ -3007,8 +3005,7 @@ def feed_xml():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/blog", "/feed.xml", "/resources", "/products", "/info", "/careers", "/privacy", "/terms"]
-    paths.extend(f"/products/{slug}" for slug in DIGITAL_PRODUCTS)
+    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
@@ -3025,10 +3022,6 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path == "/blog":
             return "daily", "0.9"
-        if path in {"/resources", "/products"}:
-            return "weekly", "0.8"
-        if path.startswith("/products/"):
-            return "monthly", "0.8"
         if path.startswith("/blog/"):
             return "weekly", "0.8"
         if path.startswith("/tools/category/"):
