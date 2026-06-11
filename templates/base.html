@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>{{ meta_title|default('Work Utilities | Free Browser Tools') }}</title>
 <meta name="description" content="{{ meta_description|default('Free browser utilities for documents, text, code, images, calculators, and career exploration.') }}">
+{% if robots_meta %}<meta name="robots" content="{{ robots_meta }}">{% endif %}
 {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
 <link rel="alternate" type="application/rss+xml" title="Work Utilities Guides" href="/feed.xml">
 <meta property="og:title" content="{{ meta_title|default('Work Utilities') }}">

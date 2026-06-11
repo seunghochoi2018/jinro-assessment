@@ -1198,9 +1198,41 @@ def _published_blog_posts() -> dict[str, dict]:
     return dict(sorted(published.items(), key=lambda item: item[1].get("publish_date", "2026-06-10"), reverse=True))
 
 
+ADSENSE_ALLOWED_ENDPOINTS = {
+    "index",
+    "seo_test_page",
+    "seo_guide_page",
+    "tool_category_page",
+    "tool_page",
+    "blog_index",
+    "blog_post",
+    "careers_index",
+    "career_detail",
+}
+
+NOINDEX_ENDPOINTS = {
+    "admin_analytics",
+    "admin_analytics_json",
+    "download_report",
+    "result",
+    "survey",
+    "survey_post",
+}
+
+
+def _adsense_allowed_for_request() -> bool:
+    endpoint = request.endpoint or ""
+    if endpoint not in ADSENSE_ALLOWED_ENDPOINTS:
+        return False
+    if endpoint == "index" and request.args.get("r"):
+        return False
+    return True
+
+
 @app.context_processor
 def inject_globals():
     lang = session.get("lang", DEFAULT_LANG)
+    show_adsense = _adsense_allowed_for_request()
     return {
         "UI": UI,
         "LANG_CONFIG": LANG_CONFIG,
@@ -1209,8 +1241,9 @@ def inject_globals():
         "tc": lambda cid: tc(cid, lang),
         "tcat": lambda cat: tcat(cat, lang),
         "app_url": APP_URL,
-        "adsense_client": os.environ.get("ADSENSE_CLIENT", DEFAULT_ADSENSE_CLIENT),
-        "adsense_bottom_slot": os.environ.get("ADSENSE_SLOT_BOTTOM", ""),
+        "adsense_client": os.environ.get("ADSENSE_CLIENT", DEFAULT_ADSENSE_CLIENT) if show_adsense else "",
+        "adsense_bottom_slot": os.environ.get("ADSENSE_SLOT_BOTTOM", "") if show_adsense else "",
+        "robots_meta": "noindex, nofollow" if (request.endpoint or "") in NOINDEX_ENDPOINTS else "",
         "contact_email": os.environ.get("CONTACT_EMAIL", "contact@example.com"),
     }
 
