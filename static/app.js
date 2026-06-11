@@ -4,16 +4,28 @@ function trackEvent(name, params = {}) {
     window.gtag('event', name, params);
   }
   try {
+    const landingPathKey = 'careersdna_landing_path';
+    const landingReferrerKey = 'careersdna_landing_referrer';
+    if (!window.sessionStorage.getItem(landingPathKey)) {
+      window.sessionStorage.setItem(landingPathKey, window.location.pathname);
+      window.sessionStorage.setItem(landingReferrerKey, document.referrer || '');
+    }
     let visitorId = window.localStorage.getItem('careersdna_vid');
     if (!visitorId) {
       visitorId = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Date.now()) + Math.random().toString(16).slice(2);
       window.localStorage.setItem('careersdna_vid', visitorId);
     }
+    const enrichedParams = Object.assign({
+      page_path: window.location.pathname,
+      referrer: document.referrer || '',
+      landing_path: window.sessionStorage.getItem(landingPathKey) || window.location.pathname,
+      landing_referrer: window.sessionStorage.getItem(landingReferrerKey) || ''
+    }, params);
     const payload = JSON.stringify({
       event: name,
       visitor_id: visitorId,
       page_path: window.location.pathname,
-      params: params
+      params: enrichedParams
     });
     if (navigator.sendBeacon) {
       navigator.sendBeacon('/analytics/event', new Blob([payload], { type: 'application/json' }));

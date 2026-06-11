@@ -106,6 +106,38 @@
   </section>
 
   <section>
+    <h2>Landing pages</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Landing page</th><th>Visitors</th><th>Pageviews</th></tr></thead>
+        <tbody>
+          {% for row in summary.landing_pages %}
+          <tr><td><a href="{{ row.landing_path }}">{{ row.landing_path }}</a></td><td>{{ row.visitors }}</td><td>{{ row.pageviews }}</td></tr>
+          {% else %}
+          <tr><td colspan="3">No landing-page data yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>Events by name</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Event</th><th>Count</th></tr></thead>
+        <tbody>
+          {% for row in summary.events_by_name %}
+          <tr><td>{{ row.event_name }}</td><td>{{ row.events }}</td></tr>
+          {% else %}
+          <tr><td colspan="2">No events yet.</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
     <h2>Top clicks</h2>
     <div class="analytics-table-wrap">
       <table class="analytics-table">

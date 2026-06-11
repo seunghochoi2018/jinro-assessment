@@ -6,6 +6,7 @@ import hashlib
 import sqlite3
 import tempfile
 from datetime import datetime
+from urllib.parse import urlparse
 
 from flask import Flask, render_template, request, session, redirect, url_for, make_response, jsonify
 import plotly.graph_objects as go
@@ -1631,6 +1632,19 @@ def _hash_ip(ip: str) -> str:
     return hashlib.sha256(f"{salt}:{ip or ''}".encode("utf-8")).hexdigest()[:24]
 
 
+def _is_internal_referrer(referrer: str) -> bool:
+    if not referrer:
+        return False
+    try:
+        ref_host = urlparse(referrer).netloc.lower()
+        app_host = urlparse(APP_URL).netloc.lower()
+        request_host = (request.host or "").lower()
+        internal_hosts = {host for host in (app_host, request_host, "careersdna.org") if host}
+        return bool(ref_host and (ref_host in internal_hosts or ref_host.endswith(".careersdna.org")))
+    except Exception:
+        return False
+
+
 def _store_analytics_event(payload: dict) -> None:
     params = payload.get("params") if isinstance(payload.get("params"), dict) else {}
     event_name = str(payload.get("event") or "")[:80]
@@ -1642,7 +1656,11 @@ def _store_analytics_event(payload: dict) -> None:
     section_key = str(params.get("section_key") or "")[:120]
     visitor_id = str(payload.get("visitor_id") or "")[:80]
     user_agent = (request.headers.get("User-Agent") or "")[:300]
-    referrer = (request.headers.get("Referer") or "")[:300]
+    referrer = str(
+        params.get("landing_referrer") or params.get("referrer") or request.headers.get("Referer") or ""
+    )[:300]
+    if _is_internal_referrer(referrer):
+        referrer = ""
     ip_hash = _hash_ip(request.headers.get("X-Forwarded-For", request.remote_addr or "").split(",")[0].strip())
 
     conn = _analytics_conn()
@@ -1726,6 +1744,31 @@ def _analytics_summary(days: int = 7) -> dict:
         WHERE {visible_filter} AND event_name='page_view_custom'
         GROUP BY page_path, page_type
         ORDER BY views DESC
+        LIMIT 20
+        """,
+        args,
+    )
+    landing_pages = _fetch_all(
+        f"""
+        SELECT
+          COALESCE(NULLIF(json_extract(params_json, '$.landing_path'), ''), page_path) AS landing_path,
+          COUNT(DISTINCT visitor_id) AS visitors,
+          SUM(CASE WHEN event_name='page_view_custom' THEN 1 ELSE 0 END) AS pageviews
+        FROM analytics_events
+        WHERE {visible_filter}
+        GROUP BY landing_path
+        ORDER BY visitors DESC, pageviews DESC
+        LIMIT 15
+        """,
+        args,
+    )
+    events_by_name = _fetch_all(
+        f"""
+        SELECT event_name, COUNT(*) AS events
+        FROM analytics_events
+        WHERE {visible_filter}
+        GROUP BY event_name
+        ORDER BY events DESC
         LIMIT 20
         """,
         args,
@@ -1846,6 +1889,8 @@ def _analytics_summary(days: int = 7) -> dict:
         "overview": overview,
         "starts": starts.get("starts", 0),
         "top_pages": top_pages,
+        "landing_pages": landing_pages,
+        "events_by_name": events_by_name,
         "liked_pages": liked_pages,
         "weak_pages": weak_pages,
         "survey_dropoff": survey_dropoff,
