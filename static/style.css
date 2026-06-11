@@ -146,6 +146,7 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
   .site-header { padding: 0.6rem 1rem; }
   .lang-selector { display: none; } /* hide header lang on mobile, use welcome page selector */
   .survey-form { padding: 1rem; }
+  .product-hero { flex-direction: column; align-items: stretch; }
 }
 
 /* Public SEO pages */
@@ -202,6 +203,9 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .feedback-message { color: #16a34a; font-weight: 650; font-size: 0.9rem; margin-top: 0.55rem; min-height: 1.2rem; }
 .feedback-sent .feedback-actions { opacity: 0.55; pointer-events: none; }
 .result-feedback { border-top: 1px solid #e8eaf6; margin-top: 1rem; }
+.product-hero { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: white; border: 1px solid #e8eaf6; border-radius: 10px; padding: 1.2rem; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.product-hero p { color: #555; line-height: 1.55; margin-top: 0.35rem; }
+.product-price { display: inline-block; color: #667eea; font-size: 1.8rem; font-weight: 850; }
 .analytics-controls { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 1rem 0 1.5rem; }
 .analytics-page .metrics-row { grid-template-columns: repeat(4, 1fr); }
 .analytics-note { color: #666; font-size: 0.92rem; margin-bottom: 0.65rem; }

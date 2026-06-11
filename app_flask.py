@@ -1198,6 +1198,72 @@ def _published_blog_posts() -> dict[str, dict]:
     return dict(sorted(published.items(), key=lambda item: item[1].get("publish_date", "2026-06-10"), reverse=True))
 
 
+DIGITAL_PRODUCTS = {
+    "career-reset-workbook": {
+        "title": "Career Reset Workbook",
+        "headline": "Career Reset Workbook",
+        "description": "A practical workbook for comparing career options, clarifying work values, and turning career confusion into a 7-day action plan.",
+        "price": "$9",
+        "checkout_env": "CAREER_RESET_CHECKOUT_URL",
+        "fallback_url": "mailto:contact@example.com?subject=Career%20Reset%20Workbook",
+        "includes": [
+            "Career situation snapshot worksheet",
+            "Strengths, interests, values, and constraints mapping",
+            "Career option comparison scorecard",
+            "Red-flag checklist for roles that look good but fit poorly",
+            "7-day action plan for research, outreach, and next steps",
+        ],
+        "best_for": [
+            "People choosing between several career directions",
+            "Students or early-career workers who need structure",
+            "Career changers who want a clearer next experiment",
+        ],
+        "preview": [
+            ("Day 1", "Write the current situation clearly: what feels wrong, what still works, and what cannot be ignored."),
+            ("Day 2", "List energizing work tasks, draining tasks, and repeatable strengths from real examples."),
+            ("Day 3", "Compare up to five career options with the same scoring rubric."),
+            ("Day 4", "Remove paths with unacceptable constraints before spending time on them."),
+            ("Day 5-7", "Turn the shortlist into research actions, outreach messages, and a small test project."),
+        ],
+    },
+}
+
+RECOMMENDED_RESOURCES = [
+    {
+        "title": "Career Reset Workbook",
+        "description": "A paid workbook for turning career confusion into a clearer shortlist and 7-day action plan.",
+        "category": "Digital product",
+        "url": "/products/career-reset-workbook",
+        "affiliate": False,
+    },
+    {
+        "title": "Resume and LinkedIn Checklist",
+        "description": "Use the free profile photo and outfit tools before preparing a resume or LinkedIn update.",
+        "category": "Internal tools",
+        "url": "/tools/profile-photo-outfit-checker",
+        "affiliate": False,
+    },
+    {
+        "title": "PDF and Image Utility Set",
+        "description": "Merge PDFs, compress images, resize images, and convert files before applications or uploads.",
+        "category": "Internal tools",
+        "url": "/tools/category/pdf",
+        "affiliate": False,
+    },
+]
+
+
+def _product_checkout_url(product: dict) -> str:
+    configured = os.environ.get(product.get("checkout_env", ""), "").strip()
+    if configured:
+        return configured
+    return product.get("fallback_url", "/resources")
+
+
+def _resources_for_context(limit: int = 3) -> list[dict]:
+    return RECOMMENDED_RESOURCES[:limit]
+
+
 ADSENSE_ALLOWED_ENDPOINTS = {
     "index",
     "seo_test_page",
@@ -1206,6 +1272,9 @@ ADSENSE_ALLOWED_ENDPOINTS = {
     "tool_page",
     "blog_index",
     "blog_post",
+    "resources_page",
+    "products_index",
+    "product_page",
     "careers_index",
     "career_detail",
 }
@@ -2348,6 +2417,7 @@ def tool_page(slug):
         tool=tool,
         tool_content=_tool_seo_content(slug, tool),
         related_tools=_tool_related(slug),
+        recommended_resources=_resources_for_context(),
         meta_title=f"{tool['title']} | Free Browser Utility",
         meta_description=tool["description"],
         canonical_url=_canonical_url(f"/tools/{slug}"),
@@ -2381,9 +2451,58 @@ def blog_post(slug):
         post=post,
         tool=tool,
         related_tools=_blog_related_tools(post),
+        recommended_resources=_resources_for_context(),
         meta_title=f"{post['title']} | Utility Guide",
         meta_description=post["description"],
         canonical_url=_canonical_url(f"/blog/{slug}"),
+    )
+
+
+@app.route("/resources")
+def resources_page():
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "resources.html",
+        lang=lang,
+        resources=RECOMMENDED_RESOURCES,
+        products=DIGITAL_PRODUCTS,
+        meta_title="Recommended Resources | Work Utilities",
+        meta_description="Recommended workbooks, checklists, and utility resources for career planning, documents, images, and everyday work.",
+        canonical_url=_canonical_url("/resources"),
+    )
+
+
+@app.route("/products")
+def products_index():
+    return render_template(
+        "products_index.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        products=DIGITAL_PRODUCTS,
+        meta_title="Digital Products | Work Utilities",
+        meta_description="Practical workbooks and templates for career planning, job search organization, and everyday work decisions.",
+        canonical_url=_canonical_url("/products"),
+    )
+
+
+@app.route("/products/<slug>")
+def product_page(slug):
+    product = DIGITAL_PRODUCTS.get(slug)
+    if not product:
+        return redirect(url_for("products_index"))
+    checkout_url = _product_checkout_url(product)
+    contact_email = os.environ.get("CONTACT_EMAIL", "contact@example.com")
+    if checkout_url.startswith("mailto:contact@example.com"):
+        checkout_url = checkout_url.replace("contact@example.com", contact_email)
+    return render_template(
+        "product_page.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        slug=slug,
+        product=product,
+        checkout_url=checkout_url,
+        payment_configured=bool(os.environ.get(product.get("checkout_env", ""), "").strip()),
+        meta_title=f"{product['title']} | Work Utilities",
+        meta_description=product["description"],
+        canonical_url=_canonical_url(f"/products/{slug}"),
     )
 
 
@@ -2888,7 +3007,8 @@ def feed_xml():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
+    paths = ["/", "/blog", "/feed.xml", "/resources", "/products", "/info", "/careers", "/privacy", "/terms"]
+    paths.extend(f"/products/{slug}" for slug in DIGITAL_PRODUCTS)
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
@@ -2905,6 +3025,10 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path == "/blog":
             return "daily", "0.9"
+        if path in {"/resources", "/products"}:
+            return "weekly", "0.8"
+        if path.startswith("/products/"):
+            return "monthly", "0.8"
         if path.startswith("/blog/"):
             return "weekly", "0.8"
         if path.startswith("/tools/category/"):

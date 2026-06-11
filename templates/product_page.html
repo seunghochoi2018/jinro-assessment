@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": {{ product.title|tojson }},
+  "description": {{ product.description|tojson }},
+  "offers": {
+    "@type": "Offer",
+    "price": {{ product.price.replace('$', '')|tojson }},
+    "priceCurrency": "USD",
+    "availability": "https://schema.org/InStock",
+    "url": {{ canonical_url|tojson }}
+  }
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page product-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'product', slug: {{ slug|tojson }} };
+  </script>
+  <p class="eyebrow">Digital workbook</p>
+  <h1>{{ product.headline }}</h1>
+  <p class="lead">{{ product.description }}</p>
+
+  <section class="product-hero">
+    <div>
+      <span class="product-price">{{ product.price }}</span>
+      <p>Designed as a practical self-guided workbook, not a promise of a specific job, admission, income, or outcome.</p>
+    </div>
+    <a class="btn-primary" href="{{ checkout_url }}" data-track="click_checkout" rel="nofollow sponsored">
+      {% if payment_configured %}Buy workbook{% else %}Request purchase link{% endif %}
+    </a>
+  </section>
+
+  <section>
+    <h2>What is included</h2>
+    <ul class="check-list">
+      {% for item in product.includes %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>Best for</h2>
+    <div class="feature-grid">
+      {% for item in product.best_for %}
+      <div>
+        <strong>{{ item }}</strong>
+        <span>Use it to make the next step clearer before spending money, time, or energy on a direction.</span>
+      </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Preview of the workflow</h2>
+    <div class="analytics-table-wrap">
+      <table class="analytics-table">
+        <thead><tr><th>Part</th><th>What you do</th></tr></thead>
+        <tbody>
+          {% for label, body in product.preview %}
+          <tr><td>{{ label }}</td><td>{{ body }}</td></tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="muted-section">
+    <h2>Payment setup note</h2>
+    <p>The checkout button is designed to use a Stripe Payment Link, Gumroad link, Lemon Squeezy checkout URL, or another hosted checkout. The seller account, tax settings, payout account, and refund policy must be configured by the site owner.</p>
+  </section>
+</article>
+{% endblock %}

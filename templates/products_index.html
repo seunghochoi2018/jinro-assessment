@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Digital Products",
+  "description": "Practical workbooks and templates for career planning and everyday work.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'products' };
+  </script>
+  <p class="eyebrow">Digital products</p>
+  <h1>Workbooks and templates for clearer career decisions</h1>
+  <p class="lead">Small paid resources for people who want a structured next step after using the free tools and guides.</p>
+
+  <section>
+    <h2>Available products</h2>
+    <div class="link-grid">
+      {% for slug, product in products.items() %}
+      <a class="info-card" href="/products/{{ slug }}" data-track="click_product_card">
+        <span class="card-kicker">{{ product.price }}</span>
+        <strong>{{ product.title }}</strong>
+        <span>{{ product.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

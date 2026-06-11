@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Recommended Resources",
+  "description": "Recommended workbooks, checklists, and utility resources for career planning and everyday work.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'resources' };
+  </script>
+  <p class="eyebrow">Recommended resources</p>
+  <h1>Practical resources for career planning and everyday work</h1>
+  <p class="lead">Use these resources when a free tool is not enough and you need a more structured checklist, workbook, or planning flow.</p>
+
+  <section class="muted-section">
+    <h2>Disclosure</h2>
+    <p>Some resources may be paid products or affiliate links. If an affiliate link is used, the site may earn a commission at no extra cost to you. Recommendations should still be checked against your own needs before purchase.</p>
+  </section>
+
+  <section>
+    <h2>Featured resources</h2>
+    <div class="link-grid">
+      {% for item in resources %}
+      <a class="info-card" href="{{ item.url }}" data-track="click_resource">
+        <span class="card-kicker">{{ item.category }}{% if item.affiliate %} affiliate{% endif %}</span>
+        <strong>{{ item.title }}</strong>
+        <span>{{ item.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
+    <h2>Digital products</h2>
+    <div class="link-grid">
+      {% for slug, product in products.items() %}
+      <a class="info-card" href="/products/{{ slug }}" data-track="click_product_card">
+        <span class="card-kicker">{{ product.price }}</span>
+        <strong>{{ product.title }}</strong>
+        <span>{{ product.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
