@@ -7,6 +7,7 @@ import sqlite3
 import tempfile
 from datetime import datetime
 from urllib.parse import urlparse
+from xml.sax.saxutils import escape
 
 from flask import Flask, render_template, request, session, redirect, url_for, make_response, jsonify
 import plotly.graph_objects as go
@@ -50,7 +51,7 @@ from data.careers import CAREERS_DB, get_careers_by_category
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-prod")
 DEFAULT_LANG = "en"
-APP_URL = os.environ.get("APP_URL", "https://jinro-assessment.onrender.com").rstrip("/")
+APP_URL = os.environ.get("APP_URL", "https://careersdna.org").rstrip("/")
 DEFAULT_ADSENSE_CLIENT = "ca-pub-6018524927950587"
 INDEXNOW_KEY = os.environ.get("INDEXNOW_KEY", "9e7a7feff4e24bb7aaefbc5fb60d6d3d")
 ANALYTICS_DB = os.environ.get(
@@ -2688,6 +2689,7 @@ def robots_txt():
         "User-agent: *",
         "Allow: /",
         f"Sitemap: {APP_URL}/sitemap.xml",
+        f"Sitemap: {APP_URL}/feed.xml",
         "",
     ])
     response = make_response(body)
@@ -2710,9 +2712,44 @@ def indexnow_key_txt():
     return response
 
 
+@app.route("/feed.xml")
+def feed_xml():
+    posts = _published_blog_posts()
+    today = datetime.utcnow().strftime("%a, %d %b %Y 00:00:00 GMT")
+    items = []
+    for slug, post in posts.items():
+        published = post.get("publish_date", "2026-06-10")
+        try:
+            pub_dt = datetime.strptime(published, "%Y-%m-%d")
+            pub_date = pub_dt.strftime("%a, %d %b %Y 00:00:00 GMT")
+        except ValueError:
+            pub_date = today
+        items.append(f"""    <item>
+      <title>{escape(post.get("title", ""))}</title>
+      <link>{APP_URL}/blog/{escape(slug)}</link>
+      <guid>{APP_URL}/blog/{escape(slug)}</guid>
+      <pubDate>{pub_date}</pubDate>
+      <description>{escape(post.get("description", ""))}</description>
+    </item>""")
+    body = f"""<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Work Utilities Guides</title>
+    <link>{APP_URL}/blog</link>
+    <description>Practical guides for PDF, image, text, developer, and business utilities.</description>
+    <lastBuildDate>{today}</lastBuildDate>
+{chr(10).join(items)}
+  </channel>
+</rss>
+"""
+    response = make_response(body)
+    response.headers["Content-Type"] = "application/rss+xml; charset=utf-8"
+    return response
+
+
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/blog", "/info", "/careers", "/privacy", "/terms"]
+    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
