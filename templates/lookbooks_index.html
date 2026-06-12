@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="article-page lookbooks-index-page">
+  <p class="eyebrow">AI style ideas</p>
+  <h1>AI Fashion Lookbooks</h1>
+  <p class="lead">Browse women&apos;s and men&apos;s outfit ideas together. Use the images as quick inspiration for work, weekends, profile photos, smart casual looks, and night-out outfits.</p>
+
+  <div class="lookbook-collection-grid">
+    {% for slug, lookbook in lookbooks.items() %}
+    <a class="lookbook-collection-card" href="/lookbooks/{{ slug }}" data-track="click_lookbook_index">
+      <div class="lookbook-preview-strip">
+        {% for title, description in lookbook["items"][:3] %}
+        <img src="{{ url_for('static', filename='lookbooks/' ~ lookbook.folder ~ '/' ~ lookbook.prefix ~ '_0' ~ loop.index ~ '.jpg') }}" alt="{{ title }} outfit idea" loading="lazy">
+        {% endfor %}
+      </div>
+      <strong>{{ lookbook.home_title }}</strong>
+      <span>{{ lookbook.home_description }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

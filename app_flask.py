@@ -2385,6 +2385,19 @@ def lookbook_page(slug):
     )
 
 
+@app.route("/lookbooks")
+def lookbooks_index():
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "lookbooks_index.html",
+        lang=lang,
+        lookbooks=LOOKBOOKS,
+        meta_title="AI Fashion Lookbooks | Outfit Ideas",
+        meta_description="Browse AI-generated outfit ideas for women's fashion, men's style, work outfits, night-out looks, and smart casual inspiration.",
+        canonical_url=_canonical_url("/lookbooks"),
+    )
+
+
 @app.route("/tests/<slug>")
 def seo_test_page(slug):
     page = SEO_TEST_PAGES.get(slug)
@@ -3061,6 +3074,7 @@ def feed_xml():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
+    paths.append("/lookbooks")
     paths.extend(f"/lookbooks/{slug}" for slug in LOOKBOOKS)
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
@@ -3072,6 +3086,8 @@ def sitemap_xml():
     def sitemap_meta(path: str) -> tuple[str, str]:
         if path == "/":
             return "daily", "1.0"
+        if path == "/lookbooks":
+            return "weekly", "0.9"
         if path.startswith("/lookbooks/"):
             return "weekly", "0.9"
         if path.startswith("/tests/"):
