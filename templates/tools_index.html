@@ -35,6 +35,29 @@
     </div>
   </section>
 
+  <section class="lookbook-home-section">
+    <div class="section-heading-row">
+      <div>
+        <p class="eyebrow">AI style ideas</p>
+        <h2>Fashion lookbooks for quick outfit inspiration</h2>
+      </div>
+      <a href="/lookbooks/women-ai-lookbook" class="btn-secondary">View lookbooks</a>
+    </div>
+    <div class="lookbook-collection-grid">
+      {% for slug, lookbook in lookbooks.items() %}
+      <a class="lookbook-collection-card" href="/lookbooks/{{ slug }}" data-track="click_home_lookbook">
+        <div class="lookbook-preview-strip">
+          {% for title, description in lookbook["items"][:3] %}
+          <img src="{{ url_for('static', filename='lookbooks/' ~ lookbook.folder ~ '/' ~ lookbook.prefix ~ '_0' ~ loop.index ~ '.jpg') }}" alt="{{ title }} outfit idea" loading="lazy">
+          {% endfor %}
+        </div>
+        <strong>{{ lookbook.home_title }}</strong>
+        <span>{{ lookbook.home_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
   <section>
     <h2>Tool categories</h2>
     <div class="link-grid">

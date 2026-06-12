@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ImageGallery",
+  "name": {{ lookbook.title|tojson }},
+  "description": {{ lookbook.description|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page lookbook-page">
+  <p class="eyebrow">{{ lookbook.eyebrow }}</p>
+  <h1>{{ lookbook.title }}</h1>
+  <p class="lead">{{ lookbook.description }}</p>
+
+  <div class="lookbook-grid">
+    {% for title, description in lookbook["items"] %}
+    <article class="lookbook-item">
+      <img src="{{ url_for('static', filename='lookbooks/' ~ lookbook.folder ~ '/' ~ lookbook.prefix ~ '_0' ~ loop.index ~ '.jpg') }}" alt="{{ title }} outfit idea" loading="{% if loop.index <= 2 %}eager{% else %}lazy{% endif %}">
+      <div>
+        <span>Look {{ "%02d"|format(loop.index) }}</span>
+        <h2>{{ title }}</h2>
+        <p>{{ description }}</p>
+      </div>
+    </article>
+    {% endfor %}
+  </div>
+
+  <section class="muted-section">
+    <h2>How to use these outfit ideas</h2>
+    <p>Use the images as visual starting points, then adapt the fit, color, and formality to your climate, workplace, budget, and comfort level. The safest approach is to copy the outfit structure first: outer layer, base top, trousers or skirt, shoes, and one accent item.</p>
+  </section>
+</div>
+{% endblock %}

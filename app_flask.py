@@ -702,6 +702,43 @@ TOOL_CATEGORIES = {
     },
 }
 
+LOOKBOOKS = {
+    "women-ai-lookbook": {
+        "title": "AI Fashion Lookbook for Women",
+        "eyebrow": "AI outfit ideas",
+        "description": "Six AI-generated women's outfit ideas for night-out, office siren, blazer, leather, and off-shoulder style inspiration.",
+        "home_title": "Women's AI fashion lookbook",
+        "home_description": "Night-out, blazer, leather, and off-shoulder outfit ideas.",
+        "folder": "women",
+        "prefix": "women_look",
+        "items": [
+            ("Office Siren", "Black blazer mini dress with tights and boots."),
+            ("Y2K Night Out", "Denim jacket, fitted top, and light jeans."),
+            ("Leather Mini", "Leather jacket, black mini skirt, and knee-high boots."),
+            ("Black Blazer", "Glossy black blazer dress for a night city look."),
+            ("Red Dress", "Red mini dress with black outerwear and boots."),
+            ("Off Shoulder", "Black off-shoulder dress for evening style."),
+        ],
+    },
+    "men-style-guide": {
+        "title": "Men's Outfit Ideas and Style Guide",
+        "eyebrow": "Men's style guide",
+        "description": "Six AI-generated men's outfit ideas for smart casual, office casual, interviews, weekend streetwear, and summer style.",
+        "home_title": "Men's style guide",
+        "home_description": "Smart casual, office, interview, weekend, and summer outfits.",
+        "folder": "men",
+        "prefix": "men_look",
+        "items": [
+            ("Smart Casual Date", "Navy overshirt, white trousers, and clean sneakers."),
+            ("Office Casual", "Charcoal blazer, black knit, trousers, and loafers."),
+            ("Monochrome Street", "Black jacket, grey tee, wide pants, and boots."),
+            ("Interview Outfit", "White shirt, dark trousers, and clean shoes."),
+            ("Weekend Streetwear", "Denim jacket, straight jeans, and white sneakers."),
+            ("Summer Smart Casual", "Light overshirt, tee, beige trousers, and watch."),
+        ],
+    },
+}
+
 BLOG_POSTS = {
     "how-to-merge-pdf-files-online": {
         "title": "How to Merge PDF Files Online",
@@ -2324,9 +2361,27 @@ def index():
         categories=TOOL_CATEGORIES,
         grouped_tools=_tools_by_category(),
         blog_posts=_published_blog_posts(),
+        lookbooks=LOOKBOOKS,
         meta_title="Free Online Tools | PDF, Image, Text, Developer, and Calculator Utilities",
         meta_description="Free browser tools for PDFs, images, text, code, calculators, productivity, business tasks, and career exploration.",
         canonical_url=_canonical_url("/"),
+    )
+
+
+@app.route("/lookbooks/<slug>")
+def lookbook_page(slug):
+    lookbook = LOOKBOOKS.get(slug)
+    if not lookbook:
+        return redirect(url_for("index"))
+    lang = session.get("lang", DEFAULT_LANG)
+    return render_template(
+        "lookbook.html",
+        lang=lang,
+        slug=slug,
+        lookbook=lookbook,
+        meta_title=f"{lookbook['title']} | AI Outfit Ideas",
+        meta_description=lookbook["description"],
+        canonical_url=_canonical_url(f"/lookbooks/{slug}"),
     )
 
 
@@ -3006,6 +3061,7 @@ def feed_xml():
 @app.route("/sitemap.xml")
 def sitemap_xml():
     paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
+    paths.extend(f"/lookbooks/{slug}" for slug in LOOKBOOKS)
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
@@ -3016,6 +3072,8 @@ def sitemap_xml():
     def sitemap_meta(path: str) -> tuple[str, str]:
         if path == "/":
             return "daily", "1.0"
+        if path.startswith("/lookbooks/"):
+            return "weekly", "0.9"
         if path.startswith("/tests/"):
             return "weekly", "0.9"
         if path.startswith("/guides/"):

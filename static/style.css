@@ -183,6 +183,22 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .quick-tool:hover { border-color: #667eea; background: white; box-shadow: 0 4px 14px rgba(102,126,234,0.14); }
 .quick-tool strong { font-size: 0.95rem; }
 .quick-tool span { color: #666; font-size: 0.86rem; line-height: 1.35; }
+.section-heading-row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.9rem; }
+.section-heading-row .btn-secondary { flex: 0 0 auto; padding: 0.55rem 1rem; }
+.lookbook-collection-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
+.lookbook-collection-card { display: flex; flex-direction: column; gap: 0.55rem; background: white; border: 1px solid #e8eaf6; border-radius: 10px; padding: 0.85rem; color: #1a1a2e; text-decoration: none; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.lookbook-collection-card:hover { border-color: #667eea; box-shadow: 0 4px 14px rgba(102,126,234,0.14); }
+.lookbook-preview-strip { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.35rem; }
+.lookbook-preview-strip img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 7px; background: #eef0f7; }
+.lookbook-collection-card strong { font-size: 1rem; }
+.lookbook-collection-card span { color: #666; font-size: 0.9rem; line-height: 1.45; }
+.lookbook-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+.lookbook-item { background: white; border: 1px solid #e8eaf6; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); }
+.lookbook-item img { width: 100%; aspect-ratio: 9 / 16; object-fit: cover; display: block; background: #eef0f7; }
+.lookbook-item div { padding: 0.85rem; }
+.lookbook-item span { display: block; color: #667eea; font-size: 0.75rem; font-weight: 850; text-transform: uppercase; margin-bottom: 0.25rem; }
+.lookbook-item h2 { font-size: 1rem; margin-bottom: 0.35rem; }
+.lookbook-item p { color: #555; font-size: 0.9rem; line-height: 1.45; }
 .cta-band { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0f4ff; border: 1px solid #dfe6ff; border-radius: 10px; padding: 1rem 1.2rem; margin: 1.3rem 0; }
 .cta-band div { display: flex; flex-direction: column; gap: 0.25rem; }
 .cta-band span { color: #666; font-size: 0.92rem; }
@@ -258,6 +274,8 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
   .hero-panel { grid-template-columns: 1fr; padding: 1.2rem; }
   .link-grid, .career-teaser-grid, .feature-grid, .snapshot-grid, .review-grid { grid-template-columns: 1fr; }
   .home-quick-start, .quick-tool-grid { grid-template-columns: 1fr; }
+  .section-heading-row { align-items: stretch; flex-direction: column; }
+  .lookbook-collection-grid, .lookbook-grid { grid-template-columns: 1fr; }
   .cta-band { align-items: stretch; flex-direction: column; }
   .article-page h1 { font-size: 1.55rem; }
   .share-actions { flex-direction: column; }
