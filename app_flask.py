@@ -51,6 +51,8 @@ from data.careers import CAREERS_DB, get_careers_by_category
 app = Flask(__name__)
 app.secret_key = os.environ.get("FLASK_SECRET_KEY", "jinro-secret-key-change-in-prod")
 DEFAULT_LANG = "en"
+PUBLIC_LANG_CODES = ("en", "zh", "es", "hi", "ar")
+PUBLIC_LANG_CONFIG = {code: LANG_CONFIG[code] for code in PUBLIC_LANG_CODES if code in LANG_CONFIG}
 APP_URL = os.environ.get("APP_URL", "https://careersdna.org").rstrip("/")
 DEFAULT_ADSENSE_CLIENT = "ca-pub-6018524927950587"
 INDEXNOW_KEY = os.environ.get("INDEXNOW_KEY", "9e7a7feff4e24bb7aaefbc5fb60d6d3d")
@@ -703,40 +705,45 @@ TOOL_CATEGORIES = {
 }
 
 LOOKBOOKS = {
-    "women-ai-lookbook": {
-        "title": "AI Fashion Lookbook for Women",
-        "eyebrow": "AI outfit ideas",
-        "description": "Six AI-generated women's outfit ideas for night-out, office siren, blazer, leather, and off-shoulder style inspiration.",
-        "home_title": "Women's AI fashion lookbook",
-        "home_description": "Night-out, blazer, leather, and off-shoulder outfit ideas.",
+    "women-office-commute-looks": {
+        "title": "Women's Office Commute Outfit Ideas",
+        "eyebrow": "Office commute looks",
+        "description": "Six women's office commute outfit ideas across natural, chic, soft formal, casual Friday, rainy day, and after-work themes.",
+        "home_title": "Women's office commute looks",
+        "home_description": "Natural, chic, soft formal, casual Friday, rainy day, and after-work outfit ideas.",
         "folder": "women",
         "prefix": "women_look",
         "items": [
-            ("Office Siren", "Black blazer mini dress with tights and boots."),
-            ("Y2K Night Out", "Denim jacket, fitted top, and light jeans."),
-            ("Leather Mini", "Leather jacket, black mini skirt, and knee-high boots."),
-            ("Black Blazer", "Glossy black blazer dress for a night city look."),
-            ("Red Dress", "Red mini dress with black outerwear and boots."),
-            ("Off Shoulder", "Black off-shoulder dress for evening style."),
+            ("Natural Commute", "Cream blouse, straight trousers, trench coat, and loafers."),
+            ("Chic Slim Fit", "Fitted knit, tailored skirt, structured blazer, and pumps."),
+            ("Soft Formal", "Light shirt, wide-leg trousers, minimal belt, and clean handbag."),
+            ("Casual Friday", "Denim jacket, white blouse, navy slacks, and clean sneakers."),
+            ("Rainy Day Office", "Long coat, knit top, midi skirt, ankle boots, and umbrella."),
+            ("After-Work Dinner", "Satin blouse, tailored trousers, cropped blazer, and understated jewelry."),
         ],
     },
-    "men-style-guide": {
-        "title": "Men's Outfit Ideas and Style Guide",
-        "eyebrow": "Men's style guide",
-        "description": "Six AI-generated men's outfit ideas for smart casual, office casual, interviews, weekend streetwear, and summer style.",
-        "home_title": "Men's style guide",
-        "home_description": "Smart casual, office, interview, weekend, and summer outfits.",
+    "men-office-commute-looks": {
+        "title": "Men's Office Commute Outfit Ideas",
+        "eyebrow": "Office commute looks",
+        "description": "Six men's office commute outfit ideas across natural smart casual, clean office, soft formal, casual Friday, rainy day, and after-work themes.",
+        "home_title": "Men's office commute looks",
+        "home_description": "Smart casual, clean office, soft formal, casual Friday, rainy day, and after-work outfits.",
         "folder": "men",
         "prefix": "men_look",
         "items": [
-            ("Smart Casual Date", "Navy overshirt, white trousers, and clean sneakers."),
-            ("Office Casual", "Charcoal blazer, black knit, trousers, and loafers."),
-            ("Monochrome Street", "Black jacket, grey tee, wide pants, and boots."),
-            ("Interview Outfit", "White shirt, dark trousers, and clean shoes."),
-            ("Weekend Streetwear", "Denim jacket, straight jeans, and white sneakers."),
-            ("Summer Smart Casual", "Light overshirt, tee, beige trousers, and watch."),
+            ("Natural Smart Casual", "Navy overshirt, white tee, tailored trousers, and clean sneakers."),
+            ("Clean Office", "Charcoal blazer, black knit, tapered trousers, and loafers."),
+            ("Soft Formal", "White shirt, navy trousers, lightweight jacket, and minimal watch."),
+            ("Casual Friday", "Denim jacket, oxford shirt, straight chinos, and white sneakers."),
+            ("Rainy Day Office", "Beige trench coat, dark knit, black trousers, leather shoes, and umbrella."),
+            ("After-Work Casual", "Black overshirt, slim trousers, Chelsea boots, and evening city styling."),
         ],
     },
+}
+
+LOOKBOOK_REDIRECTS = {
+    "women-ai-lookbook": "women-office-commute-looks",
+    "men-style-guide": "men-office-commute-looks",
 }
 
 BLOG_POSTS = {
@@ -1335,13 +1342,25 @@ def _adsense_allowed_for_request() -> bool:
     return True
 
 
+def _active_lang() -> str:
+    lang = session.get("lang", DEFAULT_LANG)
+    return lang if lang in PUBLIC_LANG_CONFIG else DEFAULT_LANG
+
+
+@app.before_request
+def normalize_public_language():
+    lang = session.get("lang")
+    if lang and lang not in PUBLIC_LANG_CONFIG:
+        session["lang"] = DEFAULT_LANG
+
+
 @app.context_processor
 def inject_globals():
-    lang = session.get("lang", DEFAULT_LANG)
+    lang = _active_lang()
     show_adsense = _adsense_allowed_for_request()
     return {
         "UI": UI,
-        "LANG_CONFIG": LANG_CONFIG,
+        "LANG_CONFIG": PUBLIC_LANG_CONFIG,
         "lang": lang,
         "t": lambda key: t(key, lang),
         "tc": lambda cid: tc(cid, lang),
@@ -2337,7 +2356,7 @@ def _blog_related_tools(post: dict) -> dict[str, dict]:
 
 @app.route("/")
 def index():
-    lang = session.get("lang", DEFAULT_LANG)
+    lang = _active_lang()
     r_param = request.args.get("r")
     if r_param:
         shared_data = _decode_share_param(r_param)
@@ -2345,7 +2364,7 @@ def index():
             return render_template(
                 "welcome.html",
                 lang=lang,
-                LANG_CONFIG=LANG_CONFIG,
+                LANG_CONFIG=PUBLIC_LANG_CONFIG,
                 shared_data=shared_data,
                 test_pages=SEO_TEST_PAGES,
                 guide_pages=SEO_GUIDE_PAGES,
@@ -2372,6 +2391,8 @@ def index():
 def lookbook_page(slug):
     lookbook = LOOKBOOKS.get(slug)
     if not lookbook:
+        if slug in LOOKBOOK_REDIRECTS:
+            return redirect(url_for("lookbook_page", slug=LOOKBOOK_REDIRECTS[slug]), code=301)
         return redirect(url_for("index"))
     lang = session.get("lang", DEFAULT_LANG)
     return render_template(
@@ -2379,7 +2400,7 @@ def lookbook_page(slug):
         lang=lang,
         slug=slug,
         lookbook=lookbook,
-        meta_title=f"{lookbook['title']} | AI Outfit Ideas",
+        meta_title=f"{lookbook['title']} | Work Outfit Ideas",
         meta_description=lookbook["description"],
         canonical_url=_canonical_url(f"/lookbooks/{slug}"),
     )
@@ -2392,8 +2413,8 @@ def lookbooks_index():
         "lookbooks_index.html",
         lang=lang,
         lookbooks=LOOKBOOKS,
-        meta_title="AI Fashion Lookbooks | Outfit Ideas",
-        meta_description="Browse AI-generated outfit ideas for women's fashion, men's style, work outfits, night-out looks, and smart casual inspiration.",
+        meta_title="Office Commute Outfit Ideas | Work Looks",
+        meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, rainy day, and after-work looks.",
         canonical_url=_canonical_url("/lookbooks"),
     )
 
@@ -2645,8 +2666,10 @@ def terms():
 @app.route("/set-lang", methods=["POST"])
 def set_lang():
     lang = request.form.get("lang", DEFAULT_LANG)
-    if lang in LANG_CONFIG:
+    if lang in PUBLIC_LANG_CONFIG:
         session["lang"] = lang
+    else:
+        session["lang"] = DEFAULT_LANG
     referrer = request.referrer or "/"
     return redirect(referrer)
 

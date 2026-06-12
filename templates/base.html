@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}">
+<html lang="{{ lang }}" dir="{{ LANG_CONFIG.get(lang, {}).get('dir', 'ltr') }}">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -51,9 +51,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
   <div class="header-left">
     <form method="post" action="/set-lang" id="lang-form">
       <select name="lang" class="lang-dropdown" onchange="document.getElementById('lang-form').submit()">
-        <option value="ko" {% if lang == 'ko' %}selected{% endif %}>Korean</option>
-        <option value="en" {% if lang == 'en' %}selected{% endif %}>English</option>
-        <option value="zh" {% if lang == 'zh' %}selected{% endif %}>Chinese</option>
+        {% for code, config in LANG_CONFIG.items() %}
+        <option value="{{ code }}" {% if lang == code %}selected{% endif %}>{{ config.name }}</option>
+        {% endfor %}
       </select>
     </form>
   </div>

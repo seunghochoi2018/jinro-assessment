@@ -19,7 +19,7 @@
   <div class="lookbook-grid">
     {% for title, description in lookbook["items"] %}
     <article class="lookbook-item">
-      <img src="{{ url_for('static', filename='lookbooks/' ~ lookbook.folder ~ '/' ~ lookbook.prefix ~ '_0' ~ loop.index ~ '.jpg') }}" alt="{{ title }} outfit idea" loading="{% if loop.index <= 2 %}eager{% else %}lazy{% endif %}">
+      <img src="{{ url_for('static', filename='lookbooks/' ~ lookbook.folder ~ '/' ~ lookbook.prefix ~ '_0' ~ loop.index ~ '.jpg') }}" alt="{{ title }} office commute outfit idea" loading="{% if loop.index <= 2 %}eager{% else %}lazy{% endif %}">
       <div>
         <span>Look {{ "%02d"|format(loop.index) }}</span>
         <h2>{{ title }}</h2>
@@ -30,8 +30,8 @@
   </div>
 
   <section class="muted-section">
-    <h2>How to use these outfit ideas</h2>
-    <p>Use the images as visual starting points, then adapt the fit, color, and formality to your climate, workplace, budget, and comfort level. The safest approach is to copy the outfit structure first: outer layer, base top, trousers or skirt, shoes, and one accent item.</p>
+    <h2>How to use these office outfit ideas</h2>
+    <p>Use the images as visual starting points, then adapt the fit, color, and formality to your workplace, commute, weather, budget, and comfort level. The safest approach is to copy the outfit structure first: outer layer, base top, trousers or skirt, shoes, and one accent item.</p>
   </section>
 </div>
 {% endblock %}
