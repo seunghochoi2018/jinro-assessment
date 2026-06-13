@@ -85,10 +85,10 @@ SEO_TEST_PAGES = {
     },
     "middle-school-career-test": {
         "title": "Middle School Career Test",
-        "headline": "A simple career test for middle school students",
-        "description": "Start with interests and strengths, then compare possible career areas without forcing one final answer.",
+        "headline": "Free career test for middle school students",
+        "description": "A simple student career test for middle schoolers. Start with interests, strengths, favorite subjects, and work style before choosing broad career areas to explore.",
         "age_hint": "13-15",
-        "keywords": ["middle school career test", "student aptitude quiz"],
+        "keywords": ["middle school career test", "career test for middle school students", "student aptitude quiz"],
     },
     "college-career-test": {
         "title": "College Career Test",
@@ -208,8 +208,8 @@ SEO_TEST_DETAILS = {
     "middle-school-career-test": {
         "primary_keyword": "career test for middle school students",
         "search_title": "Free Career Test for Middle School Students",
-        "intent": "Younger students can explore broad career areas without forcing one final job choice too early.",
-        "best_for": ["Early career exploration", "School counseling activities", "Students who need simple next steps"],
+        "intent": "Middle school students can explore broad career areas using interests, strengths, favorite subjects, and learning style without forcing one final job choice too early.",
+        "best_for": ["Early career exploration", "School counseling activities", "Students choosing subjects, clubs, or projects"],
         "compare": ["High School Career Test", "Creative Career Test", "STEM Career Test"],
     },
     "college-career-test": {
@@ -708,9 +708,9 @@ LOOKBOOKS = {
     "women-office-commute-looks": {
         "title": "Women's Office Commute Outfit Ideas",
         "eyebrow": "Office commute looks",
-        "description": "Six women's office commute outfit ideas across natural, chic, soft formal, casual Friday, rainy day, and after-work themes.",
+        "description": "Six women's office commute outfit ideas across natural, chic, soft formal, casual Friday, layered coat, and after-work themes.",
         "home_title": "Women's office commute looks",
-        "home_description": "Natural, chic, soft formal, casual Friday, rainy day, and after-work outfit ideas.",
+        "home_description": "Natural, chic, soft formal, casual Friday, layered coat, and after-work outfit ideas.",
         "folder": "women",
         "prefix": "women_look",
         "items": [
@@ -718,7 +718,7 @@ LOOKBOOKS = {
             ("Chic Slim Fit", "Fitted knit, tailored skirt, structured blazer, and pumps."),
             ("Soft Formal", "Light shirt, wide-leg trousers, minimal belt, and clean handbag."),
             ("Casual Friday", "Denim jacket, white blouse, navy slacks, and clean sneakers."),
-            ("Rainy Day Office", "Long coat, knit top, midi skirt, ankle boots, and umbrella."),
+            ("Layered Coat Commute", "Long coat, knit top, midi skirt, ankle boots, and simple commute styling."),
             ("After-Work Dinner", "Satin blouse, tailored trousers, cropped blazer, and understated jewelry."),
         ],
     },
@@ -747,6 +747,7 @@ LOOKBOOK_REDIRECTS = {
 }
 
 LOOKBOOK_ITEM_REDIRECTS = {
+    ("women-office-commute-looks", "rainy-day-office"): "layered-coat-commute",
     ("men-office-commute-looks", "rainy-day-office"): "layered-commute",
 }
 
@@ -771,10 +772,10 @@ LOOKBOOK_THEME_GUIDES = {
         "summary": "A relaxed Friday look that still keeps enough structure for the workplace.",
         "tips": ["Use dark or clean denim only when the workplace allows it.", "Pair casual layers with tailored slacks instead of distressed jeans.", "Keep sneakers plain and clean."],
     },
-    ("women-office-commute-looks", "rainy-day-office"): {
-        "keyword": "women's rainy day office outfit",
-        "summary": "A commute-friendly rainy day outfit using a longer outer layer, boots, and darker base pieces.",
-        "tips": ["Pick ankle boots or water-resistant shoes.", "Use a coat length that protects the outfit while walking.", "Avoid fabrics that wrinkle badly after getting damp."],
+    ("women-office-commute-looks", "layered-coat-commute"): {
+        "keyword": "women's layered coat office outfit",
+        "summary": "A commute-friendly layered outfit using a longer coat, knit top, midi skirt, ankle boots, and simple accessories.",
+        "tips": ["Use a coat length that makes the outfit feel intentional.", "Keep the inner layer simple so the silhouette stays clean.", "Avoid large handheld props when the image needs to look realistic."],
     },
     ("women-office-commute-looks", "after-work-dinner"): {
         "keyword": "women's office to dinner outfit",
@@ -896,20 +897,20 @@ OUTFIT_GUIDES = {
             ("Use plain sneakers only", "If sneakers are allowed, choose clean minimal sneakers instead of gym shoes."),
         ],
         "checklist": ["Only one piece feels very casual.", "Denim is clean if used.", "Shoes are neat.", "The outfit still fits the team tone.", "No gym wear."],
-        "related": ["business-casual-outfit-ideas", "smart-casual-work-outfit", "rainy-day-office-outfit"],
+        "related": ["business-casual-outfit-ideas", "smart-casual-work-outfit", "layered-commute-outfit"],
     },
-    "rainy-day-office-outfit": {
-        "title": "Rainy Day Office Outfit",
-        "keyword": "rainy day office outfit",
-        "description": "Office commute outfit ideas for rainy days, wet sidewalks, and unpredictable weather.",
+    "layered-commute-outfit": {
+        "title": "Layered Commute Outfit",
+        "keyword": "layered commute outfit",
+        "description": "Office commute outfit ideas using clean layers, practical shoes, and low-risk simple styling.",
         "image": "lookbooks/women/women_look_05.jpg",
-        "intro": "A rainy office outfit needs to protect the commute without looking like outdoor gear once you arrive.",
+        "intro": "A layered commute outfit should look polished before and after travel while avoiding complicated accessories.",
         "sections": [
-            ("Choose the outer layer first", "A trench coat, long coat, or water-resistant jacket should cover enough of the outfit for the actual walk."),
-            ("Use darker lower pieces", "Dark trousers, midi skirts, and ankle boots hide splash marks better than pale fabrics."),
-            ("Avoid fragile fabrics", "Thin linen, suede, and fabrics that wrinkle badly are risky on wet commutes."),
+            ("Choose the outer layer first", "A trench coat, long coat, blazer, or overshirt gives the outfit structure before anyone sees the full base look."),
+            ("Keep the base simple", "Dark trousers, midi skirts, knits, and clean shirts are easier to style than busy prints or fragile fabrics."),
+            ("Avoid difficult props", "Large handheld items, phones, and busy accessories can make AI outfit images look awkward, so simple styling works best."),
         ],
-        "checklist": ["Outer layer covers enough.", "Shoes have grip.", "Lower half is not too pale.", "Umbrella fits the outfit.", "A backup layer is available if needed."],
+        "checklist": ["Outer layer looks intentional.", "Shoes are clean and practical.", "Base outfit is simple.", "Accessories stay minimal.", "The outfit still works indoors."],
         "related": ["office-commute-outfit-ideas", "winter-office-outfit-ideas", "business-casual-outfit-ideas"],
     },
     "first-day-office-outfit": {
@@ -973,14 +974,14 @@ OUTFIT_GUIDES = {
         "keyword": "office commute outfit ideas",
         "description": "Office commute outfit ideas for walking, transit, weather changes, and long workdays.",
         "image": "lookbooks/women/women_look_05.jpg",
-        "intro": "A commute outfit has to look good after movement, weather, and a full day of sitting.",
+        "intro": "A commute outfit has to look good after movement, temperature changes, and a full day of sitting.",
         "sections": [
-            ("Start with shoes", "The best commute outfit fails if the shoes cannot handle walking, stairs, or wet pavement."),
+            ("Start with shoes", "The best commute outfit fails if the shoes cannot handle walking, stairs, or a long route."),
             ("Use layers", "A removable layer helps with train heat, office air conditioning, and weather changes."),
             ("Avoid fragile fits", "Very tight, sheer, or wrinkle-prone pieces are harder to maintain during a commute."),
         ],
         "checklist": ["Shoes handle the commute.", "Layer can be removed.", "Bag fits daily items.", "Fabric does not wrinkle too easily.", "Outfit still looks professional on arrival."],
-        "related": ["rainy-day-office-outfit", "first-day-office-outfit", "smart-casual-work-outfit"],
+        "related": ["layered-commute-outfit", "first-day-office-outfit", "smart-casual-work-outfit"],
     },
     "summer-office-outfit-ideas": {
         "title": "Summer Office Outfit Ideas",
@@ -1008,7 +1009,7 @@ OUTFIT_GUIDES = {
             ("Use office-friendly boots", "Ankle boots, Chelsea boots, and simple leather boots usually look cleaner than outdoor-heavy footwear."),
         ],
         "checklist": ["Outerwear looks intentional.", "Indoor layer is not too bulky.", "Shoes handle cold pavement.", "Colors stay easy to match.", "Bag fits gloves or scarf."],
-        "related": ["rainy-day-office-outfit", "office-commute-outfit-ideas", "business-casual-outfit-ideas"],
+        "related": ["layered-commute-outfit", "office-commute-outfit-ideas", "business-casual-outfit-ideas"],
     },
     "fall-office-outfit-ideas": {
         "title": "Fall Office Outfit Ideas",
@@ -1021,21 +1022,21 @@ OUTFIT_GUIDES = {
             ("Lean on muted colors", "Camel, olive, navy, gray, burgundy, cream, and dark brown look seasonal while staying professional."),
             ("Pick shoes for weather changes", "Loafers, ankle boots, Chelsea boots, and clean leather sneakers cover most fall commutes."),
         ],
-        "checklist": ["Layer is removable.", "Colors feel muted.", "Shoes work in light rain.", "Outfit still fits office formality.", "No summer-only fabrics dominate."],
-        "related": ["winter-office-outfit-ideas", "rainy-day-office-outfit", "office-outfit-color-combinations"],
+        "checklist": ["Layer is removable.", "Colors feel muted.", "Shoes work for walking.", "Outfit still fits office formality.", "No summer-only fabrics dominate."],
+        "related": ["winter-office-outfit-ideas", "layered-commute-outfit", "office-outfit-color-combinations"],
     },
     "spring-office-outfit-ideas": {
         "title": "Spring Office Outfit Ideas",
         "keyword": "spring office outfit ideas",
         "description": "Spring office outfit ideas for lighter layers, fresh colors, changing temperatures, and commute comfort.",
         "image": "lookbooks/women/women_look_01.jpg",
-        "intro": "Spring office outfits work best with lighter layers that can handle cool mornings, warmer afternoons, and unexpected rain.",
+        "intro": "Spring office outfits work best with lighter layers that can handle cool mornings, warmer afternoons, and changing indoor temperatures.",
         "sections": [
             ("Choose lighter outerwear", "A trench, light blazer, cardigan, or overshirt gives structure without looking heavy."),
             ("Use fresh but quiet colors", "Light blue, cream, soft gray, beige, muted green, and white feel seasonal while staying office-safe."),
             ("Plan for temperature changes", "A removable layer prevents the outfit from feeling wrong by lunchtime."),
         ],
-        "checklist": ["Layer is light.", "Color palette feels fresh.", "Shoes handle damp pavement.", "Fabric is not too sheer.", "Outfit works without the outer layer."],
+        "checklist": ["Layer is light.", "Color palette feels fresh.", "Shoes handle walking.", "Fabric is not too sheer.", "Outfit works without the outer layer."],
         "related": ["summer-office-outfit-ideas", "office-commute-outfit-ideas", "office-outfit-color-combinations"],
     },
     "petite-office-outfit-ideas": {
@@ -1083,16 +1084,16 @@ OUTFIT_GUIDES = {
     "office-shoes-guide": {
         "title": "Office Shoes Guide",
         "keyword": "office shoes guide",
-        "description": "Office shoe ideas for commuting, business casual outfits, rainy days, interviews, and long workdays.",
+        "description": "Office shoe ideas for commuting, business casual outfits, interviews, and long workdays.",
         "image": "lookbooks/men/men_look_01.jpg",
         "intro": "Office shoes have to match the dress code and survive the commute. Clean, simple shoes usually beat trendy shoes for daily work.",
         "sections": [
             ("Match formality first", "Loafers, ankle boots, flats, low heels, Chelsea boots, and minimal leather shoes cover most offices."),
             ("Check commute comfort", "If the commute includes walking or stairs, grip, support, and break-in time matter more than a perfect photo."),
-            ("Keep one backup pair", "A backup pair at work helps on rainy days, snow days, and events after office hours."),
+            ("Keep one backup pair", "A backup pair at work helps on long commute days, event days, and after-office plans."),
         ],
         "checklist": ["Shoes are clean.", "Grip is enough for the commute.", "Formality fits the office.", "Color matches multiple outfits.", "Feet still feel okay after a full day."],
-        "related": ["rainy-day-office-outfit", "interview-outfit-ideas", "office-commute-outfit-ideas"],
+        "related": ["layered-commute-outfit", "interview-outfit-ideas", "office-commute-outfit-ideas"],
     },
     "work-bag-outfit-guide": {
         "title": "Work Bag Outfit Guide",
@@ -1164,6 +1165,10 @@ OUTFIT_GUIDES = {
         "checklist": ["Palette uses two or three neutrals.", "Texture adds interest.", "Shoes match the palette.", "Bag does not clash.", "The outfit still has enough contrast."],
         "related": ["office-outfit-color-combinations", "work-capsule-wardrobe", "business-casual-outfit-ideas"],
     },
+}
+
+OUTFIT_GUIDE_REDIRECTS = {
+    "rainy-day-office-outfit": "layered-commute-outfit",
 }
 
 
@@ -2866,7 +2871,7 @@ def lookbooks_index():
         lookbooks=LOOKBOOKS,
         outfit_guides=OUTFIT_GUIDES,
         meta_title="Office Commute Outfit Ideas | Work Looks",
-        meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, rainy day, and after-work looks.",
+        meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, layered commute, and after-work looks.",
         meta_image=f"{APP_URL}{url_for('static', filename='lookbooks/women/women_look_01.jpg')}",
         canonical_url=_canonical_url("/lookbooks"),
     )
@@ -2876,6 +2881,8 @@ def lookbooks_index():
 def outfit_guide_page(slug):
     guide = OUTFIT_GUIDES.get(slug)
     if not guide:
+        if slug in OUTFIT_GUIDE_REDIRECTS:
+            return redirect(url_for("outfit_guide_page", slug=OUTFIT_GUIDE_REDIRECTS[slug]), code=301)
         return redirect(url_for("lookbooks_index"))
     lang = _active_lang()
     related = {key: OUTFIT_GUIDES[key] for key in guide.get("related", []) if key in OUTFIT_GUIDES}
