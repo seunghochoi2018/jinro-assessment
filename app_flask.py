@@ -725,9 +725,9 @@ LOOKBOOKS = {
     "men-office-commute-looks": {
         "title": "Men's Office Commute Outfit Ideas",
         "eyebrow": "Office commute looks",
-        "description": "Six men's office commute outfit ideas across natural smart casual, clean office, soft formal, casual Friday, rainy day, and after-work themes.",
+        "description": "Six men's office commute outfit ideas across natural smart casual, clean office, soft formal, casual Friday, layered commute, and after-work themes.",
         "home_title": "Men's office commute looks",
-        "home_description": "Smart casual, clean office, soft formal, casual Friday, rainy day, and after-work outfits.",
+        "home_description": "Smart casual, clean office, soft formal, casual Friday, layered commute, and after-work outfits.",
         "folder": "men",
         "prefix": "men_look",
         "items": [
@@ -735,7 +735,7 @@ LOOKBOOKS = {
             ("Clean Office", "Charcoal blazer, black knit, tapered trousers, and loafers."),
             ("Soft Formal", "White shirt, navy trousers, lightweight jacket, and minimal watch."),
             ("Casual Friday", "Denim jacket, oxford shirt, straight chinos, and white sneakers."),
-            ("Rainy Day Office", "Beige trench coat, dark knit, black trousers, leather shoes, and umbrella."),
+            ("Layered Commute", "Charcoal blazer, dark knit, slim trousers, and polished loafers."),
             ("After-Work Casual", "Black overshirt, slim trousers, Chelsea boots, and evening city styling."),
         ],
     },
@@ -744,6 +744,10 @@ LOOKBOOKS = {
 LOOKBOOK_REDIRECTS = {
     "women-ai-lookbook": "women-office-commute-looks",
     "men-style-guide": "men-office-commute-looks",
+}
+
+LOOKBOOK_ITEM_REDIRECTS = {
+    ("men-office-commute-looks", "rainy-day-office"): "layered-commute",
 }
 
 LOOKBOOK_THEME_GUIDES = {
@@ -797,10 +801,10 @@ LOOKBOOK_THEME_GUIDES = {
         "summary": "A casual Friday outfit that uses denim carefully while keeping the rest clean.",
         "tips": ["Keep the denim jacket dark, neat, and logo-free.", "Use chinos or clean trousers rather than distressed jeans.", "Plain white sneakers work best when they are clean."],
     },
-    ("men-office-commute-looks", "rainy-day-office"): {
-        "keyword": "men's rainy day office outfit",
-        "summary": "A practical rainy commute outfit with a trench coat, dark knit, and weather-friendly shoes.",
-        "tips": ["Use darker trousers to hide splash marks.", "Pick leather shoes with enough grip.", "A beige trench adds polish without needing a full suit."],
+    ("men-office-commute-looks", "layered-commute"): {
+        "keyword": "men's layered office commute outfit",
+        "summary": "A practical layered commute outfit with a blazer, dark knit, slim trousers, and polished shoes.",
+        "tips": ["Use a blazer or overshirt as the structured layer.", "Keep trousers clean and not overly skinny.", "Choose polished shoes that still work for walking."],
     },
     ("men-office-commute-looks", "after-work-casual"): {
         "keyword": "men's office to evening casual outfit",
@@ -898,7 +902,7 @@ OUTFIT_GUIDES = {
         "title": "Rainy Day Office Outfit",
         "keyword": "rainy day office outfit",
         "description": "Office commute outfit ideas for rainy days, wet sidewalks, and unpredictable weather.",
-        "image": "lookbooks/men/men_look_05.jpg",
+        "image": "lookbooks/women/women_look_05.jpg",
         "intro": "A rainy office outfit needs to protect the commute without looking like outdoor gear once you arrive.",
         "sections": [
             ("Choose the outer layer first", "A trench coat, long coat, or water-resistant jacket should cover enough of the outfit for the actual walk."),
@@ -2835,6 +2839,8 @@ def lookbook_item_page(slug, item_slug):
     items = _lookbook_items(slug, lookbook)
     item = next((entry for entry in items if entry["slug"] == item_slug), None)
     if not item:
+        if (slug, item_slug) in LOOKBOOK_ITEM_REDIRECTS:
+            return redirect(url_for("lookbook_item_page", slug=slug, item_slug=LOOKBOOK_ITEM_REDIRECTS[(slug, item_slug)]), code=301)
         return redirect(url_for("lookbook_page", slug=slug))
     lang = _active_lang()
     return render_template(
