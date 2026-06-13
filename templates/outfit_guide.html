@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ guide.title|tojson }},
+  "description": {{ guide.description|tojson }},
+  "image": {{ (app_url ~ url_for('static', filename=guide.image))|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page outfit-guide-page">
+  <p class="eyebrow">{{ guide.keyword }}</p>
+  <h1>{{ guide.title }}</h1>
+  <p class="lead">{{ guide.description }}</p>
+
+  <figure class="lookbook-feature">
+    <img src="{{ url_for('static', filename=guide.image) }}" alt="{{ guide.title }}" loading="eager">
+    <figcaption>{{ guide.intro }}</figcaption>
+  </figure>
+
+  {% for title, body in guide.sections %}
+  <section>
+    <h2>{{ title }}</h2>
+    <p>{{ body }}</p>
+  </section>
+  {% endfor %}
+
+  <section>
+    <h2>Quick checklist</h2>
+    <ul class="check-list">
+      {% for item in guide.checklist %}
+      <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  {% if related_guides %}
+  <section>
+    <h2>Related outfit guides</h2>
+    <div class="link-grid">
+      {% for related_slug, related in related_guides.items() %}
+      <a class="info-card" href="/outfit-guides/{{ related_slug }}" data-track="click_related_outfit_guide">
+        <span class="card-kicker">{{ related.keyword }}</span>
+        <strong>{{ related.title }}</strong>
+        <span>{{ related.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

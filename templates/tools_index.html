@@ -59,6 +59,27 @@
   </section>
 
   <section>
+    <div class="section-heading-row">
+      <div>
+        <p class="eyebrow">Work outfit guides</p>
+        <h2>Search-friendly outfit guides</h2>
+      </div>
+      <a href="/outfit-guides/business-casual-outfit-ideas" class="btn-secondary">Start here</a>
+    </div>
+    <div class="link-grid">
+      {% for slug, guide in outfit_guides.items() %}
+      {% if loop.index <= 6 %}
+      <a class="info-card" href="/outfit-guides/{{ slug }}" data-track="click_home_outfit_guide">
+        <span class="card-kicker">{{ guide.keyword }}</span>
+        <strong>{{ guide.title }}</strong>
+        <span>{{ guide.description }}</span>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section>
     <h2>Tool categories</h2>
     <div class="link-grid">
       {% for category_slug, category in categories.items() %}

@@ -18,5 +18,20 @@
     </a>
     {% endfor %}
   </div>
+
+  <section>
+    <h2>Popular work outfit guides</h2>
+    <div class="link-grid">
+      {% for slug, guide in outfit_guides.items() %}
+      {% if loop.index <= 6 %}
+      <a class="info-card" href="/outfit-guides/{{ slug }}" data-track="click_lookbooks_outfit_guide">
+        <span class="card-kicker">{{ guide.keyword }}</span>
+        <strong>{{ guide.title }}</strong>
+        <span>{{ guide.description }}</span>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
 </div>
 {% endblock %}

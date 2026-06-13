@@ -831,6 +831,151 @@ def _lookbook_items(slug: str, lookbook: dict) -> list[dict]:
         })
     return items
 
+
+OUTFIT_GUIDES = {
+    "business-casual-outfit-ideas": {
+        "title": "Business Casual Outfit Ideas",
+        "keyword": "business casual outfit ideas",
+        "description": "Practical business casual outfit ideas for office days, meetings, and hybrid work.",
+        "image": "lookbooks/women/women_look_03.jpg",
+        "intro": "Business casual works best when one piece is structured and the rest stays clean, comfortable, and intentional. The goal is to look work-ready without needing a full suit.",
+        "sections": [
+            ("Start with one structured layer", "A blazer, trench, overshirt, cardigan, or clean jacket makes relaxed pieces feel more professional."),
+            ("Keep the base simple", "Use plain shirts, knits, blouses, chinos, trousers, or neat skirts before adding trend pieces."),
+            ("Make shoes intentional", "Loafers, clean sneakers, ankle boots, polished flats, and minimal leather shoes usually work better than loud footwear."),
+        ],
+        "checklist": ["One structured layer is included.", "Colors are easy to match.", "Shoes are clean.", "The outfit works while sitting and walking.", "No distracting logos or graphics."],
+        "related": ["first-day-office-outfit", "casual-friday-office-outfit", "office-outfit-color-combinations"],
+    },
+    "interview-outfit-ideas": {
+        "title": "Interview Outfit Ideas",
+        "keyword": "interview outfit ideas",
+        "description": "Simple interview outfit ideas that look polished without distracting from your answers.",
+        "image": "lookbooks/men/men_look_03.jpg",
+        "intro": "A good interview outfit should help the interviewer focus on your answers. Dress one step more polished than the everyday workplace unless the company clearly expects a formal suit.",
+        "sections": [
+            ("Match the industry first", "Corporate, finance, law, healthcare, education, and public roles usually need more structure than startup or creative teams."),
+            ("Avoid experimental pieces", "Save strong trends, loud prints, and unusual silhouettes for after you understand the workplace culture."),
+            ("Test the outfit before the interview", "Sit, walk, and check the outfit under similar lighting. Wrinkles, tight fits, and uncomfortable shoes show quickly."),
+        ],
+        "checklist": ["Top layer is structured.", "Colors are calm.", "Shoes are clean.", "Fit works while sitting.", "Accessories do not distract."],
+        "related": ["business-casual-outfit-ideas", "profile-photo-outfit-ideas", "first-day-office-outfit"],
+    },
+    "casual-friday-office-outfit": {
+        "title": "Casual Friday Office Outfit",
+        "keyword": "casual Friday office outfit",
+        "description": "Casual Friday outfit ideas that still look clean and workplace-appropriate.",
+        "image": "lookbooks/women/women_look_04.jpg",
+        "intro": "Casual Friday does not mean careless. The safest formula is one casual piece, one structured piece, and clean shoes.",
+        "sections": [
+            ("Use denim carefully", "Dark, clean denim reads more professional than distressed, faded, or overly loose pieces."),
+            ("Keep one polished anchor", "A blazer, pressed shirt, neat trousers, or structured bag keeps the outfit from looking like weekend wear."),
+            ("Use plain sneakers only", "If sneakers are allowed, choose clean minimal sneakers instead of gym shoes."),
+        ],
+        "checklist": ["Only one piece feels very casual.", "Denim is clean if used.", "Shoes are neat.", "The outfit still fits the team tone.", "No gym wear."],
+        "related": ["business-casual-outfit-ideas", "smart-casual-work-outfit", "rainy-day-office-outfit"],
+    },
+    "rainy-day-office-outfit": {
+        "title": "Rainy Day Office Outfit",
+        "keyword": "rainy day office outfit",
+        "description": "Office commute outfit ideas for rainy days, wet sidewalks, and unpredictable weather.",
+        "image": "lookbooks/men/men_look_05.jpg",
+        "intro": "A rainy office outfit needs to protect the commute without looking like outdoor gear once you arrive.",
+        "sections": [
+            ("Choose the outer layer first", "A trench coat, long coat, or water-resistant jacket should cover enough of the outfit for the actual walk."),
+            ("Use darker lower pieces", "Dark trousers, midi skirts, and ankle boots hide splash marks better than pale fabrics."),
+            ("Avoid fragile fabrics", "Thin linen, suede, and fabrics that wrinkle badly are risky on wet commutes."),
+        ],
+        "checklist": ["Outer layer covers enough.", "Shoes have grip.", "Lower half is not too pale.", "Umbrella fits the outfit.", "A backup layer is available if needed."],
+        "related": ["office-commute-outfit-ideas", "winter-office-outfit-ideas", "business-casual-outfit-ideas"],
+    },
+    "first-day-office-outfit": {
+        "title": "First Day Office Outfit",
+        "keyword": "first day office outfit",
+        "description": "First day office outfit ideas when you are not sure how formal the workplace will be.",
+        "image": "lookbooks/women/women_look_01.jpg",
+        "intro": "For a first day, choose flexible pieces that can look slightly formal or slightly relaxed depending on the team.",
+        "sections": [
+            ("Aim slightly overdressed", "Being a little more polished is safer than looking too casual before you know the office norms."),
+            ("Choose quiet colors", "Navy, gray, cream, black, white, beige, and muted blue are easy to adjust later."),
+            ("Prioritize comfort", "You may walk, sit through onboarding, meet multiple people, or commute at unusual times."),
+        ],
+        "checklist": ["Comfortable for a full day.", "Layer can be removed.", "Colors are calm.", "Shoes handle walking.", "No distracting graphics."],
+        "related": ["business-casual-outfit-ideas", "interview-outfit-ideas", "office-commute-outfit-ideas"],
+    },
+    "profile-photo-outfit-ideas": {
+        "title": "Profile Photo Outfit Ideas",
+        "keyword": "profile photo outfit ideas",
+        "description": "Outfit ideas for LinkedIn, resume, company bio, and professional profile photos.",
+        "image": "lookbooks/men/men_look_02.jpg",
+        "intro": "For a small profile photo, color contrast and a clean neckline matter more than complicated styling.",
+        "sections": [
+            ("Make the face easy to see", "Avoid tops that blend into the background or pull attention away from the face."),
+            ("Use simple structure", "A blazer, collar, clean knit, or structured blouse usually photographs well."),
+            ("Avoid tiny patterns", "Small checks, thin stripes, and busy prints can look noisy after cropping."),
+        ],
+        "checklist": ["Face remains the focus.", "Top contrasts with background.", "No distracting logo.", "Neckline is clean.", "Crop works at small size."],
+        "related": ["interview-outfit-ideas", "office-outfit-color-combinations", "business-casual-outfit-ideas"],
+    },
+    "office-outfit-color-combinations": {
+        "title": "Office Outfit Color Combinations",
+        "keyword": "office outfit color combinations",
+        "description": "Safe office color combinations for business casual, interviews, profile photos, and daily work.",
+        "image": "lookbooks/women/women_look_03.jpg",
+        "intro": "Office color combinations are easiest when you start with one neutral base and add one soft accent.",
+        "sections": [
+            ("Use reliable neutrals", "Navy, charcoal, black, white, cream, beige, camel, and gray are the easiest base colors."),
+            ("Add one quiet accent", "Light blue, muted green, burgundy, dusty rose, and soft brown can add interest without looking loud."),
+            ("Watch contrast", "Profile photos and presentations need enough contrast so the outfit does not disappear on camera."),
+        ],
+        "checklist": ["One base neutral is clear.", "Only one accent color is used.", "Shoes match the formality.", "Contrast works in photos.", "Colors do not fight the workplace tone."],
+        "related": ["profile-photo-outfit-ideas", "business-casual-outfit-ideas", "interview-outfit-ideas"],
+    },
+    "smart-casual-work-outfit": {
+        "title": "Smart Casual Work Outfit",
+        "keyword": "smart casual work outfit",
+        "description": "Smart casual work outfit ideas for offices that are polished but not fully formal.",
+        "image": "lookbooks/men/men_look_01.jpg",
+        "intro": "Smart casual is easiest when casual pieces are clean and at least one piece has structure.",
+        "sections": [
+            ("Use clean casual pieces", "Plain tees, knits, chinos, overshirts, dark denim, and minimal sneakers can work if they are neat."),
+            ("Add polish with fit", "Smart casual depends heavily on fit. Avoid pieces that look stretched, oversized, or worn out."),
+            ("Keep accessories minimal", "A watch, belt, or simple bag is enough for most offices."),
+        ],
+        "checklist": ["One piece is structured.", "Fit is intentional.", "Shoes are clean.", "Colors are easy to match.", "No gym or lounge pieces."],
+        "related": ["casual-friday-office-outfit", "business-casual-outfit-ideas", "office-commute-outfit-ideas"],
+    },
+    "office-commute-outfit-ideas": {
+        "title": "Office Commute Outfit Ideas",
+        "keyword": "office commute outfit ideas",
+        "description": "Office commute outfit ideas for walking, transit, weather changes, and long workdays.",
+        "image": "lookbooks/women/women_look_05.jpg",
+        "intro": "A commute outfit has to look good after movement, weather, and a full day of sitting.",
+        "sections": [
+            ("Start with shoes", "The best commute outfit fails if the shoes cannot handle walking, stairs, or wet pavement."),
+            ("Use layers", "A removable layer helps with train heat, office air conditioning, and weather changes."),
+            ("Avoid fragile fits", "Very tight, sheer, or wrinkle-prone pieces are harder to maintain during a commute."),
+        ],
+        "checklist": ["Shoes handle the commute.", "Layer can be removed.", "Bag fits daily items.", "Fabric does not wrinkle too easily.", "Outfit still looks professional on arrival."],
+        "related": ["rainy-day-office-outfit", "first-day-office-outfit", "smart-casual-work-outfit"],
+    },
+    "summer-office-outfit-ideas": {
+        "title": "Summer Office Outfit Ideas",
+        "keyword": "summer office outfit ideas",
+        "description": "Summer office outfit ideas that stay breathable while still looking professional.",
+        "image": "lookbooks/men/men_look_06.jpg",
+        "intro": "Summer office outfits need breathable fabrics, lighter colors, and enough structure to avoid looking too casual.",
+        "sections": [
+            ("Choose breathable but structured fabrics", "Cotton, linen blends, light wool, and breathable knits usually work better than thin clingy fabrics."),
+            ("Use lighter neutrals", "Cream, white, light gray, beige, pale blue, and navy feel seasonal without losing polish."),
+            ("Keep backup layers", "Many offices are cold in summer because of air conditioning, so a light jacket or overshirt helps."),
+        ],
+        "checklist": ["Fabric breathes.", "Layer is light.", "Shoes are not too casual.", "Colors feel clean.", "Outfit still fits office formality."],
+        "related": ["office-commute-outfit-ideas", "business-casual-outfit-ideas", "office-outfit-color-combinations"],
+    },
+}
+
+
 BLOG_POSTS = {
     "how-to-merge-pdf-files-online": {
         "title": "How to Merge PDF Files Online",
@@ -2466,6 +2611,7 @@ def index():
         grouped_tools=_tools_by_category(),
         blog_posts=_published_blog_posts(),
         lookbooks=LOOKBOOKS,
+        outfit_guides=OUTFIT_GUIDES,
         meta_title="Free Online Tools | PDF, Image, Text, Developer, and Calculator Utilities",
         meta_description="Free browser tools for PDFs, images, text, code, calculators, productivity, business tasks, and career exploration.",
         canonical_url=_canonical_url("/"),
@@ -2523,9 +2669,29 @@ def lookbooks_index():
         "lookbooks_index.html",
         lang=lang,
         lookbooks=LOOKBOOKS,
+        outfit_guides=OUTFIT_GUIDES,
         meta_title="Office Commute Outfit Ideas | Work Looks",
         meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, rainy day, and after-work looks.",
         canonical_url=_canonical_url("/lookbooks"),
+    )
+
+
+@app.route("/outfit-guides/<slug>")
+def outfit_guide_page(slug):
+    guide = OUTFIT_GUIDES.get(slug)
+    if not guide:
+        return redirect(url_for("lookbooks_index"))
+    lang = _active_lang()
+    related = {key: OUTFIT_GUIDES[key] for key in guide.get("related", []) if key in OUTFIT_GUIDES}
+    return render_template(
+        "outfit_guide.html",
+        lang=lang,
+        slug=slug,
+        guide=guide,
+        related_guides=related,
+        meta_title=f"{guide['title']} | Work Outfit Guide",
+        meta_description=guide["description"],
+        canonical_url=_canonical_url(f"/outfit-guides/{slug}"),
     )
 
 
@@ -3208,6 +3374,7 @@ def feed_xml():
 def sitemap_xml():
     paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
     paths.append("/lookbooks")
+    paths.extend(f"/outfit-guides/{slug}" for slug in OUTFIT_GUIDES)
     paths.extend(f"/lookbooks/{slug}" for slug in LOOKBOOKS)
     for slug, lookbook in LOOKBOOKS.items():
         paths.extend(f"/lookbooks/{slug}/{item['slug']}" for item in _lookbook_items(slug, lookbook))
@@ -3222,6 +3389,8 @@ def sitemap_xml():
         if path == "/":
             return "daily", "1.0"
         if path == "/lookbooks":
+            return "weekly", "0.9"
+        if path.startswith("/outfit-guides/"):
             return "weekly", "0.9"
         if path.startswith("/lookbooks/"):
             return "weekly", "0.9"
