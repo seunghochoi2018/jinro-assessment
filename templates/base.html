@@ -12,7 +12,9 @@
 <meta property="og:description" content="{{ meta_description|default('Free browser utilities for documents, text, code, images, calculators, and career exploration.') }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ canonical_url|default(app_url) }}">
-<meta name="twitter:card" content="summary">
+{% if meta_image %}<meta property="og:image" content="{{ meta_image }}">{% endif %}
+<meta name="twitter:card" content="{% if meta_image %}summary_large_image{% else %}summary{% endif %}">
+{% if meta_image %}<meta name="twitter:image" content="{{ meta_image }}">{% endif %}
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",

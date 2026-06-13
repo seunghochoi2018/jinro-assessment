@@ -10,6 +10,24 @@
   "mainEntityOfPage": {{ canonical_url|tojson }}
 }
 </script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {% for item in faq %}
+    {
+      "@type": "Question",
+      "name": {{ item.q|tojson }},
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": {{ item.a|tojson }}
+      }
+    }{% if not loop.last %},{% endif %}
+    {% endfor %}
+  ]
+}
+</script>
 {% endblock %}
 {% block content %}
 <div class="article-page outfit-guide-page">
@@ -36,6 +54,18 @@
       <li>{{ item }}</li>
       {% endfor %}
     </ul>
+  </section>
+
+  <section>
+    <h2>Common questions</h2>
+    <div class="faq-list">
+      {% for item in faq %}
+      <details>
+        <summary>{{ item.q }}</summary>
+        <p>{{ item.a }}</p>
+      </details>
+      {% endfor %}
+    </div>
   </section>
 
   {% if related_guides %}

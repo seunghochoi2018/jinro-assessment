@@ -832,6 +832,25 @@ def _lookbook_items(slug: str, lookbook: dict) -> list[dict]:
     return items
 
 
+def _outfit_guide_faq(guide: dict) -> list[dict]:
+    title = guide["title"].lower()
+    keyword = guide["keyword"]
+    return [
+        {
+            "q": f"What is the safest way to build {keyword}?",
+            "a": f"Start with one structured piece, keep colors simple, and choose shoes that match the commute and workplace formality. For {title}, comfort matters because the outfit needs to work while sitting, walking, and moving through the day.",
+        },
+        {
+            "q": f"Can {keyword} work for business casual offices?",
+            "a": "Yes, if the outfit includes clean lines, neat shoes, and at least one polished layer such as a blazer, trench, cardigan, overshirt, or structured bag.",
+        },
+        {
+            "q": "What should I avoid for office outfits?",
+            "a": "Avoid distracting logos, gym wear, see-through fabrics, badly wrinkled pieces, shoes that look worn out, and anything that makes the outfit uncomfortable for a normal workday.",
+        },
+    ]
+
+
 OUTFIT_GUIDES = {
     "business-casual-outfit-ideas": {
         "title": "Business Casual Outfit Ideas",
@@ -2803,6 +2822,7 @@ def lookbook_page(slug):
         lookbook_items=items,
         meta_title=f"{lookbook['title']} | Work Outfit Ideas",
         meta_description=lookbook["description"],
+        meta_image=f"{APP_URL}{url_for('static', filename=items[0]['image'])}" if items else "",
         canonical_url=_canonical_url(f"/lookbooks/{slug}"),
     )
 
@@ -2826,6 +2846,7 @@ def lookbook_item_page(slug, item_slug):
         related_items=[entry for entry in items if entry["slug"] != item_slug],
         meta_title=f"{item['title']} | {lookbook['title']}",
         meta_description=f"{item['summary']} Tips for a practical {item['keyword']}.",
+        meta_image=f"{APP_URL}{url_for('static', filename=item['image'])}",
         canonical_url=_canonical_url(f"/lookbooks/{slug}/{item_slug}"),
     )
 
@@ -2840,6 +2861,7 @@ def lookbooks_index():
         outfit_guides=OUTFIT_GUIDES,
         meta_title="Office Commute Outfit Ideas | Work Looks",
         meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, rainy day, and after-work looks.",
+        meta_image=f"{APP_URL}{url_for('static', filename='lookbooks/women/women_look_01.jpg')}",
         canonical_url=_canonical_url("/lookbooks"),
     )
 
@@ -2856,9 +2878,11 @@ def outfit_guide_page(slug):
         lang=lang,
         slug=slug,
         guide=guide,
+        faq=_outfit_guide_faq(guide),
         related_guides=related,
         meta_title=f"{guide['title']} | Work Outfit Guide",
         meta_description=guide["description"],
+        meta_image=f"{APP_URL}{url_for('static', filename=guide['image'])}",
         canonical_url=_canonical_url(f"/outfit-guides/{slug}"),
     )
 
@@ -2872,6 +2896,7 @@ def outfit_guides_index():
         outfit_guides=OUTFIT_GUIDES,
         meta_title="Work Outfit Guides | Office Style Ideas",
         meta_description="Browse practical work outfit guides for business casual, interviews, office commute, seasonal outfits, shoes, bags, colors, and capsule wardrobes.",
+        meta_image=f"{APP_URL}{url_for('static', filename='lookbooks/women/women_look_03.jpg')}",
         canonical_url=_canonical_url("/outfit-guides"),
     )
 
@@ -3595,18 +3620,47 @@ def sitemap_xml():
         if path.startswith("/career/"):
             return "monthly", "0.7"
         return "monthly", "0.4"
-    urls = "\n".join(
-        f"""  <url>
+
+    def sitemap_images(path: str) -> list[tuple[str, str]]:
+        if path.startswith("/outfit-guides/"):
+            slug = path.rsplit("/", 1)[-1]
+            guide = OUTFIT_GUIDES.get(slug)
+            if guide:
+                return [(f"{APP_URL}{url_for('static', filename=guide['image'])}", guide["title"])]
+        if path.startswith("/lookbooks/"):
+            parts = path.strip("/").split("/")
+            if len(parts) >= 2:
+                lookbook = LOOKBOOKS.get(parts[1])
+                if not lookbook:
+                    return []
+                items = _lookbook_items(parts[1], lookbook)
+                if len(parts) == 3:
+                    item = next((entry for entry in items if entry["slug"] == parts[2]), None)
+                    return [(f"{APP_URL}{url_for('static', filename=item['image'])}", item["title"])] if item else []
+                return [(f"{APP_URL}{url_for('static', filename=item['image'])}", item["title"]) for item in items]
+        return []
+
+    url_blocks = []
+    for path in paths:
+        changefreq, priority = sitemap_meta(path)
+        images = "\n".join(
+            f"""    <image:image>
+      <image:loc>{escape(image_url)}</image:loc>
+      <image:title>{escape(title)}</image:title>
+    </image:image>"""
+            for image_url, title in sitemap_images(path)
+        )
+        image_block = f"\n{images}" if images else ""
+        url_blocks.append(f"""  <url>
     <loc>{APP_URL}{path}</loc>
     <lastmod>{today}</lastmod>
     <changefreq>{changefreq}</changefreq>
-    <priority>{priority}</priority>
-  </url>"""
-        for path in paths
-        for changefreq, priority in [sitemap_meta(path)]
-    )
+    <priority>{priority}</priority>{image_block}
+  </url>""")
+    urls = "\n".join(url_blocks)
     body = f"""<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 {urls}
 </urlset>
 """
