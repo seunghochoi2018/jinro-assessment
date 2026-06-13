@@ -973,6 +973,174 @@ OUTFIT_GUIDES = {
         "checklist": ["Fabric breathes.", "Layer is light.", "Shoes are not too casual.", "Colors feel clean.", "Outfit still fits office formality."],
         "related": ["office-commute-outfit-ideas", "business-casual-outfit-ideas", "office-outfit-color-combinations"],
     },
+    "winter-office-outfit-ideas": {
+        "title": "Winter Office Outfit Ideas",
+        "keyword": "winter office outfit ideas",
+        "description": "Winter office outfit ideas for cold commutes, warm layers, and professional indoor settings.",
+        "image": "lookbooks/women/women_look_05.jpg",
+        "intro": "Winter office outfits need warm outer layers without making the indoor outfit bulky or uncomfortable.",
+        "sections": [
+            ("Build around the coat", "A wool coat, trench with liner, or long structured coat makes the commute look polished before anyone sees the full outfit."),
+            ("Layer thin pieces", "Thin knits, shirts, thermal base layers, and cardigans are easier to manage than one very bulky sweater."),
+            ("Use office-friendly boots", "Ankle boots, Chelsea boots, and simple leather boots usually look cleaner than outdoor-heavy footwear."),
+        ],
+        "checklist": ["Outerwear looks intentional.", "Indoor layer is not too bulky.", "Shoes handle cold pavement.", "Colors stay easy to match.", "Bag fits gloves or scarf."],
+        "related": ["rainy-day-office-outfit", "office-commute-outfit-ideas", "business-casual-outfit-ideas"],
+    },
+    "fall-office-outfit-ideas": {
+        "title": "Fall Office Outfit Ideas",
+        "keyword": "fall office outfit ideas",
+        "description": "Fall office outfit ideas using light layers, muted colors, jackets, knits, and commute-friendly shoes.",
+        "image": "lookbooks/men/men_look_05.jpg",
+        "intro": "Fall is the easiest season for office outfits because light jackets, knits, and structured layers all work naturally.",
+        "sections": [
+            ("Use midweight layers", "Overshirts, light trench coats, blazers, and cardigans give enough warmth without feeling heavy indoors."),
+            ("Lean on muted colors", "Camel, olive, navy, gray, burgundy, cream, and dark brown look seasonal while staying professional."),
+            ("Pick shoes for weather changes", "Loafers, ankle boots, Chelsea boots, and clean leather sneakers cover most fall commutes."),
+        ],
+        "checklist": ["Layer is removable.", "Colors feel muted.", "Shoes work in light rain.", "Outfit still fits office formality.", "No summer-only fabrics dominate."],
+        "related": ["winter-office-outfit-ideas", "rainy-day-office-outfit", "office-outfit-color-combinations"],
+    },
+    "spring-office-outfit-ideas": {
+        "title": "Spring Office Outfit Ideas",
+        "keyword": "spring office outfit ideas",
+        "description": "Spring office outfit ideas for lighter layers, fresh colors, changing temperatures, and commute comfort.",
+        "image": "lookbooks/women/women_look_01.jpg",
+        "intro": "Spring office outfits work best with lighter layers that can handle cool mornings, warmer afternoons, and unexpected rain.",
+        "sections": [
+            ("Choose lighter outerwear", "A trench, light blazer, cardigan, or overshirt gives structure without looking heavy."),
+            ("Use fresh but quiet colors", "Light blue, cream, soft gray, beige, muted green, and white feel seasonal while staying office-safe."),
+            ("Plan for temperature changes", "A removable layer prevents the outfit from feeling wrong by lunchtime."),
+        ],
+        "checklist": ["Layer is light.", "Color palette feels fresh.", "Shoes handle damp pavement.", "Fabric is not too sheer.", "Outfit works without the outer layer."],
+        "related": ["summer-office-outfit-ideas", "office-commute-outfit-ideas", "office-outfit-color-combinations"],
+    },
+    "petite-office-outfit-ideas": {
+        "title": "Petite Office Outfit Ideas",
+        "keyword": "petite office outfit ideas",
+        "description": "Petite office outfit ideas that use proportion, clean lines, and structure without overwhelming the frame.",
+        "image": "lookbooks/women/women_look_02.jpg",
+        "intro": "Petite office outfits usually work best when the outfit has clear vertical lines, clean proportions, and fewer bulky breaks.",
+        "sections": [
+            ("Keep proportions clear", "High-waist trousers, cropped jackets, tucked tops, and clean hems can help the outfit look balanced."),
+            ("Avoid heavy visual breaks", "Too many strong color blocks, oversized layers, or long untailored coats can overwhelm the outfit."),
+            ("Use shoes to extend the line", "Pointed flats, loafers, ankle boots, or low heels in similar tones can make the outfit feel more continuous."),
+        ],
+        "checklist": ["Hem length is intentional.", "Top and bottom proportions are clear.", "Outer layer does not overwhelm.", "Shoes support the outfit line.", "Bag size fits the frame."],
+        "related": ["business-casual-outfit-ideas", "office-outfit-color-combinations", "first-day-office-outfit"],
+    },
+    "plus-size-office-outfit-ideas": {
+        "title": "Plus Size Office Outfit Ideas",
+        "keyword": "plus size office outfit ideas",
+        "description": "Plus size office outfit ideas focused on fit, structure, comfort, and professional polish.",
+        "image": "lookbooks/women/women_look_03.jpg",
+        "intro": "Strong plus size office outfits come from fit and structure, not hiding the body. The best pieces allow movement while keeping a clean line.",
+        "sections": [
+            ("Prioritize fit over size labels", "Trousers, blazers, shirts, and skirts should move comfortably without pulling, gaping, or bunching."),
+            ("Use structure where it helps", "A blazer, coat, defined waistband, or clean shoulder line can make simple pieces look more intentional."),
+            ("Choose fabrics with recovery", "Fabrics that hold shape through sitting, walking, and commuting usually look better by the end of the day."),
+        ],
+        "checklist": ["No pulling at buttons.", "Waist and shoulders feel comfortable.", "Fabric holds shape.", "Shoes support the day.", "Layering does not add unwanted bulk."],
+        "related": ["business-casual-outfit-ideas", "office-commute-outfit-ideas", "profile-photo-outfit-ideas"],
+    },
+    "work-capsule-wardrobe": {
+        "title": "Work Capsule Wardrobe",
+        "keyword": "work capsule wardrobe",
+        "description": "A simple work capsule wardrobe guide for building repeatable office outfits with fewer pieces.",
+        "image": "lookbooks/men/men_look_02.jpg",
+        "intro": "A work capsule wardrobe makes mornings easier by keeping a small set of pieces that mix well across office days.",
+        "sections": [
+            ("Start with core neutrals", "Choose two or three base colors such as navy, gray, black, cream, beige, or white."),
+            ("Buy repeatable categories", "Trousers, shirts, knits, blazers, overshirts, simple shoes, and one commute coat do most of the work."),
+            ("Add variety through texture", "Different fabrics and layers make repeated colors feel less repetitive."),
+        ],
+        "checklist": ["Two base colors are clear.", "Most tops match most bottoms.", "Shoes work with multiple outfits.", "One outer layer covers commutes.", "Laundry rhythm is realistic."],
+        "related": ["office-outfit-color-combinations", "business-casual-outfit-ideas", "first-day-office-outfit"],
+    },
+    "office-shoes-guide": {
+        "title": "Office Shoes Guide",
+        "keyword": "office shoes guide",
+        "description": "Office shoe ideas for commuting, business casual outfits, rainy days, interviews, and long workdays.",
+        "image": "lookbooks/men/men_look_01.jpg",
+        "intro": "Office shoes have to match the dress code and survive the commute. Clean, simple shoes usually beat trendy shoes for daily work.",
+        "sections": [
+            ("Match formality first", "Loafers, ankle boots, flats, low heels, Chelsea boots, and minimal leather shoes cover most offices."),
+            ("Check commute comfort", "If the commute includes walking or stairs, grip, support, and break-in time matter more than a perfect photo."),
+            ("Keep one backup pair", "A backup pair at work helps on rainy days, snow days, and events after office hours."),
+        ],
+        "checklist": ["Shoes are clean.", "Grip is enough for the commute.", "Formality fits the office.", "Color matches multiple outfits.", "Feet still feel okay after a full day."],
+        "related": ["rainy-day-office-outfit", "interview-outfit-ideas", "office-commute-outfit-ideas"],
+    },
+    "work-bag-outfit-guide": {
+        "title": "Work Bag Outfit Guide",
+        "keyword": "work bag outfit guide",
+        "description": "Work bag outfit ideas for matching totes, backpacks, shoulder bags, and briefcases with office looks.",
+        "image": "lookbooks/women/women_look_03.jpg",
+        "intro": "A work bag can make a simple outfit look intentional, but it also has to carry the real items you use every day.",
+        "sections": [
+            ("Choose function first", "Laptop size, commute method, weather, and daily carry should decide the bag before color or trend."),
+            ("Match the outfit tone", "Structured totes and briefcases feel more formal. Clean backpacks and soft shoulder bags can work in relaxed offices."),
+            ("Use neutral colors", "Black, brown, tan, navy, gray, and cream bags match more office outfits than bright seasonal colors."),
+        ],
+        "checklist": ["Laptop fits if needed.", "Strap works for commute length.", "Color matches most outfits.", "Shape fits office formality.", "Bag does not look overloaded."],
+        "related": ["work-capsule-wardrobe", "business-casual-outfit-ideas", "office-commute-outfit-ideas"],
+    },
+    "blazer-office-outfit-ideas": {
+        "title": "Blazer Office Outfit Ideas",
+        "keyword": "blazer office outfit ideas",
+        "description": "Blazer office outfit ideas for business casual, interviews, casual Friday, and smart casual workdays.",
+        "image": "lookbooks/women/women_look_06.jpg",
+        "intro": "A blazer is the fastest way to make simple office pieces look more polished.",
+        "sections": [
+            ("Use the blazer as structure", "A blazer can upgrade a knit, blouse, T-shirt, dress, chinos, or dark denim if the fit is clean."),
+            ("Balance fit carefully", "Oversized blazers work best with cleaner bottoms. Fitted blazers work best when they do not pull at the buttons."),
+            ("Keep the rest simple", "When the blazer has strong shape, simple base pieces keep the outfit from feeling busy."),
+        ],
+        "checklist": ["Shoulders fit cleanly.", "Sleeves are not distracting.", "Base layer is simple.", "Bottoms match the formality.", "Shoes finish the outfit intentionally."],
+        "related": ["business-casual-outfit-ideas", "interview-outfit-ideas", "smart-casual-work-outfit"],
+    },
+    "office-jeans-outfit-ideas": {
+        "title": "Office Jeans Outfit Ideas",
+        "keyword": "office jeans outfit ideas",
+        "description": "Office jeans outfit ideas for casual workplaces, casual Fridays, and smart casual teams.",
+        "image": "lookbooks/men/men_look_04.jpg",
+        "intro": "Jeans can work in some offices when they are clean, dark or simple, and paired with more polished pieces.",
+        "sections": [
+            ("Choose clean denim", "Dark, straight, slim-straight, or neat relaxed denim works better than distressed or heavily faded jeans."),
+            ("Add one polished piece", "A blazer, overshirt, Oxford shirt, knit, or structured jacket keeps denim from reading too casual."),
+            ("Use cleaner shoes", "Loafers, boots, minimal sneakers, and flats usually work better than athletic shoes."),
+        ],
+        "checklist": ["Denim is allowed.", "Jeans are clean and not distressed.", "Top layer is polished.", "Shoes are intentional.", "Fit works while sitting."],
+        "related": ["casual-friday-office-outfit", "smart-casual-work-outfit", "business-casual-outfit-ideas"],
+    },
+    "black-pants-office-outfit": {
+        "title": "Black Pants Office Outfit",
+        "keyword": "black pants office outfit",
+        "description": "Black pants office outfit ideas for simple, repeatable, and professional work looks.",
+        "image": "lookbooks/men/men_look_06.jpg",
+        "intro": "Black pants are one of the easiest office anchors because they work with shirts, knits, blazers, coats, and clean sneakers.",
+        "sections": [
+            ("Vary the top layer", "White shirts, light blue shirts, gray knits, black overshirts, and structured blazers all work with black pants."),
+            ("Watch fabric texture", "Wool, twill, ponte, and structured blends usually look more office-ready than thin clingy fabric."),
+            ("Use contrast intentionally", "Black pants with a white, blue, cream, or gray top gives a clear office look without much effort."),
+        ],
+        "checklist": ["Pants hold shape.", "Length works with shoes.", "Top adds enough contrast.", "Shoes match formality.", "No lint or fading is visible."],
+        "related": ["office-outfit-color-combinations", "business-casual-outfit-ideas", "work-capsule-wardrobe"],
+    },
+    "neutral-office-outfit-ideas": {
+        "title": "Neutral Office Outfit Ideas",
+        "keyword": "neutral office outfit ideas",
+        "description": "Neutral office outfit ideas using black, white, gray, navy, beige, cream, and camel.",
+        "image": "lookbooks/women/women_look_01.jpg",
+        "intro": "Neutral office outfits are easy to repeat because the pieces mix together without looking mismatched.",
+        "sections": [
+            ("Pick two neutrals", "A simple outfit often looks better with two clear neutrals than with too many close shades."),
+            ("Use texture for depth", "Cotton, wool, satin, leather, knit, and twill can make a neutral outfit feel more considered."),
+            ("Add one anchor piece", "A coat, blazer, bag, or shoes in a stable neutral helps the outfit feel finished."),
+        ],
+        "checklist": ["Palette uses two or three neutrals.", "Texture adds interest.", "Shoes match the palette.", "Bag does not clash.", "The outfit still has enough contrast."],
+        "related": ["office-outfit-color-combinations", "work-capsule-wardrobe", "business-casual-outfit-ideas"],
+    },
 }
 
 
@@ -2695,6 +2863,19 @@ def outfit_guide_page(slug):
     )
 
 
+@app.route("/outfit-guides")
+def outfit_guides_index():
+    lang = _active_lang()
+    return render_template(
+        "outfit_guides_index.html",
+        lang=lang,
+        outfit_guides=OUTFIT_GUIDES,
+        meta_title="Work Outfit Guides | Office Style Ideas",
+        meta_description="Browse practical work outfit guides for business casual, interviews, office commute, seasonal outfits, shoes, bags, colors, and capsule wardrobes.",
+        canonical_url=_canonical_url("/outfit-guides"),
+    )
+
+
 @app.route("/tests/<slug>")
 def seo_test_page(slug):
     page = SEO_TEST_PAGES.get(slug)
@@ -3374,6 +3555,7 @@ def feed_xml():
 def sitemap_xml():
     paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
     paths.append("/lookbooks")
+    paths.append("/outfit-guides")
     paths.extend(f"/outfit-guides/{slug}" for slug in OUTFIT_GUIDES)
     paths.extend(f"/lookbooks/{slug}" for slug in LOOKBOOKS)
     for slug, lookbook in LOOKBOOKS.items():
@@ -3391,6 +3573,8 @@ def sitemap_xml():
         if path == "/lookbooks":
             return "weekly", "0.9"
         if path.startswith("/outfit-guides/"):
+            return "weekly", "0.9"
+        if path == "/outfit-guides":
             return "weekly", "0.9"
         if path.startswith("/lookbooks/"):
             return "weekly", "0.9"

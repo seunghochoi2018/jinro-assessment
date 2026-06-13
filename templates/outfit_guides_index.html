@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="article-page outfit-guides-index-page">
+  <p class="eyebrow">Work outfit guides</p>
+  <h1>Work Outfit Guides</h1>
+  <p class="lead">Browse practical office outfit guides for business casual, interviews, casual Fridays, seasonal workwear, commute outfits, shoes, bags, colors, and capsule wardrobes.</p>
+
+  <div class="link-grid">
+    {% for slug, guide in outfit_guides.items() %}
+    <a class="info-card" href="/outfit-guides/{{ slug }}" data-track="click_outfit_guides_index">
+      <span class="card-kicker">{{ guide.keyword }}</span>
+      <strong>{{ guide.title }}</strong>
+      <span>{{ guide.description }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

@@ -20,7 +20,13 @@
   </div>
 
   <section>
-    <h2>Popular work outfit guides</h2>
+    <div class="section-heading-row">
+      <div>
+        <p class="eyebrow">Work outfit guides</p>
+        <h2>Popular work outfit guides</h2>
+      </div>
+      <a href="/outfit-guides" class="btn-secondary">View all</a>
+    </div>
     <div class="link-grid">
       {% for slug, guide in outfit_guides.items() %}
       {% if loop.index <= 6 %}
