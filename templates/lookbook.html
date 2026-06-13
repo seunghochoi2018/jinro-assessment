@@ -17,13 +17,14 @@
   <p class="lead">{{ lookbook.description }}</p>
 
   <div class="lookbook-grid">
-    {% for title, description in lookbook["items"] %}
+    {% for item in lookbook_items %}
     <article class="lookbook-item">
-      <img src="{{ url_for('static', filename='lookbooks/' ~ lookbook.folder ~ '/' ~ lookbook.prefix ~ '_0' ~ loop.index ~ '.jpg') }}" alt="{{ title }} office commute outfit idea" loading="{% if loop.index <= 2 %}eager{% else %}lazy{% endif %}">
+      <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.title }} office commute outfit idea" loading="{% if item.index <= 2 %}eager{% else %}lazy{% endif %}">
       <div>
-        <span>Look {{ "%02d"|format(loop.index) }}</span>
-        <h2>{{ title }}</h2>
-        <p>{{ description }}</p>
+        <span>Look {{ "%02d"|format(item.index) }}</span>
+        <h2>{{ item.title }}</h2>
+        <p>{{ item.description }}</p>
+        <a href="/lookbooks/{{ slug }}/{{ item.slug }}" class="text-link" data-track="click_lookbook_theme">View outfit tips</a>
       </div>
     </article>
     {% endfor %}

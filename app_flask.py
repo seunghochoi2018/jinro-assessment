@@ -746,6 +746,91 @@ LOOKBOOK_REDIRECTS = {
     "men-style-guide": "men-office-commute-looks",
 }
 
+LOOKBOOK_THEME_GUIDES = {
+    ("women-office-commute-looks", "natural-commute"): {
+        "keyword": "women's natural office commute outfit",
+        "summary": "A calm workday look built around light neutrals, a clean blouse, straight trousers, and a trench coat.",
+        "tips": ["Keep the palette close to cream, beige, white, and soft gray.", "Use loafers or low heels when the commute includes walking.", "Add one structured bag so the relaxed pieces still read professional."],
+    },
+    ("women-office-commute-looks", "chic-slim-fit"): {
+        "keyword": "women's chic slim fit office outfit",
+        "summary": "A polished office look for days when you want a sharper silhouette without looking overdone.",
+        "tips": ["Balance a fitted top with a structured blazer.", "Keep skirt length and neckline workplace-appropriate.", "Use black, charcoal, navy, or cream for a cleaner office impression."],
+    },
+    ("women-office-commute-looks", "soft-formal"): {
+        "keyword": "women's soft formal office outfit",
+        "summary": "A softer formal option that works for interviews, presentations, client meetings, and regular office days.",
+        "tips": ["Choose a crisp shirt with wide-leg trousers for comfort.", "Use a minimal belt to make the outfit look intentional.", "Keep accessories quiet so the outfit stays professional."],
+    },
+    ("women-office-commute-looks", "casual-friday"): {
+        "keyword": "women's casual Friday office outfit",
+        "summary": "A relaxed Friday look that still keeps enough structure for the workplace.",
+        "tips": ["Use dark or clean denim only when the workplace allows it.", "Pair casual layers with tailored slacks instead of distressed jeans.", "Keep sneakers plain and clean."],
+    },
+    ("women-office-commute-looks", "rainy-day-office"): {
+        "keyword": "women's rainy day office outfit",
+        "summary": "A commute-friendly rainy day outfit using a longer outer layer, boots, and darker base pieces.",
+        "tips": ["Pick ankle boots or water-resistant shoes.", "Use a coat length that protects the outfit while walking.", "Avoid fabrics that wrinkle badly after getting damp."],
+    },
+    ("women-office-commute-looks", "after-work-dinner"): {
+        "keyword": "women's office to dinner outfit",
+        "summary": "A work-to-evening outfit that keeps the office base polished and adds one elevated texture.",
+        "tips": ["Use satin or a subtle sheen only in one piece.", "Keep the blazer structured for office hours.", "Swap only accessories or shoes if you need a stronger evening look."],
+    },
+    ("men-office-commute-looks", "natural-smart-casual"): {
+        "keyword": "men's smart casual commute outfit",
+        "summary": "A clean smart casual commute outfit for offices that do not require a suit.",
+        "tips": ["Use an overshirt as the structured layer.", "Keep the T-shirt plain and fitted, not oversized.", "Choose tailored trousers so sneakers still look work-ready."],
+    },
+    ("men-office-commute-looks", "clean-office"): {
+        "keyword": "men's clean office outfit",
+        "summary": "A simple blazer-led office outfit that works for everyday business casual settings.",
+        "tips": ["Pair a charcoal blazer with a dark knit for a modern look.", "Use tapered trousers rather than skinny fits.", "Loafers or minimal leather shoes make the outfit more office-ready."],
+    },
+    ("men-office-commute-looks", "soft-formal"): {
+        "keyword": "men's soft formal office outfit",
+        "summary": "A lighter formal look for client meetings, interviews, and polished workdays.",
+        "tips": ["Use a white shirt as the anchor piece.", "Choose navy or gray trousers for easy matching.", "A minimal watch is enough; avoid loud accessories."],
+    },
+    ("men-office-commute-looks", "casual-friday"): {
+        "keyword": "men's casual Friday office outfit",
+        "summary": "A casual Friday outfit that uses denim carefully while keeping the rest clean.",
+        "tips": ["Keep the denim jacket dark, neat, and logo-free.", "Use chinos or clean trousers rather than distressed jeans.", "Plain white sneakers work best when they are clean."],
+    },
+    ("men-office-commute-looks", "rainy-day-office"): {
+        "keyword": "men's rainy day office outfit",
+        "summary": "A practical rainy commute outfit with a trench coat, dark knit, and weather-friendly shoes.",
+        "tips": ["Use darker trousers to hide splash marks.", "Pick leather shoes with enough grip.", "A beige trench adds polish without needing a full suit."],
+    },
+    ("men-office-commute-looks", "after-work-casual"): {
+        "keyword": "men's office to evening casual outfit",
+        "summary": "A work-to-evening outfit that keeps a polished shape while feeling less formal after hours.",
+        "tips": ["Use a black overshirt or clean jacket as the outer layer.", "Chelsea boots make the outfit sharper without a suit.", "Keep the base simple so the look works in both office and evening settings."],
+    },
+}
+
+
+def _slugify_label(label: str) -> str:
+    return "".join(ch.lower() if ch.isalnum() else "-" for ch in label).strip("-").replace("--", "-")
+
+
+def _lookbook_items(slug: str, lookbook: dict) -> list[dict]:
+    items = []
+    for idx, (title, description) in enumerate(lookbook["items"], start=1):
+        item_slug = _slugify_label(title)
+        guide = LOOKBOOK_THEME_GUIDES.get((slug, item_slug), {})
+        items.append({
+            "index": idx,
+            "slug": item_slug,
+            "title": title,
+            "description": description,
+            "keyword": guide.get("keyword", f"{title} office outfit"),
+            "summary": guide.get("summary", description),
+            "tips": guide.get("tips", []),
+            "image": f"lookbooks/{lookbook['folder']}/{lookbook['prefix']}_0{idx}.jpg",
+        })
+    return items
+
 BLOG_POSTS = {
     "how-to-merge-pdf-files-online": {
         "title": "How to Merge PDF Files Online",
@@ -2394,21 +2479,46 @@ def lookbook_page(slug):
         if slug in LOOKBOOK_REDIRECTS:
             return redirect(url_for("lookbook_page", slug=LOOKBOOK_REDIRECTS[slug]), code=301)
         return redirect(url_for("index"))
-    lang = session.get("lang", DEFAULT_LANG)
+    lang = _active_lang()
+    items = _lookbook_items(slug, lookbook)
     return render_template(
         "lookbook.html",
         lang=lang,
         slug=slug,
         lookbook=lookbook,
+        lookbook_items=items,
         meta_title=f"{lookbook['title']} | Work Outfit Ideas",
         meta_description=lookbook["description"],
         canonical_url=_canonical_url(f"/lookbooks/{slug}"),
     )
 
 
+@app.route("/lookbooks/<slug>/<item_slug>")
+def lookbook_item_page(slug, item_slug):
+    lookbook = LOOKBOOKS.get(slug)
+    if not lookbook:
+        return redirect(url_for("lookbooks_index"))
+    items = _lookbook_items(slug, lookbook)
+    item = next((entry for entry in items if entry["slug"] == item_slug), None)
+    if not item:
+        return redirect(url_for("lookbook_page", slug=slug))
+    lang = _active_lang()
+    return render_template(
+        "lookbook_item.html",
+        lang=lang,
+        slug=slug,
+        lookbook=lookbook,
+        item=item,
+        related_items=[entry for entry in items if entry["slug"] != item_slug],
+        meta_title=f"{item['title']} | {lookbook['title']}",
+        meta_description=f"{item['summary']} Tips for a practical {item['keyword']}.",
+        canonical_url=_canonical_url(f"/lookbooks/{slug}/{item_slug}"),
+    )
+
+
 @app.route("/lookbooks")
 def lookbooks_index():
-    lang = session.get("lang", DEFAULT_LANG)
+    lang = _active_lang()
     return render_template(
         "lookbooks_index.html",
         lang=lang,
@@ -3099,6 +3209,8 @@ def sitemap_xml():
     paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
     paths.append("/lookbooks")
     paths.extend(f"/lookbooks/{slug}" for slug in LOOKBOOKS)
+    for slug, lookbook in LOOKBOOKS.items():
+        paths.extend(f"/lookbooks/{slug}/{item['slug']}" for item in _lookbook_items(slug, lookbook))
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
     paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())

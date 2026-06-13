@@ -199,6 +199,11 @@ hr { border: none; border-top: 1px solid #e8e8e8; margin: 1rem 0; }
 .lookbook-item span { display: block; color: #667eea; font-size: 0.75rem; font-weight: 850; text-transform: uppercase; margin-bottom: 0.25rem; }
 .lookbook-item h2 { font-size: 1rem; margin-bottom: 0.35rem; }
 .lookbook-item p { color: #555; font-size: 0.9rem; line-height: 1.45; }
+.text-link { display: inline-block; color: #667eea; font-weight: 750; text-decoration: none; margin-top: 0.55rem; }
+.text-link:hover { text-decoration: underline; }
+.lookbook-feature { background: white; border: 1px solid #e8eaf6; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04); margin: 1rem 0 1.5rem; }
+.lookbook-feature img { width: 100%; max-height: 760px; object-fit: contain; display: block; background: #eef0f7; }
+.lookbook-feature figcaption { padding: 0.85rem 1rem; color: #555; font-size: 0.92rem; line-height: 1.5; }
 .cta-band { display: flex; align-items: center; justify-content: space-between; gap: 1rem; background: #f0f4ff; border: 1px solid #dfe6ff; border-radius: 10px; padding: 1rem 1.2rem; margin: 1.3rem 0; }
 .cta-band div { display: flex; flex-direction: column; gap: 0.25rem; }
 .cta-band span { color: #666; font-size: 0.92rem; }

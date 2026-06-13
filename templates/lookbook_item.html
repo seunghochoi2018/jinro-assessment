@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ meta_title|tojson }},
+  "description": {{ meta_description|tojson }},
+  "image": {{ (app_url ~ url_for('static', filename=item.image))|tojson }},
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="article-page lookbook-item-page">
+  <p class="eyebrow">{{ lookbook.eyebrow }}</p>
+  <h1>{{ item.title }} Office Outfit</h1>
+  <p class="lead">{{ item.summary }}</p>
+
+  <figure class="lookbook-feature">
+    <img src="{{ url_for('static', filename=item.image) }}" alt="{{ item.title }} office commute outfit idea" loading="eager">
+    <figcaption>{{ item.description }}</figcaption>
+  </figure>
+
+  <section>
+    <h2>How to style this look</h2>
+    <ul class="check-list">
+      {% for tip in item.tips %}
+      <li>{{ tip }}</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section>
+    <h2>When this outfit works best</h2>
+    <p>{{ item.title }} works best when you want a practical office commute outfit that still looks intentional. Adjust the formality up with a blazer, cleaner shoes, or a structured bag. Adjust it down with softer fabrics, simpler layers, and fewer accessories.</p>
+  </section>
+
+  <section>
+    <h2>Related office outfit ideas</h2>
+    <div class="link-grid">
+      {% for related in related_items[:3] %}
+      <a class="info-card" href="/lookbooks/{{ slug }}/{{ related.slug }}" data-track="click_related_lookbook_theme">
+        <strong>{{ related.title }}</strong>
+        <span>{{ related.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}
