@@ -1738,12 +1738,15 @@ ADSENSE_ALLOWED_ENDPOINTS = {
     "index",
     "seo_test_page",
     "seo_guide_page",
-    "tool_category_page",
-    "tool_page",
     "blog_index",
     "blog_post",
     "careers_index",
     "career_detail",
+    "lookbooks_index",
+    "lookbook_page",
+    "lookbook_item_page",
+    "outfit_guides_index",
+    "outfit_guide_page",
 }
 
 NOINDEX_ENDPOINTS = {
