@@ -1722,6 +1722,54 @@ RECOMMENDED_RESOURCES = [
     },
 ]
 
+MONETIZATION_OFFERS = {
+    "career-course": {
+        "title": "Career skill courses",
+        "description": "Compare structured courses before committing to a new career direction.",
+        "category": "Career learning",
+        "url_env": "MONETIZE_CAREER_COURSE_URL",
+        "fallback_url": "/guides/career-test-for-students",
+        "contexts": {"career", "guide", "student"},
+        "affiliate": True,
+    },
+    "resume-builder": {
+        "title": "Resume and profile tools",
+        "description": "Prepare a resume, profile photo, or portfolio before applying.",
+        "category": "Job search",
+        "url_env": "MONETIZE_RESUME_BUILDER_URL",
+        "fallback_url": "/tools/profile-photo-outfit-checker",
+        "contexts": {"career", "guide", "job"},
+        "affiliate": True,
+    },
+    "freelance-services": {
+        "title": "Freelance career help",
+        "description": "Use external specialists only when a checklist is not enough.",
+        "category": "Services",
+        "url_env": "MONETIZE_FREELANCE_SERVICES_URL",
+        "fallback_url": "/resources",
+        "contexts": {"career", "guide", "job"},
+        "affiliate": True,
+    },
+    "office-outfit-picks": {
+        "title": "Office outfit picks",
+        "description": "Find practical commute and work outfit items from external stores.",
+        "category": "Style",
+        "url_env": "MONETIZE_OFFICE_OUTFIT_URL",
+        "fallback_url": "/lookbooks",
+        "contexts": {"style", "lookbook"},
+        "affiliate": True,
+    },
+    "career-workbook": {
+        "title": "Career Reset Workbook",
+        "description": "A structured workbook for comparing options and planning the next week.",
+        "category": "Digital product",
+        "url_env": "CAREER_RESET_CHECKOUT_URL",
+        "fallback_url": "/products/career-reset-workbook",
+        "contexts": {"career", "guide", "student", "job"},
+        "affiliate": False,
+    },
+}
+
 
 def _product_checkout_url(product: dict) -> str:
     configured = os.environ.get(product.get("checkout_env", ""), "").strip()
@@ -1732,6 +1780,32 @@ def _product_checkout_url(product: dict) -> str:
 
 def _resources_for_context(limit: int = 3) -> list[dict]:
     return RECOMMENDED_RESOURCES[:limit]
+
+
+def _offer_target_url(offer: dict) -> str:
+    configured = os.environ.get(offer.get("url_env", ""), "").strip()
+    return configured or offer.get("fallback_url", "/resources")
+
+
+def _monetization_offers(context: str = "career", limit: int = 3, include_unconfigured: bool = True) -> list[dict]:
+    selected = []
+    for slug, offer in MONETIZATION_OFFERS.items():
+        if context not in offer.get("contexts", set()):
+            continue
+        configured = bool(os.environ.get(offer.get("url_env", ""), "").strip())
+        if not configured and not include_unconfigured:
+            continue
+        selected.append(
+            {
+                **offer,
+                "slug": slug,
+                "configured": configured,
+                "go_url": f"/go/{slug}",
+            }
+        )
+        if len(selected) >= limit:
+            break
+    return selected
 
 
 ADSENSE_ALLOWED_ENDPOINTS = {
@@ -2832,6 +2906,7 @@ def lookbook_page(slug):
         slug=slug,
         lookbook=lookbook,
         lookbook_items=items,
+        monetization_offers=_monetization_offers("lookbook", limit=3),
         meta_title=f"{lookbook['title']} | Work Outfit Ideas",
         meta_description=lookbook["description"],
         meta_image=f"{APP_URL}{url_for('static', filename=items[0]['image'])}" if items else "",
@@ -2858,6 +2933,7 @@ def lookbook_item_page(slug, item_slug):
         lookbook=lookbook,
         item=item,
         related_items=[entry for entry in items if entry["slug"] != item_slug],
+        monetization_offers=_monetization_offers("lookbook", limit=3),
         meta_title=f"{item['title']} | {lookbook['title']}",
         meta_description=f"{item['summary']} Tips for a practical {item['keyword']}.",
         meta_image=f"{APP_URL}{url_for('static', filename=item['image'])}",
@@ -2896,6 +2972,7 @@ def outfit_guide_page(slug):
         guide=guide,
         faq=_outfit_guide_faq(guide),
         related_guides=related,
+        monetization_offers=_monetization_offers("style", limit=3),
         meta_title=f"{guide['title']} | Work Outfit Guide",
         meta_description=guide["description"],
         meta_image=f"{APP_URL}{url_for('static', filename=guide['image'])}",
@@ -2935,6 +3012,7 @@ def seo_test_page(slug):
         slug=slug,
         related_tests=related_tests,
         featured_careers=[_career_display(c, lang) for c in _top_career_sample(6)],
+        monetization_offers=_monetization_offers("student" if "student" in slug or "school" in slug else "career", limit=3),
         meta_title=f"{seo_detail['search_title']} | Career Aptitude Test",
         meta_description=f"{seo_detail['intent']} Free assessment with 174 career profiles and practical comparison points.",
         canonical_url=_canonical_url(f"/tests/{slug}"),
@@ -2955,6 +3033,7 @@ def seo_guide_page(slug):
         faq=_guide_faq(guide),
         related_tests=_guide_related_tests(guide),
         related_careers=_guide_related_careers(guide, lang),
+        monetization_offers=_monetization_offers("guide", limit=3),
         meta_title=f"{guide['title']} | Free Career Test",
         meta_description=guide["description"],
         canonical_url=_canonical_url(f"/guides/{slug}"),
@@ -3037,6 +3116,7 @@ def blog_post(slug):
         post=post,
         tool=tool,
         related_tools=_blog_related_tools(post),
+        monetization_offers=_monetization_offers("style" if post.get("category") == "Style" else "job", limit=3),
         meta_title=f"{post['title']} | Utility Guide",
         meta_description=post["description"],
         canonical_url=_canonical_url(f"/blog/{slug}"),
@@ -3050,6 +3130,7 @@ def resources_page():
         "resources.html",
         lang=lang,
         resources=RECOMMENDED_RESOURCES,
+        monetization_offers=_monetization_offers("career", limit=5),
         products=DIGITAL_PRODUCTS,
         meta_title="Recommended Resources | Work Utilities",
         meta_description="Recommended workbooks, checklists, and utility resources for career planning, documents, images, and everyday work.",
@@ -3089,6 +3170,31 @@ def product_page(slug):
         meta_description=product["description"],
         canonical_url=_canonical_url(f"/products/{slug}"),
     )
+
+
+@app.route("/go/<slug>")
+def monetization_go(slug):
+    offer = MONETIZATION_OFFERS.get(slug)
+    if not offer:
+        return redirect(url_for("resources_page"))
+    target_url = _offer_target_url(offer)
+    try:
+        _store_analytics_event(
+            {
+                "event": "click_monetization_offer",
+                "visitor_id": request.cookies.get("cdna_vid", ""),
+                "params": {
+                    "page_path": request.referrer or request.path,
+                    "page_type": "monetization",
+                    "target_path": target_url[:300],
+                    "offer_slug": slug,
+                    "configured": bool(os.environ.get(offer.get("url_env", ""), "").strip()),
+                },
+            }
+        )
+    except Exception as exc:
+        app.logger.warning("monetization_click_store_failed: %s", exc)
+    return redirect(target_url, code=302)
 
 
 @app.route("/careers")
@@ -3131,6 +3237,7 @@ def career_detail(career_id):
         review=review,
         article=article,
         faq=faq,
+        monetization_offers=_monetization_offers("career", limit=3),
         meta_title=f"{display['display_name']} Career Test and Fit Guide",
         meta_description=f"Explore {display['display_name']} career fit, daily work, education, salary signals, related paths, and tests to compare this career with your strengths.",
         canonical_url=_canonical_url(f"/career/{career_id}"),

@@ -1,0 +1,15 @@
+{% if monetization_offers %}
+<section class="muted-section monetization-offers">
+  <h2>Recommended next steps</h2>
+  <p>Some links may become affiliate or paid product links. If a sponsored link is used, this site may earn a commission at no extra cost to you.</p>
+  <div class="link-grid">
+    {% for offer in monetization_offers %}
+    <a class="info-card" href="{{ offer.go_url }}" data-track="click_monetization_offer" rel="nofollow sponsored">
+      <span class="card-kicker">{{ offer.category }}{% if offer.affiliate %} affiliate-ready{% endif %}</span>
+      <strong>{{ offer.title }}</strong>
+      <span>{{ offer.description }}</span>
+    </a>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
