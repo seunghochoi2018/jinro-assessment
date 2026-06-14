@@ -708,9 +708,9 @@ LOOKBOOKS = {
     "women-office-commute-looks": {
         "title": "Women's Office Commute Outfit Ideas",
         "eyebrow": "Office commute looks",
-        "description": "Six women's office commute outfit ideas across natural, chic, soft formal, casual Friday, layered coat, and after-work themes.",
+        "description": "Seven women's office commute outfit ideas across natural, chic, soft formal, casual Friday, layered coat, after-work, and summer themes.",
         "home_title": "Women's office commute looks",
-        "home_description": "Natural, chic, soft formal, casual Friday, layered coat, and after-work outfit ideas.",
+        "home_description": "Natural, chic, soft formal, casual Friday, layered coat, after-work, and summer outfit ideas.",
         "folder": "women",
         "prefix": "women_look",
         "items": [
@@ -720,14 +720,15 @@ LOOKBOOKS = {
             ("Casual Friday", "Denim jacket, white blouse, navy slacks, and clean sneakers."),
             ("Layered Coat Commute", "Long coat, knit top, midi skirt, ankle boots, and simple commute styling."),
             ("After-Work Dinner", "Satin blouse, tailored trousers, cropped blazer, and understated jewelry."),
+            ("Summer Office", "Short sleeve blouse, light tailored trousers, slim belt, and low block heels."),
         ],
     },
     "men-office-commute-looks": {
         "title": "Men's Office Commute Outfit Ideas",
         "eyebrow": "Office commute looks",
-        "description": "Six men's office commute outfit ideas across natural smart casual, clean office, soft formal, casual Friday, layered commute, and after-work themes.",
+        "description": "Seven men's office commute outfit ideas across natural smart casual, clean office, soft formal, casual Friday, layered commute, after-work, and summer themes.",
         "home_title": "Men's office commute looks",
-        "home_description": "Smart casual, clean office, soft formal, casual Friday, layered commute, and after-work outfits.",
+        "home_description": "Smart casual, clean office, soft formal, casual Friday, layered commute, after-work, and summer outfits.",
         "folder": "men",
         "prefix": "men_look",
         "items": [
@@ -737,6 +738,7 @@ LOOKBOOKS = {
             ("Casual Friday", "Denim jacket, oxford shirt, straight chinos, and white sneakers."),
             ("Layered Commute", "Charcoal blazer, dark knit, slim trousers, and polished loafers."),
             ("After-Work Casual", "Black overshirt, slim trousers, Chelsea boots, and evening city styling."),
+            ("Summer Office", "Light blue oxford shirt, stone chinos, brown belt, and clean loafers."),
         ],
     },
 }
@@ -782,6 +784,11 @@ LOOKBOOK_THEME_GUIDES = {
         "summary": "A work-to-evening outfit that keeps the office base polished and adds one elevated texture.",
         "tips": ["Use satin or a subtle sheen only in one piece.", "Keep the blazer structured for office hours.", "Swap only accessories or shoes if you need a stronger evening look."],
     },
+    ("women-office-commute-looks", "summer-office"): {
+        "keyword": "women's summer office outfit",
+        "summary": "A breathable summer office outfit using a short sleeve blouse, light tailored trousers, and low block heels.",
+        "tips": ["Choose breathable fabrics that still hold shape.", "Use light neutrals to keep the outfit fresh without looking too casual.", "Keep neckline, sleeve length, and shoe choice workplace-appropriate."],
+    },
     ("men-office-commute-looks", "natural-smart-casual"): {
         "keyword": "men's smart casual commute outfit",
         "summary": "A clean smart casual commute outfit for offices that do not require a suit.",
@@ -811,6 +818,11 @@ LOOKBOOK_THEME_GUIDES = {
         "keyword": "men's office to evening casual outfit",
         "summary": "A work-to-evening outfit that keeps a polished shape while feeling less formal after hours.",
         "tips": ["Use a black overshirt or clean jacket as the outer layer.", "Chelsea boots make the outfit sharper without a suit.", "Keep the base simple so the look works in both office and evening settings."],
+    },
+    ("men-office-commute-looks", "summer-office"): {
+        "keyword": "men's summer office outfit",
+        "summary": "A breathable summer business casual outfit using a light oxford shirt, stone chinos, and clean loafers.",
+        "tips": ["Use a tucked shirt and belt so the outfit still reads office-ready.", "Choose chinos with enough structure instead of thin casual pants.", "Keep shoes clean and simple because summer outfits have fewer layers."],
     },
 }
 
@@ -987,7 +999,7 @@ OUTFIT_GUIDES = {
         "title": "Summer Office Outfit Ideas",
         "keyword": "summer office outfit ideas",
         "description": "Summer office outfit ideas that stay breathable while still looking professional.",
-        "image": "lookbooks/men/men_look_06.jpg",
+        "image": "lookbooks/women/women_look_07.jpg",
         "intro": "Summer office outfits need breathable fabrics, lighter colors, and enough structure to avoid looking too casual.",
         "sections": [
             ("Choose breathable but structured fabrics", "Cotton, linen blends, light wool, and breathable knits usually work better than thin clingy fabrics."),
@@ -2950,7 +2962,7 @@ def lookbooks_index():
         lookbooks=LOOKBOOKS,
         outfit_guides=OUTFIT_GUIDES,
         meta_title="Office Commute Outfit Ideas | Work Looks",
-        meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, layered commute, and after-work looks.",
+        meta_description="Browse women's and men's office commute outfit ideas for natural, chic, soft formal, casual Friday, layered commute, after-work, and summer looks.",
         meta_image=f"{APP_URL}{url_for('static', filename='lookbooks/women/women_look_01.jpg')}",
         canonical_url=_canonical_url("/lookbooks"),
     )
