@@ -2394,14 +2394,14 @@ def _analytics_summary(days: int = 7) -> dict:
     since = datetime.utcnow().timestamp() - days * 86400
     since_iso = datetime.utcfromtimestamp(since).isoformat(timespec="seconds")
     args = (since_iso,)
-    visible_filter = "created_at >= ? AND page_path NOT LIKE '/admin%' AND page_path != '/probe'"
+    visible_filter = "created_at >= ? AND page_path NOT LIKE '/admin%' AND page_path NOT IN ('/probe', '/monitoring-check')"
     overview = _fetch_one(
         f"""
         SELECT
           COUNT(*) AS events,
           COUNT(DISTINCT visitor_id) AS visitors,
-          SUM(CASE WHEN event_name='page_view_custom' THEN 1 ELSE 0 END) AS pageviews,
-          SUM(CASE WHEN event_name='view_result' THEN 1 ELSE 0 END) AS results
+          COALESCE(SUM(CASE WHEN event_name='page_view_custom' THEN 1 ELSE 0 END), 0) AS pageviews,
+          COALESCE(SUM(CASE WHEN event_name='view_result' THEN 1 ELSE 0 END), 0) AS results
         FROM analytics_events
         WHERE {visible_filter}
         """,
@@ -2480,7 +2480,7 @@ def _analytics_summary(days: int = 7) -> dict:
         LEFT JOIN (
           SELECT page_path, COUNT(*) AS engaged
           FROM analytics_events
-          WHERE created_at >= ? AND page_path NOT LIKE '/admin%' AND page_path != '/probe' AND (
+          WHERE created_at >= ? AND page_path NOT LIKE '/admin%' AND page_path NOT IN ('/probe', '/monitoring-check') AND (
             (event_name='engaged_time' AND seconds >= 45)
             OR (event_name='scroll_depth' AND percent >= 75)
             OR event_name LIKE 'click_start_%'
@@ -2488,7 +2488,7 @@ def _analytics_summary(days: int = 7) -> dict:
           )
           GROUP BY page_path
         ) e ON e.page_path = v.page_path
-        WHERE v.created_at >= ? AND v.page_path NOT LIKE '/admin%' AND v.page_path != '/probe' AND v.event_name='page_view_custom'
+        WHERE v.created_at >= ? AND v.page_path NOT LIKE '/admin%' AND v.page_path NOT IN ('/probe', '/monitoring-check') AND v.event_name='page_view_custom'
         GROUP BY v.page_path
         HAVING views >= 3
         ORDER BY weak_rate DESC, views DESC
