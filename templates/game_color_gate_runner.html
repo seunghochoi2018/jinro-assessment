@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{{ meta_title }}</title>
+<meta name="description" content="{{ meta_description }}">
+{% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+<meta name="theme-color" content="#101114">
+<meta property="og:title" content="{{ meta_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ canonical_url }}">
+{% if adsense_client %}
+<script async src="https://pagead2.googlesyndication.com/pagead/js?client={{ adsense_client }}" crossorigin="anonymous"></script>
+{% endif %}
+<link rel="stylesheet" href="{{ url_for('static', filename='games/color-gate-runner.css') }}">
+</head>
+<body>
+<main class="game-shell" aria-label="Color Gate Runner">
+  {% if adsense_client and adsense_game_top_slot %}
+  <aside class="game-ad game-ad-top" aria-label="Advertisement">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="{{ adsense_game_top_slot }}"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+  {% endif %}
+  <canvas id="gameCanvas" width="900" height="1600"></canvas>
+
+  <section class="hud" aria-live="polite">
+    <div>
+      <span class="hud-label">Score</span>
+      <strong id="score">0</strong>
+    </div>
+    <div>
+      <span class="hud-label">Best</span>
+      <strong id="best">0</strong>
+    </div>
+    <div>
+      <span class="hud-label">Coins</span>
+      <strong id="coins">0</strong>
+    </div>
+  </section>
+
+  <section class="menu" id="menu">
+    <div class="brand">
+      <span class="mark"></span>
+      <p>Color Gate Runner</p>
+    </div>
+    <h1 id="menuTitle">Color Gate Runner</h1>
+    <p id="menuStats" class="menu-stats">Best 0</p>
+    <div class="menu-actions">
+      <button id="playBtn" type="button">Play</button>
+      <button id="reviveBtn" type="button" class="secondary" hidden>Revive</button>
+    </div>
+  </section>
+
+  <section class="ad-panel" id="adPanel" hidden>
+    <p id="adText">Ad break</p>
+  </section>
+  {% if adsense_client and adsense_game_bottom_slot %}
+  <aside class="game-ad game-ad-bottom" aria-label="Advertisement">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="{{ adsense_game_bottom_slot }}"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+  {% endif %}
+</main>
+<script>
+window.COLOR_GATE_RUNNER_CONFIG = {
+  analyticsUrl: "{{ url_for('analytics_event') }}",
+  enableMockAds: false
+};
+</script>
+<script src="{{ url_for('static', filename='games/color-gate-runner.js') }}"></script>
+</body>
+</html>

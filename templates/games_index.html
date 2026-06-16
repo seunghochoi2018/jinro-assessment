@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="page-hero compact-hero">
+  <p class="eyebrow">Browser Games</p>
+  <h1>Free mobile-friendly browser games</h1>
+  <p class="hero-subtitle">Quick prototypes built for repeat play, idle progression, and ad-supported web testing.</p>
+</section>
+
+{% if adsense_client and adsense_game_top_slot %}
+<div class="ad-banner game-list-ad" aria-label="Advertisement">
+  <ins class="adsbygoogle"
+       style="display:block"
+       data-ad-client="{{ adsense_client }}"
+       data-ad-slot="{{ adsense_game_top_slot }}"
+       data-ad-format="auto"
+       data-full-width-responsive="true"></ins>
+  <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+</div>
+{% endif %}
+
+<section class="game-card-grid">
+  {% for slug, game in games.items() %}
+  <a class="game-card" href="{{ game.url }}">
+    <span class="game-status">{{ game.status }}</span>
+    <h2>{{ game.title }}</h2>
+    <p>{{ game.tagline }}</p>
+    <div>
+      <span>{{ game.genre }}</span>
+      <strong>Play</strong>
+    </div>
+  </a>
+  {% endfor %}
+</section>
+{% endblock %}

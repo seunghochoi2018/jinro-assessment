@@ -1833,6 +1833,26 @@ ADSENSE_ALLOWED_ENDPOINTS = {
     "lookbook_item_page",
     "outfit_guides_index",
     "outfit_guide_page",
+    "games_index",
+    "color_gate_runner",
+    "idle_hero",
+}
+
+WEB_GAMES = {
+    "idle-hero": {
+        "title": "Idle Hero Surge",
+        "tagline": "A low-effort idle RPG where login rewards, offline gains, and upgrades make the hero's skill effects grow larger over time.",
+        "url": "/games/idle-hero",
+        "genre": "Idle RPG",
+        "status": "Prototype",
+    },
+    "color-gate-runner": {
+        "title": "Color Gate Runner",
+        "tagline": "A fast one-hand arcade runner for short-session mobile play.",
+        "url": "/games/color-gate-runner",
+        "genre": "Arcade",
+        "status": "Prototype",
+    },
 }
 
 NOINDEX_ENDPOINTS = {
@@ -1883,6 +1903,8 @@ def inject_globals():
         "app_url": APP_URL,
         "adsense_client": os.environ.get("ADSENSE_CLIENT", DEFAULT_ADSENSE_CLIENT) if show_adsense else "",
         "adsense_bottom_slot": os.environ.get("ADSENSE_SLOT_BOTTOM", "") if show_adsense else "",
+        "adsense_game_top_slot": os.environ.get("ADSENSE_SLOT_GAME_TOP", "") if show_adsense else "",
+        "adsense_game_bottom_slot": os.environ.get("ADSENSE_SLOT_GAME_BOTTOM", os.environ.get("ADSENSE_SLOT_BOTTOM", "")) if show_adsense else "",
         "robots_meta": "noindex, nofollow" if (request.endpoint or "") in NOINDEX_ENDPOINTS else "",
         "contact_email": os.environ.get("CONTACT_EMAIL", "contact@example.com"),
     }
@@ -3209,6 +3231,40 @@ def monetization_go(slug):
     return redirect(target_url, code=302)
 
 
+@app.route("/games")
+def games_index():
+    return render_template(
+        "games_index.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        games=WEB_GAMES,
+        meta_title="Free Browser Games | Work Utilities",
+        meta_description="Play quick browser games including idle growth RPG prototypes and mobile arcade games.",
+        canonical_url=_canonical_url("/games"),
+    )
+
+
+@app.route("/games/color-gate-runner")
+def color_gate_runner():
+    return render_template(
+        "game_color_gate_runner.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        meta_title="Color Gate Runner - Mobile Arcade Game",
+        meta_description="A fast one-hand arcade runner prototype with ad monetization hooks.",
+        canonical_url=_canonical_url("/games/color-gate-runner"),
+    )
+
+
+@app.route("/games/idle-hero")
+def idle_hero():
+    return render_template(
+        "game_idle_hero.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        meta_title="Idle Hero Surge - Growth RPG",
+        meta_description="A mobile idle growth RPG prototype with login rewards, offline progress, upgrades, and scaling skill effects.",
+        canonical_url=_canonical_url("/games/idle-hero"),
+    )
+
+
 @app.route("/careers")
 def careers_index():
     lang = session.get("lang", DEFAULT_LANG)
@@ -3713,7 +3769,8 @@ def feed_xml():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms"]
+    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms", "/games"]
+    paths.extend(game["url"] for game in WEB_GAMES.values())
     paths.append("/lookbooks")
     paths.append("/outfit-guides")
     paths.extend(f"/outfit-guides/{slug}" for slug in OUTFIT_GUIDES)
@@ -3744,6 +3801,10 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path == "/blog":
             return "daily", "0.9"
+        if path == "/games":
+            return "weekly", "0.8"
+        if path.startswith("/games/"):
+            return "weekly", "0.7"
         if path.startswith("/blog/"):
             return "weekly", "0.8"
         if path.startswith("/tools/category/"):

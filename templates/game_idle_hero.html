@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>{{ meta_title }}</title>
+<meta name="description" content="{{ meta_description }}">
+{% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+<meta name="theme-color" content="#111316">
+<meta property="og:title" content="{{ meta_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ canonical_url }}">
+{% if adsense_client %}
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client }}" crossorigin="anonymous"></script>
+{% endif %}
+<link rel="stylesheet" href="{{ url_for('static', filename='games/idle-hero.css') }}">
+</head>
+<body>
+<main class="idle-shell">
+  {% if adsense_client and adsense_game_top_slot %}
+  <aside class="game-ad game-ad-top" aria-label="Advertisement">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="{{ adsense_game_top_slot }}"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+  {% endif %}
+  <section class="topbar">
+    <div>
+      <span>Level</span>
+      <strong id="levelText">1</strong>
+    </div>
+    <div>
+      <span>Gold</span>
+      <strong id="goldText">0</strong>
+    </div>
+    <div>
+      <span>Power</span>
+      <strong id="powerText">0</strong>
+    </div>
+  </section>
+
+  <section class="arena">
+    <div class="stage-label">
+      <span id="stageText">Stage 1</span>
+      <strong id="enemyName">Training Slime</strong>
+    </div>
+    <div class="enemy-wrap">
+      <div class="damage-stack" id="damageStack"></div>
+      <div class="enemy" id="enemy">
+        <div class="enemy-eye left"></div>
+        <div class="enemy-eye right"></div>
+      </div>
+      <div class="skill-ring" id="skillRing"></div>
+    </div>
+    <div class="hpbar">
+      <span id="hpFill"></span>
+    </div>
+    <div class="hero-wrap">
+      <div class="hero-aura" id="heroAura"></div>
+      <div class="hero" id="hero"></div>
+      <button class="strike-btn" id="strikeBtn" type="button">Strike</button>
+    </div>
+  </section>
+
+  <section class="progress-panel">
+    <div>
+      <span>EXP</span>
+      <strong id="expText">0 / 20</strong>
+    </div>
+    <div class="expbar"><span id="expFill"></span></div>
+    <p id="statusText">Auto battle is running.</p>
+  </section>
+
+  <section class="actions">
+    <button id="upgradeSword" type="button">
+      <span>Sword</span>
+      <strong id="swordCost">25</strong>
+    </button>
+    <button id="upgradeSkill" type="button">
+      <span>Skill</span>
+      <strong id="skillCost">60</strong>
+    </button>
+    <button id="claimLogin" type="button">
+      <span>Login</span>
+      <strong>Claim</strong>
+    </button>
+    <button id="boostAd" type="button">
+      <span>Reward</span>
+      <strong>2x</strong>
+    </button>
+  </section>
+
+  <section class="offline-modal" id="offlineModal" hidden>
+    <div class="modal-box">
+      <h1>Welcome Back</h1>
+      <p id="offlineText">Your hero trained while you were away.</p>
+      <div class="modal-actions">
+        <button id="claimOffline" type="button">Claim</button>
+        <button id="claimOfflineDouble" type="button" class="secondary">2x Reward</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="ad-toast" id="adToast" hidden>
+    <p id="adToastText">Bonus ready</p>
+  </section>
+  {% if adsense_client and adsense_game_bottom_slot %}
+  <aside class="game-ad game-ad-bottom" aria-label="Advertisement">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="{{ adsense_client }}"
+         data-ad-slot="{{ adsense_game_bottom_slot }}"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  </aside>
+  {% endif %}
+</main>
+<script>
+window.IDLE_HERO_CONFIG = {
+  analyticsUrl: "{{ url_for('analytics_event') }}",
+  enableMockAds: false,
+  rewardAdId: "ca-app-pub-3940256099942544/5224354917"
+};
+</script>
+<script src="{{ url_for('static', filename='games/idle-hero.js') }}"></script>
+</body>
+</html>

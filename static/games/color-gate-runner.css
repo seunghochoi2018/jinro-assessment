@@ -1,0 +1,231 @@
+:root {
+  color-scheme: dark;
+  --bg: #101114;
+  --panel: rgba(16, 17, 20, 0.74);
+  --text: #f6f2e8;
+  --muted: #b8b4aa;
+  --line: rgba(255, 255, 255, 0.16);
+  --accent: #34d399;
+  --danger: #fb7185;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+button {
+  font: inherit;
+}
+
+.game-shell {
+  position: relative;
+  width: 100vw;
+  height: 100svh;
+  min-height: 520px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 50% 10%, rgba(255, 255, 255, 0.08), transparent 34%),
+    linear-gradient(180deg, #17191d 0%, #101114 58%, #090a0c 100%);
+  touch-action: none;
+  user-select: none;
+}
+
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.hud {
+  position: absolute;
+  top: max(14px, env(safe-area-inset-top));
+  left: 50%;
+  z-index: 5;
+  display: grid;
+  width: min(92vw, 460px);
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.hud > div {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(12, 13, 16, 0.5);
+  padding: 8px 10px;
+  backdrop-filter: blur(14px);
+}
+
+.hud-label {
+  display: block;
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.1;
+}
+
+.hud strong {
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 19px;
+  line-height: 1.15;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.menu {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(16, 17, 20, 0.1), rgba(16, 17, 20, 0.58));
+}
+
+.menu.is-hidden {
+  display: none;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 18px;
+  color: var(--muted);
+}
+
+.brand p {
+  margin: 0;
+  font-size: 13px;
+  letter-spacing: 0;
+}
+
+.mark {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  background: conic-gradient(from 0deg, #34d399, #60a5fa, #f59e0b, #fb7185, #34d399);
+}
+
+.menu h1 {
+  max-width: 12ch;
+  margin: 0;
+  font-size: clamp(42px, 12vw, 82px);
+  line-height: 0.92;
+  letter-spacing: 0;
+}
+
+.menu-stats {
+  min-height: 24px;
+  margin: 18px 0 22px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.menu-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.menu button {
+  min-width: 132px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--text);
+  color: #101114;
+  cursor: pointer;
+  font-weight: 800;
+}
+
+.menu button.secondary {
+  border: 1px solid var(--line);
+  background: rgba(16, 17, 20, 0.62);
+  color: var(--text);
+}
+
+.ad-panel {
+  position: absolute;
+  right: 14px;
+  bottom: max(14px, env(safe-area-inset-bottom));
+  z-index: 12;
+  min-width: 132px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+  backdrop-filter: blur(14px);
+}
+
+.ad-panel p {
+  margin: 0;
+}
+
+.game-ad {
+  position: absolute;
+  left: 50%;
+  z-index: 14;
+  width: min(94%, 468px);
+  min-height: 64px;
+  transform: translateX(-50%);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: rgba(12, 13, 16, 0.58);
+}
+
+.game-ad-top {
+  top: max(78px, calc(env(safe-area-inset-top) + 60px));
+}
+
+.game-ad-bottom {
+  bottom: max(76px, calc(env(safe-area-inset-bottom) + 64px));
+}
+
+.game-ad:empty {
+  display: none;
+}
+
+@media (min-width: 860px) {
+  .game-shell {
+    width: min(100vw, 520px);
+    margin: 0 auto;
+    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08), 0 24px 80px rgba(0, 0, 0, 0.55);
+  }
+}
+
+@media (max-height: 620px) {
+  .menu h1 {
+    font-size: 40px;
+  }
+
+  .brand {
+    margin-bottom: 10px;
+  }
+
+  .menu-stats {
+    margin: 10px 0 14px;
+  }
+}
