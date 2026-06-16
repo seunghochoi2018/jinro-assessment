@@ -7,6 +7,7 @@
 <meta name="description" content="{{ meta_description|default('Free browser utilities for documents, text, code, images, calculators, and career exploration.') }}">
 {% if robots_meta %}<meta name="robots" content="{{ robots_meta }}">{% endif %}
 {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
 <link rel="alternate" type="application/rss+xml" title="Work Utilities Guides" href="/feed.xml">
 <meta property="og:title" content="{{ meta_title|default('Work Utilities') }}">
 <meta property="og:description" content="{{ meta_description|default('Free browser utilities for documents, text, code, images, calculators, and career exploration.') }}">

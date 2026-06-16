@@ -6,6 +6,7 @@
 <title>{{ meta_title }}</title>
 <meta name="description" content="{{ meta_description }}">
 {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
 <meta name="theme-color" content="#111316">
 <meta property="og:title" content="{{ meta_title }}">
 <meta property="og:description" content="{{ meta_description }}">

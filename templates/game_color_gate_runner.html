@@ -6,13 +6,14 @@
 <title>{{ meta_title }}</title>
 <meta name="description" content="{{ meta_description }}">
 {% if canonical_url %}<link rel="canonical" href="{{ canonical_url }}">{% endif %}
+<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
 <meta name="theme-color" content="#101114">
 <meta property="og:title" content="{{ meta_title }}">
 <meta property="og:description" content="{{ meta_description }}">
 <meta property="og:type" content="website">
 <meta property="og:url" content="{{ canonical_url }}">
 {% if adsense_client %}
-<script async src="https://pagead2.googlesyndication.com/pagead/js?client={{ adsense_client }}" crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client={{ adsense_client }}" crossorigin="anonymous"></script>
 {% endif %}
 <link rel="stylesheet" href="{{ url_for('static', filename='games/color-gate-runner.css') }}">
 </head>

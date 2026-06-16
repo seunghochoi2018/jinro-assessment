@@ -3725,6 +3725,11 @@ def ads_txt():
     return response
 
 
+@app.route("/favicon.ico")
+def favicon():
+    return redirect(url_for("static", filename="favicon.svg"), code=302)
+
+
 @app.route(f"/{INDEXNOW_KEY}.txt")
 def indexnow_key_txt():
     response = make_response(f"{INDEXNOW_KEY}\n")
