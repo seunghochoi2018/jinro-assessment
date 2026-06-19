@@ -57,14 +57,36 @@
 
   function postEvent(event, params = {}) {
     if (!cfg.analyticsUrl) return;
+    let visitorId = "";
+    try {
+      visitorId = window.localStorage.getItem("careersdna_vid") || "";
+      if (!visitorId) {
+        visitorId = (window.crypto && window.crypto.randomUUID)
+          ? window.crypto.randomUUID()
+          : String(Date.now()) + Math.random().toString(16).slice(2);
+        window.localStorage.setItem("careersdna_vid", visitorId);
+      }
+      if (!window.sessionStorage.getItem("careersdna_landing_path")) {
+        window.sessionStorage.setItem("careersdna_landing_path", window.location.pathname);
+        window.sessionStorage.setItem("careersdna_landing_referrer", document.referrer || "");
+      }
+    } catch {}
     fetch(cfg.analyticsUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         event,
+        visitor_id: visitorId,
         params: {
           page_path: "/games/color-gate-runner",
           page_type: "game",
+          landing_path: (() => {
+            try { return window.sessionStorage.getItem("careersdna_landing_path") || "/games/color-gate-runner"; } catch { return "/games/color-gate-runner"; }
+          })(),
+          landing_referrer: (() => {
+            try { return window.sessionStorage.getItem("careersdna_landing_referrer") || ""; } catch { return ""; }
+          })(),
+          referrer: document.referrer || "",
           ...params
         }
       }),
@@ -485,6 +507,7 @@
     syncHud();
     menuStats.textContent = `Best ${store.best}`;
     game.last = performance.now();
+    postEvent("page_view_custom", { page_type: "game" });
     requestAnimationFrame(loop);
     postEvent("game_view");
   }

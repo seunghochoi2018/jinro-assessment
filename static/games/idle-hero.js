@@ -76,14 +76,36 @@
 
   function postEvent(event, params = {}) {
     if (!cfg.analyticsUrl) return;
+    let visitorId = "";
+    try {
+      visitorId = window.localStorage.getItem("careersdna_vid") || "";
+      if (!visitorId) {
+        visitorId = (window.crypto && window.crypto.randomUUID)
+          ? window.crypto.randomUUID()
+          : String(Date.now()) + Math.random().toString(16).slice(2);
+        window.localStorage.setItem("careersdna_vid", visitorId);
+      }
+      if (!window.sessionStorage.getItem("careersdna_landing_path")) {
+        window.sessionStorage.setItem("careersdna_landing_path", window.location.pathname);
+        window.sessionStorage.setItem("careersdna_landing_referrer", document.referrer || "");
+      }
+    } catch {}
     fetch(cfg.analyticsUrl, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         event,
+        visitor_id: visitorId,
         params: {
           page_path: "/games/idle-hero",
           page_type: "game",
+          landing_path: (() => {
+            try { return window.sessionStorage.getItem("careersdna_landing_path") || "/games/idle-hero"; } catch { return "/games/idle-hero"; }
+          })(),
+          landing_referrer: (() => {
+            try { return window.sessionStorage.getItem("careersdna_landing_referrer") || ""; } catch { return ""; }
+          })(),
+          referrer: document.referrer || "",
           ...params
         }
       }),
@@ -387,6 +409,7 @@
     ensureEnemy();
     const offline = calculateOffline();
     render();
+    postEvent("page_view_custom", { page_type: "game" });
     postEvent("idle_view", { level: state.level, stage: state.stage });
     if (offline) openOfflineReward(offline);
     requestAnimationFrame(tick);
