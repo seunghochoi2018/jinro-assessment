@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "AboutPage",
+  "name": "About CareersDNA",
+  "description": "About CareersDNA, its purpose, scope, and how to use the site.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page">
+  <h1>About CareersDNA</h1>
+  <p class="lead">CareersDNA is an informational site for career exploration. The goal is to help users compare career options more clearly, not to declare one perfect job title.</p>
+
+  <section>
+    <h2>What the site includes</h2>
+    <div class="feature-grid">
+      <div><strong>Career assessment</strong><span>A structured test that compares interests, strengths, personality, and work values.</span></div>
+      <div><strong>Career library</strong><span>Career profiles with work-style descriptions, education signals, salary context, growth, and related majors.</span></div>
+      <div><strong>Career guides</strong><span>Short guides for common search questions such as student planning, introvert-friendly careers, and career change.</span></div>
+      <div><strong>Supporting resources</strong><span>Workbooks, templates, and browser tools that help with practical follow-up tasks.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Who it is for</h2>
+    <ul class="article-list">
+      <li>Students choosing subjects, majors, projects, or early career directions.</li>
+      <li>College users comparing internships, majors, and first-job options.</li>
+      <li>Adults reassessing work values, burnout risk, or career-change paths.</li>
+      <li>Users who want a shortlist and next steps instead of vague motivation.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What the site is not</h2>
+    <p>CareersDNA is not licensed counseling, mental health treatment, legal advice, hiring advice, or a promise of outcomes. The site is designed to support research and reflection. Important decisions should be checked against current local requirements, trusted mentors, counselors, teachers, or employers.</p>
+  </section>
+
+  <section>
+    <h2>How to use the site well</h2>
+    <ol class="roadmap-list">
+      <li>Start with the assessment or a guide that matches your situation.</li>
+      <li>Compare at least three careers instead of stopping at the top result.</li>
+      <li>Review the daily work, training path, and tradeoffs for each option.</li>
+      <li>Choose one small test such as a course, project, interview, or volunteer experience.</li>
+      <li>Update your shortlist after you learn from real-world feedback.</li>
+    </ol>
+  </section>
+
+  <section class="muted-section">
+    <h2>Trust and transparency</h2>
+    <p>The site includes advertising and may include product or affiliate recommendations on some pages. That does not change the need to verify fit, price, quality, and suitability for your own situation.</p>
+  </section>
+</article>
+{% endblock %}

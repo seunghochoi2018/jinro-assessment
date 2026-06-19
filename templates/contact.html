@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ContactPage",
+  "name": "Contact CareersDNA",
+  "description": "Contact CareersDNA for site questions, feedback, privacy requests, or business inquiries.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page">
+  <h1>Contact</h1>
+  <p class="lead">For site questions, correction requests, privacy requests, or business inquiries, use the contact address below.</p>
+
+  <section>
+    <h2>Email</h2>
+    <p><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></p>
+  </section>
+
+  <section>
+    <h2>What to include</h2>
+    <ul class="article-list">
+      <li>The page URL if your message is about a specific guide, tool, or career profile.</li>
+      <li>A short description of what seems wrong, unclear, broken, or incomplete.</li>
+      <li>Any correction source or context if you are reporting factual issues.</li>
+    </ul>
+  </section>
+
+  <section class="muted-section">
+    <h2>Response scope</h2>
+    <p>Messages may be used to improve site content and fix errors. Not every message will receive individual advice, especially for requests that require personal counseling or regulated professional guidance.</p>
+  </section>
+</article>
+{% endblock %}

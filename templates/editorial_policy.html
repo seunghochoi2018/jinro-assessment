@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "CareersDNA Editorial Policy",
+  "description": "Editorial standards for guides, career profiles, resources, and advertising disclosures on CareersDNA.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page">
+  <h1>Editorial Policy</h1>
+  <p class="lead">CareersDNA publishes informational content intended to help users compare career options, understand work-related tradeoffs, and take practical next steps.</p>
+
+  <section>
+    <h2>Content principles</h2>
+    <ul class="article-list">
+      <li>Pages should be useful on their own, even if the user never clicks an ad or buys a product.</li>
+      <li>Content should explain the decision, tradeoff, or comparison behind a topic instead of repeating a keyword.</li>
+      <li>Assessment pages and guides should encourage research, not false certainty.</li>
+      <li>Claims about outcomes, income, or job fit should be framed carefully and not treated as guarantees.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How pages are maintained</h2>
+    <p>Guides, profiles, and resources are reviewed when content gaps are found, when user behavior suggests a page is not helpful enough, or when important context changes. Some pages may be expanded, consolidated, redirected, or removed when they do not meet usefulness standards.</p>
+  </section>
+
+  <section>
+    <h2>Advertising and affiliate disclosure</h2>
+    <p>The site may display advertising through Google AdSense and may include resource recommendations or affiliate links on selected pages. Ads and affiliate relationships do not change the need to evaluate whether a recommendation actually fits the user's situation.</p>
+  </section>
+
+  <section>
+    <h2>Limits of the content</h2>
+    <p>CareersDNA is not a substitute for licensed counseling, legal advice, immigration advice, medical advice, or employer-specific hiring guidance. Users should verify sensitive or high-stakes decisions through current local sources and qualified professionals.</p>
+  </section>
+
+  <section class="muted-section">
+    <h2>Feedback</h2>
+    <p>If a page is unclear, misleading, outdated, or too thin to be useful, contact {{ contact_email }}. Feedback is used to prioritize updates and removals.</p>
+  </section>
+</article>
+{% endblock %}

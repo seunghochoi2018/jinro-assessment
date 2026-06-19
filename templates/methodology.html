@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "CareersDNA Methodology",
+  "description": "How the CareersDNA assessment is structured and how users should interpret results.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<article class="article-page">
+  <h1>Methodology</h1>
+  <p class="lead">The CareersDNA assessment is built as a comparison tool. It combines several signals so the result is not based on one personality label or one interest score alone.</p>
+
+  <section>
+    <h2>Main inputs</h2>
+    <div class="feature-grid">
+      <div><strong>Interests</strong><span>What kinds of activities, environments, and problems naturally hold your attention.</span></div>
+      <div><strong>Strength patterns</strong><span>Signals for communication, analysis, creativity, practical work, learning habits, and related capabilities.</span></div>
+      <div><strong>Personality</strong><span>Work style indicators such as pace, structure, social energy, independence, and stress fit.</span></div>
+      <div><strong>Work values</strong><span>Tradeoffs such as stability, income, autonomy, creativity, growth, and contribution.</span></div>
+      <div><strong>Age context</strong><span>Different guidance for middle school, high school, college, and adult career-change use cases.</span></div>
+      <div><strong>Career data</strong><span>Career profiles include education signals, difficulty, related majors, and similar paths for comparison.</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>How scoring should be interpreted</h2>
+    <p>A strong result means your current answers resemble a given career profile more than other profiles in the library. It does not mean that a career is guaranteed to suit you forever. Career fit changes with skill growth, health, circumstances, and exposure to real work.</p>
+  </section>
+
+  <section>
+    <h2>Why there is no single perfect answer</h2>
+    <ul class="article-list">
+      <li>Many careers share similar work patterns and can fit the same person for different reasons.</li>
+      <li>Daily work varies by employer, region, team, school, and seniority level.</li>
+      <li>Some users need broad exploration, while others need realistic next-step filtering.</li>
+      <li>The same person may prefer different tradeoffs at different stages of life.</li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>How to use the result responsibly</h2>
+    <ol class="roadmap-list">
+      <li>Read the reasons behind the ranking, not just the top label.</li>
+      <li>Compare similar careers with different education, income, and lifestyle tradeoffs.</li>
+      <li>Use real-world tests such as projects, classes, interviews, shadowing, or volunteering.</li>
+      <li>Revisit the result after you gain new evidence about what you actually enjoy and can sustain.</li>
+    </ol>
+  </section>
+
+  <section class="muted-section">
+    <h2>Limitations</h2>
+    <p>The site does not replace current labor-market research, licensing rules, local salary data, or one-to-one guidance from qualified professionals. Important decisions should be verified with up-to-date sources and people who know the relevant field.</p>
+  </section>
+</article>
+{% endblock %}

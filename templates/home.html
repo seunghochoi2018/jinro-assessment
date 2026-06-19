@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block extra_head %}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "CareersDNA",
+  "description": "Career test, career guides, career profiles, and practical work tools.",
+  "mainEntityOfPage": {{ canonical_url|tojson }}
+}
+</script>
+{% endblock %}
+{% block content %}
+<div class="welcome-page wide-page">
+  <script>
+    window.CAREERSDNA_PAGE = { type: 'home' };
+  </script>
+
+  <section class="hero-panel">
+    <div>
+      <p class="eyebrow">Career exploration</p>
+      <h1 class="main-title">Career test, career guides, and practical next-step tools</h1>
+      <p class="sub-title">CareersDNA helps students, early-career users, and career changers compare realistic career options. Start with a free assessment, then review career profiles, guides, and planning resources.</p>
+      <div class="hero-actions">
+        <a href="/info" class="btn-primary" data-track="click_start_from_home">Start the career test</a>
+        <a href="/careers" class="btn-secondary" data-track="click_home_careers">Browse career profiles</a>
+      </div>
+    </div>
+    <div class="hero-facts" aria-label="Site facts">
+      <div><strong>174</strong><span>career profiles</span></div>
+      <div><strong>4</strong><span>major use cases: student, college, early career, career change</span></div>
+      <div><strong>10 min</strong><span>typical assessment time</span></div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2>What CareersDNA is for</h2>
+    <div class="feature-grid">
+      <div><strong>Career test</strong><span>Compare interests, strengths, personality, and work values before choosing one direction too early.</span></div>
+      <div><strong>Career profiles</strong><span>Review education path, salary signal, difficulty, related majors, and similar roles for each career.</span></div>
+      <div><strong>Decision guides</strong><span>Use search-friendly guides for common questions such as career confusion, student career planning, and career change.</span></div>
+      <div><strong>Work resources</strong><span>Use checklists, planning templates, and practical tools when you need a concrete next step.</span></div>
+      <div><strong>Editorial standards</strong><span>Pages are written to support research and reflection, not to promise guaranteed outcomes.</span></div>
+      <div><strong>Transparent scope</strong><span>The site is educational and informational. It is not therapy, counseling licensure, or hiring advice.</span></div>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2>Choose a starting point</h2>
+    <div class="link-grid">
+      {% for slug, page in test_pages.items() %}
+      {% if loop.index <= 6 %}
+      <a class="info-card" href="/tests/{{ slug }}" data-track="click_home_test">
+        <span class="card-kicker">{{ page.age_hint }}</span>
+        <strong>{{ page.title }}</strong>
+        <span>{{ page.description }}</span>
+      </a>
+      {% endif %}
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2>Popular career guides</h2>
+    <div class="link-grid">
+      {% for slug, guide in guide_pages.items() %}
+      <a class="info-card" href="/guides/{{ slug }}" data-track="click_home_guide">
+        <strong>{{ guide.title }}</strong>
+        <span>{{ guide.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2>Popular career profiles</h2>
+    <div class="career-teaser-grid">
+      {% for career in featured_careers %}
+      <a class="career-teaser" href="/career/{{ career.id }}" data-track="click_home_career">
+        <strong>{{ career.display_name }}</strong>
+        <span>{{ career.display_description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+
+  <section class="content-section muted-section">
+    <h2>How results should be used</h2>
+    <p>Use the result to build a shortlist, compare daily work patterns, and decide what to research next. A high score means your current answers resemble a career profile in this system. It does not guarantee admission, hiring, income, or long-term satisfaction.</p>
+  </section>
+
+  <section class="content-section">
+    <h2>How the site is built</h2>
+    <div class="link-grid">
+      <a class="info-card" href="/about" data-track="click_home_about">
+        <strong>About CareersDNA</strong>
+        <span>What the site covers, who it is for, and how to use it responsibly.</span>
+      </a>
+      <a class="info-card" href="/methodology" data-track="click_home_methodology">
+        <strong>Methodology</strong>
+        <span>How the assessment combines interests, strengths, personality, values, and career data.</span>
+      </a>
+      <a class="info-card" href="/editorial-policy" data-track="click_home_editorial">
+        <strong>Editorial Policy</strong>
+        <span>How pages are reviewed, what is updated, and what the site does not claim to do.</span>
+      </a>
+    </div>
+  </section>
+
+  <section class="content-section">
+    <h2>Useful supporting tools</h2>
+    <div class="link-grid">
+      {% for slug, tool in featured_tools.items() %}
+      <a class="info-card" href="/tools/{{ slug }}" data-track="click_home_tool">
+        <strong>{{ tool.title }}</strong>
+        <span>{{ tool.description }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

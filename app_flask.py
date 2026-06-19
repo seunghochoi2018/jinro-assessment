@@ -2906,21 +2906,26 @@ def index():
                 test_pages=SEO_TEST_PAGES,
                 guide_pages=SEO_GUIDE_PAGES,
                 featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
-                meta_title="Shared Career Result | Career Assessment",
+                meta_title="Shared Career Result | CareersDNA",
                 meta_description="View a shared career exploration result and take the free career assessment.",
                 canonical_url=_canonical_url("/"),
             )
     return render_template(
-        "tools_index.html",
+        "home.html",
         lang=lang,
-        tools=DAILY_TOOLS,
-        categories=TOOL_CATEGORIES,
-        grouped_tools=_tools_by_category(),
-        blog_posts=_published_blog_posts(),
-        lookbooks=LOOKBOOKS,
-        outfit_guides=OUTFIT_GUIDES,
-        meta_title="Free Online Tools | PDF, Image, Text, Developer, and Calculator Utilities",
-        meta_description="Free browser tools for PDFs, images, text, code, calculators, productivity, business tasks, and career exploration.",
+        test_pages=SEO_TEST_PAGES,
+        guide_pages=SEO_GUIDE_PAGES,
+        featured_careers=[_career_display(c, lang) for c in _top_career_sample(8)],
+        featured_tools={slug: DAILY_TOOLS[slug] for slug in (
+            "word-counter",
+            "resume-bullet-point-generator",
+            "interview-outfit-picker",
+            "pomodoro-timer",
+            "decision-matrix",
+            "qr-code-generator",
+        ) if slug in DAILY_TOOLS},
+        meta_title="CareersDNA | Career Test, Career Guides, and Work Tools",
+        meta_description="Career tests, career guides, practical resources, and browser tools for students, career changers, and everyday work decisions.",
         canonical_url=_canonical_url("/"),
     )
 
@@ -3098,7 +3103,7 @@ def tool_category_page(category_slug):
         category=category,
         tools=tools,
         categories=TOOL_CATEGORIES,
-        meta_title=f"{category['title']} | Free Online Tools",
+        meta_title=f"{category['title']} | CareersDNA Tools",
         meta_description=category["description"],
         canonical_url=_canonical_url(f"/tools/category/{category_slug}"),
     )
@@ -3117,7 +3122,7 @@ def tool_page(slug):
         tool=tool,
         tool_content=_tool_seo_content(slug, tool),
         related_tools=_tool_related(slug),
-        meta_title=f"{tool['title']} | Free Browser Utility",
+        meta_title=f"{tool['title']} | CareersDNA Tool",
         meta_description=tool["description"],
         canonical_url=_canonical_url(f"/tools/{slug}"),
     )
@@ -3130,7 +3135,7 @@ def blog_index():
         "blog_index.html",
         lang=lang,
         posts=_published_blog_posts(),
-        meta_title="Utility Guides | PDF, Image, Text, and Developer Tool Tutorials",
+        meta_title="Guides | CareersDNA",
         meta_description="Practical guides for using free browser tools for PDFs, images, text, developer workflows, and everyday work tasks.",
         canonical_url=_canonical_url("/blog"),
     )
@@ -3166,9 +3171,53 @@ def resources_page():
         resources=RECOMMENDED_RESOURCES,
         monetization_offers=_monetization_offers("career", limit=5),
         products=DIGITAL_PRODUCTS,
-        meta_title="Recommended Resources | Work Utilities",
+        meta_title="Recommended Resources | CareersDNA",
         meta_description="Recommended workbooks, checklists, and utility resources for career planning, documents, images, and everyday work.",
         canonical_url=_canonical_url("/resources"),
+    )
+
+
+@app.route("/about")
+def about_page():
+    return render_template(
+        "about.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        meta_title="About CareersDNA",
+        meta_description="Learn what CareersDNA covers, who it is for, and how to use the site responsibly.",
+        canonical_url=_canonical_url("/about"),
+    )
+
+
+@app.route("/methodology")
+def methodology_page():
+    return render_template(
+        "methodology.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        meta_title="Methodology | CareersDNA",
+        meta_description="How the CareersDNA assessment combines interests, strengths, personality, values, and career comparison data.",
+        canonical_url=_canonical_url("/methodology"),
+    )
+
+
+@app.route("/editorial-policy")
+def editorial_policy_page():
+    return render_template(
+        "editorial_policy.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        meta_title="Editorial Policy | CareersDNA",
+        meta_description="Editorial standards, advertising disclosure, and content maintenance policy for CareersDNA.",
+        canonical_url=_canonical_url("/editorial-policy"),
+    )
+
+
+@app.route("/contact")
+def contact_page():
+    return render_template(
+        "contact.html",
+        lang=session.get("lang", DEFAULT_LANG),
+        meta_title="Contact | CareersDNA",
+        meta_description="Contact CareersDNA for feedback, corrections, privacy requests, and business inquiries.",
+        canonical_url=_canonical_url("/contact"),
     )
 
 
@@ -3178,7 +3227,7 @@ def products_index():
         "products_index.html",
         lang=session.get("lang", DEFAULT_LANG),
         products=DIGITAL_PRODUCTS,
-        meta_title="Digital Products | Work Utilities",
+        meta_title="Digital Products | CareersDNA",
         meta_description="Practical workbooks and templates for career planning, job search organization, and everyday work decisions.",
         canonical_url=_canonical_url("/products"),
     )
@@ -3200,7 +3249,7 @@ def product_page(slug):
         product=product,
         checkout_url=checkout_url,
         payment_configured=bool(os.environ.get(product.get("checkout_env", ""), "").strip()),
-        meta_title=f"{product['title']} | Work Utilities",
+        meta_title=f"{product['title']} | CareersDNA",
         meta_description=product["description"],
         canonical_url=_canonical_url(f"/products/{slug}"),
     )
@@ -3237,7 +3286,7 @@ def games_index():
         "games_index.html",
         lang=session.get("lang", DEFAULT_LANG),
         games=WEB_GAMES,
-        meta_title="Free Browser Games | Work Utilities",
+        meta_title="Free Browser Games | CareersDNA",
         meta_description="Play quick browser games including idle growth RPG prototypes and mobile arcade games.",
         canonical_url=_canonical_url("/games"),
     )
@@ -3318,8 +3367,8 @@ def privacy():
     return render_template(
         "privacy.html",
         lang=lang,
-        meta_title="Privacy Policy | Career Assessment",
-        meta_description="Privacy policy for Career Assessment, including cookies, analytics, advertising, and assessment data handling.",
+        meta_title="Privacy Policy | CareersDNA",
+        meta_description="Privacy policy for CareersDNA, including cookies, analytics, advertising, and assessment data handling.",
         canonical_url=_canonical_url("/privacy"),
     )
 
@@ -3330,8 +3379,8 @@ def terms():
     return render_template(
         "terms.html",
         lang=lang,
-        meta_title="Terms and Disclaimer | Career Assessment",
-        meta_description="Terms, educational-use disclaimer, and limitations of the Career Assessment service.",
+        meta_title="Terms and Disclaimer | CareersDNA",
+        meta_description="Terms, educational-use disclaimer, and limitations of the CareersDNA service.",
         canonical_url=_canonical_url("/terms"),
     )
 
@@ -3759,7 +3808,7 @@ def feed_xml():
     body = f"""<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>Work Utilities Guides</title>
+    <title>CareersDNA Guides</title>
     <link>{APP_URL}/blog</link>
     <description>Practical guides for PDF, image, text, developer, and business utilities.</description>
     <lastBuildDate>{today}</lastBuildDate>
@@ -3774,7 +3823,7 @@ def feed_xml():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/privacy", "/terms", "/games"]
+    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/resources", "/products", "/about", "/methodology", "/editorial-policy", "/contact", "/privacy", "/terms", "/games"]
     paths.extend(game["url"] for game in WEB_GAMES.values())
     paths.append("/lookbooks")
     paths.append("/outfit-guides")
@@ -3784,6 +3833,7 @@ def sitemap_xml():
         paths.extend(f"/lookbooks/{slug}/{item['slug']}" for item in _lookbook_items(slug, lookbook))
     paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
     paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
+    paths.extend(f"/products/{slug}" for slug in DIGITAL_PRODUCTS)
     paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
@@ -3804,6 +3854,8 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path.startswith("/guides/"):
             return "weekly", "0.9"
+        if path in {"/about", "/methodology", "/editorial-policy", "/contact", "/resources", "/products"}:
+            return "weekly", "0.8"
         if path == "/blog":
             return "daily", "0.9"
         if path == "/games":
@@ -3816,6 +3868,8 @@ def sitemap_xml():
             return "weekly", "0.9"
         if path.startswith("/tools/"):
             return "weekly", "0.8"
+        if path.startswith("/products/"):
+            return "monthly", "0.7"
         if path == "/careers":
             return "weekly", "0.8"
         if path.startswith("/career/"):
