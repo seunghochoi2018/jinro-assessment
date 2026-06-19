@@ -1824,18 +1824,8 @@ ADSENSE_ALLOWED_ENDPOINTS = {
     "index",
     "seo_test_page",
     "seo_guide_page",
-    "blog_index",
-    "blog_post",
     "careers_index",
     "career_detail",
-    "lookbooks_index",
-    "lookbook_page",
-    "lookbook_item_page",
-    "outfit_guides_index",
-    "outfit_guide_page",
-    "games_index",
-    "color_gate_runner",
-    "idle_hero",
 }
 
 WEB_GAMES = {
@@ -1858,13 +1848,25 @@ WEB_GAMES = {
 NOINDEX_ENDPOINTS = {
     "admin_analytics",
     "admin_analytics_json",
+    "blog_index",
+    "blog_post",
     "download_report",
+    "games_index",
+    "color_gate_runner",
+    "idle_hero",
+    "lookbooks_index",
+    "lookbook_page",
+    "lookbook_item_page",
+    "outfit_guides_index",
+    "outfit_guide_page",
     "product_page",
     "products_index",
     "resources_page",
     "result",
     "survey",
     "survey_post",
+    "tool_category_page",
+    "tool_page",
 }
 
 
@@ -3823,18 +3825,7 @@ def feed_xml():
 
 @app.route("/sitemap.xml")
 def sitemap_xml():
-    paths = ["/", "/blog", "/feed.xml", "/info", "/careers", "/resources", "/products", "/about", "/methodology", "/editorial-policy", "/contact", "/privacy", "/terms", "/games"]
-    paths.extend(game["url"] for game in WEB_GAMES.values())
-    paths.append("/lookbooks")
-    paths.append("/outfit-guides")
-    paths.extend(f"/outfit-guides/{slug}" for slug in OUTFIT_GUIDES)
-    paths.extend(f"/lookbooks/{slug}" for slug in LOOKBOOKS)
-    for slug, lookbook in LOOKBOOKS.items():
-        paths.extend(f"/lookbooks/{slug}/{item['slug']}" for item in _lookbook_items(slug, lookbook))
-    paths.extend(f"/tools/category/{slug}" for slug in TOOL_CATEGORIES)
-    paths.extend(f"/tools/{slug}" for slug in DAILY_TOOLS)
-    paths.extend(f"/products/{slug}" for slug in DIGITAL_PRODUCTS)
-    paths.extend(f"/blog/{slug}" for slug in _published_blog_posts())
+    paths = ["/", "/info", "/careers", "/about", "/methodology", "/editorial-policy", "/contact", "/privacy", "/terms"]
     paths.extend(f"/guides/{slug}" for slug in SEO_GUIDE_PAGES)
     paths.extend(f"/tests/{slug}" for slug in SEO_TEST_PAGES)
     paths.extend(f"/career/{career.get('id')}" for career in CAREERS_DB if career.get("id"))
